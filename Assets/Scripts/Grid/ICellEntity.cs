@@ -1,10 +1,14 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace Grid
 {
     public interface ICellEntity
     {
         public Vector3 CellSize { get; }
+        
+        public Matrix NearCellIDs { get; }
+        public int CellID { get; }
         
         public string Name { get; set; }
 

@@ -7,10 +7,13 @@ namespace Grid
 {
     public class CellEntity : MonoBehaviour, ICellEntity
     {
-        [SerializeField] private List<GameObject> items;
+        [SerializeField] private int cellId;
+        [SerializeField] private Matrix nearCellIds;
         [SerializeField] private Vector3 cellSize;
 
         public Vector3 CellSize => cellSize;
+        public Matrix NearCellIDs => nearCellIds;
+        public int CellID => cellId;
 
         public string Name
         {

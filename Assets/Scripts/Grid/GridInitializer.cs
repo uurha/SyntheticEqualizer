@@ -10,6 +10,7 @@ namespace Grid
 {
     public class GridInitializer : MonoBehaviour
     {
+        [SerializeField] private Matrix matrix3X3;
         [PrefabHeader]
         [HasComponent(typeof(ICellEntity))] [PrefabRequired] [SerializeField] private GameObject prefab;
 
@@ -50,45 +51,9 @@ namespace Grid
                 }
             }
             
-            var bufferRow = FillRow(bufferList, gridSize.z, gridSize.x);
-            var bufferColumn = FillColumn(bufferList, gridSize.x, gridSize.z);
-            
-            return new GridConfiguration(bufferRow, bufferColumn);
+            return new GridConfiguration(bufferList);
         }
 
-        private LineConfiguration[] FillRow(ICellEntity[,] bufferList, int lineCount, int lineSize)
-        {
-            var bufferLine = new LineConfiguration[lineCount];
-
-            for (var z = 0; z < lineCount; z++)
-            {
-                var lineItems = new ICellEntity[lineSize];
-
-                for (var x = 0; x < lineSize; x++)
-                {
-                    lineItems[x] = bufferList[x, z];
-                }
-                bufferLine[z] = new LineConfiguration(lineItems);
-            }
-            return bufferLine;
-        }
-        
-        private LineConfiguration[] FillColumn(ICellEntity[,] bufferList, int lineCount, int lineSize)
-        {
-            var bufferLine = new LineConfiguration[lineCount];
-
-            for (var z = 0; z < lineCount; z++)
-            {
-                var lineItems = new ICellEntity[lineSize];
-
-                for (var x = 0; x < lineSize; x++)
-                {
-                    lineItems[x] = bufferList[z, x];
-                }
-                bufferLine[z] = new LineConfiguration(lineItems);
-            }
-            return bufferLine;
-        }
 
         private Vector3 Orient(ICellEntity prefabEntity, int x, int z)
         {
@@ -101,13 +66,16 @@ namespace Grid
     {
         private readonly LineConfiguration[] _rowConfiguration;
         private readonly LineConfiguration[] _columnsConfiguration;
-        private IEnumerable<ICellEntity> _lineConfigurations;
+        private readonly IEnumerable<ICellEntity> _lineConfigurations;
 
-        public GridConfiguration(LineConfiguration[] rowConfiguration, LineConfiguration[] columnsConfiguration)
+        public GridConfiguration(ICellEntity[,] cellEntities)
         {
-            _rowConfiguration = rowConfiguration;
-            _columnsConfiguration = columnsConfiguration;
-            _lineConfigurations = _columnsConfiguration.Concat(_rowConfiguration).SelectMany(x=>x.GetCells());
+            _rowConfiguration =
+                cellEntities.FillDimension(MatrixDimension.Row, entities => new LineConfiguration(entities));
+
+            _columnsConfiguration =
+                cellEntities.FillDimension(MatrixDimension.Column, entities => new LineConfiguration(entities));
+            _lineConfigurations = _columnsConfiguration.Concat(_rowConfiguration).SelectMany(x => x.GetCells());
         }
 
         public LineConfiguration[] RowConfiguration => _rowConfiguration;

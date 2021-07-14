@@ -419,4 +419,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridInitializer: {fileID: 1826572396}
   cullingStart: {x: 0, y: 0, z: 0}
-  cullingEnd: {x: 15, y: 0, z: 15}
+  cullingEnd: {x: 24.99575, y: 0, z: 18.32403}

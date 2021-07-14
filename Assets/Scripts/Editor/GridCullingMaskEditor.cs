@@ -32,6 +32,16 @@ public class GridCullingMaskEditor : ValidationAttributeEditor
         var newStart = Handles.PositionHandle(start, quaternion);
         var newEnd = Handles.PositionHandle(end, quaternion);
         
+        var size = newEnd - newStart;
+        var center = size / 2;
+
+        var color = Handles.color;
+        Handles.color = Color.yellow;
+        
+        Handles.DrawWireCube(center, size);
+        
+        Handles.color = color;
+        
         if (EditorGUI.EndChangeCheck())
         {
             Undo.RecordObject(target, "Update culling mask");
