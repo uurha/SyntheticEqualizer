@@ -7,13 +7,11 @@ namespace Grid
 {
     public class CellEntity : MonoBehaviour, ICellEntity
     {
-        [SerializeField] private int cellId;
-        [SerializeField] private Matrix nearCellIds;
+        [SerializeField] private EntityType cellId;
         [SerializeField] private Vector3 cellSize;
 
         public Vector3 CellSize => cellSize;
-        public Matrix NearCellIDs => nearCellIds;
-        public int CellID => cellId;
+        public EntityType CellID => cellId;
 
         public string Name
         {
@@ -48,6 +46,11 @@ namespace Grid
             Orient(position);
             Orient(rotation);
             return this;
+        }
+
+        public ICellEntity CreateInstance(Transform parent)
+        {
+            return Instantiate(this, parent);
         }
 
         public Orientation GetOrientation()

@@ -12,7 +12,6 @@ namespace Grid
         [SerializeField] private GridInitializer gridInitializer;
 
         [SettingsHeader]
-
         [SerializeField] private Vector3 cullingStart;
         [SerializeField] private Vector3 cullingEnd;
 
@@ -25,7 +24,7 @@ namespace Grid
         {
             var buffer = gridInitializer.InstancedGrid;
 
-            buffer.SetActive(position => position.Between(cullingStart, cullingEnd));
+            buffer.CalculateCellInBound(position => position.Between(cullingStart, cullingEnd));
         }
     }
 }

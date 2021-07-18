@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0994c5cd51e64ad43b231190931711f4, type: 3}
+  m_Name: BeomPreset
+  m_EditorClassIdentifier: 
+  beomCells:
+  - {fileID: 1654235765531610755, guid: 14ed6fefdb3575e459a60eda5e9cb5f6, type: 3}
+  - {fileID: 1654235765531610755, guid: e7759eb3e860f3942a477f0d579a9776, type: 3}
+  - {fileID: 1654235765531610755, guid: 409c88929796e4747a2908ace19692d7, type: 3}
+  - {fileID: 1654235765531610755, guid: de68b5e9fe615fc4cb75ab423e89ed4b, type: 3}
+  cellReplacementsArray:
+  - cellID: -1
+    cellIdReplacements: 
+  - cellID: 1
+    cellIdReplacements: 0200000003000000
+  - cellID: 2
+    cellIdReplacements: 0100000003000000
+  - cellID: 3
+    cellIdReplacements: 0100000002000000

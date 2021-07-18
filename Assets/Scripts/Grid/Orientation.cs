@@ -15,5 +15,11 @@ namespace Grid
             Position = transform.position;
             Rotation = transform.rotation;
         }
+        
+        public Orientation(Vector3 position, Quaternion rotation)
+        {
+            Position = position;
+            Rotation = rotation;
+        }
     }
 }
