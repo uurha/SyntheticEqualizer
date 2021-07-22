@@ -7,7 +7,8 @@ namespace Grid
     {
         public Vector3 CellSize { get; }
 
-        public EntityType CellID { get; }
+        public EntityType InDirection { get; }
+        public EntityType OutDirection { get; }
         
         public string Name { get; set; }
 
@@ -23,6 +24,8 @@ namespace Grid
 
         public ICellEntity CreateInstance(Transform parent);
 
+        public void Destroy();
+
         public Orientation GetOrientation();
     }
 
@@ -30,7 +33,9 @@ namespace Grid
     {
         public Vector3 CellSize { get; }
         
-        public int CellID { get; }
+        public EntityType InDirection { get; }
+        
+        public EntityType OutDirection { get; }
         
         public string Name { get; set; }
 
@@ -39,7 +44,8 @@ namespace Grid
         public CellEntityStruct(ICellEntity cellEntity)
         {
             CellSize = cellEntity.CellSize;
-            CellID = (int) cellEntity.CellID;
+            InDirection = cellEntity.InDirection;
+            OutDirection = cellEntity.OutDirection;
             Name = cellEntity.Name;
             Orientation = cellEntity.GetOrientation();
         }

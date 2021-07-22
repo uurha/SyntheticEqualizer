@@ -7,17 +7,21 @@ namespace Grid
 {
     public class CellEntity : MonoBehaviour, ICellEntity
     {
-        [SerializeField] private EntityType cellId;
+        [SerializeField] private EntityType inDirection;
+        [SerializeField] private EntityType outDirection;
         [SerializeField] private Vector3 cellSize;
 
         public Vector3 CellSize => cellSize;
-        public EntityType CellID => cellId;
 
         public string Name
         {
             get => gameObject.name;
             set => gameObject.name = value;
         }
+
+        public EntityType InDirection => inDirection;
+
+        public EntityType OutDirection => outDirection;
 
         public ICellEntity Initialize()
         {
@@ -51,6 +55,11 @@ namespace Grid
         public ICellEntity CreateInstance(Transform parent)
         {
             return Instantiate(this, parent);
+        }
+
+        public void Destroy()
+        {
+            Destroy(gameObject);
         }
 
         public Orientation GetOrientation()

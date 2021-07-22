@@ -1,24 +1,10 @@
 ﻿using System;
 using System.Linq;
 using Grid;
+using UnityEngine;
 
 namespace Extensions
 {
-    public static class ComparisonExtensions
-    {
-
-        public static bool IsMovable(this EntityType lv)
-        {
-            return (int) lv >= (int) EntityType.Movable;
-        }
-        
-        public static bool IsUnMovable(this EntityType lv)
-        {
-            return (int) lv <= (int) EntityType.Unmovable;
-        }
-        
-    }
-    
     public static class MatrixExtensions
     {
         /// <summary>
@@ -60,6 +46,14 @@ namespace Extensions
             return colVector;
         }
 
+        public static EntityType Negative(this EntityType entityType)
+        {
+            var current = (int) entityType;
+
+            var next = current * -1;
+            
+            return (EntityType)next;
+        }
 
 
         /// <summary>

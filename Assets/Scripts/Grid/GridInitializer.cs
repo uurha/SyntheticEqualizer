@@ -31,6 +31,19 @@ namespace Grid
         // Start is called before the first frame update
         private void Start()
         {
+            Initialize();
+        }
+
+        [ContextMenu("Initialize")]
+        private void Initialize()
+        {
+            if(!Application.isPlaying) return;
+
+            if (_isInitialized)
+            {
+                _isInitialized = false;
+                _gridConfigurations.Clear();
+            }
             _gridConfigurations = InstantiateGrid(preset);
             _isInitialized = true;
         }
@@ -38,8 +51,8 @@ namespace Grid
         private GridConfiguration InstantiateGrid(BeomPreset preset)
         {
             var bufferList = new ICellEntity[columnCount, rowCount];
-
-            var grid = GenerateCellGrid(GenerateGrid(columnCount, rowCount), preset.GetBeomEntities());
+            var generatedPath = GeneratePath(columnCount, rowCount);
+            var grid = GenerateCellGrid(generatedPath ,columnCount, rowCount, preset.GetBeomEntities());
 
             for (var row = 0; row < rowCount; row++)
             {
@@ -55,116 +68,122 @@ namespace Grid
             return new GridConfiguration(bufferList);
         }
 
-        private ICellEntity[,] GenerateCellGrid(EntityType[,] typeGrid, BeomCells preset)
+        private ICellEntity[,] GenerateCellGrid(Queue<EntityType> roadPath, int columns, int rows, BeomCells preset)
         {
-            var rowSize = typeGrid.GetLength((int)MatrixDimension.Row);
-            var columnSize = typeGrid.GetLength((int)MatrixDimension.Column);
-            var cellGrid = new ICellEntity[columnSize, rowSize];
+            var cellGrid = new ICellEntity[columns, rows];
+            var entityType = roadPath.Dequeue();
+            var cell = preset.GetCell(entityType.Negative(), entityType);
+            var randomInitialColumn = Random.Range(0, columns);
+            var previousCellEntity = cellGrid[randomInitialColumn, 0] = cell;
 
-            for (var row = 0; row < rowSize; row++)
+            var currentColumn = randomInitialColumn;
+            var currentRow = 0;
+
+            for (int i = 0; i < roadPath.Count; i++)
             {
-                for (var column = 0; column < columnSize; column++)
+                var next = roadPath.Dequeue();
+                var inDir = previousCellEntity.OutDirection.Negative();
+                var nextCell = preset.GetCell(inDir, next);
+                
+                var prevColumn = currentColumn;
+                var prevRow = currentRow;
+
+                if (nextCell == null)
                 {
-                    cellGrid[column, row] = preset.GetCell(typeGrid[column, row]);
+                    Debug.Log("f");
+                }
+                
+                cellGrid[currentColumn, currentRow] = nextCell;
+                previousCellEntity = nextCell;
+                
+
+                switch (next)
+                {
+                    case EntityType.North:
+                        currentRow++;
+                        break;
+                    case EntityType.East:
+                        currentColumn++;
+                        break;
+                    case EntityType.South:
+                        currentRow--;
+                        break;
+                    case EntityType.West:
+                        currentColumn--;
+                        break;
+                }
+
+                if (currentColumn >= columns ||
+                    currentColumn < 0)
+                {
+                    if (next == EntityType.East ||
+                        next == EntityType.West)
+                    {
+                        cellGrid[prevColumn, currentRow] = nextCell;
+                        break;
+                    }
+                }
+
+                if (currentRow >= rows ||
+                    currentRow < 0)
+                {
+                    if (next == EntityType.North ||
+                        next == EntityType.South)
+                    {
+                        cellGrid[currentColumn, prevRow] = nextCell;
+                        break;
+                    }
+                }
+            }
+
+            for (int row = 0; row < rows; row++)
+            {
+                for (int column = 0; column < columns; column++)
+                {
+                    cellGrid[column, row] ??= preset.GetCell(EntityType.None, EntityType.None);
                 }
             }
 
             return cellGrid;
         }
 
-        private EntityType[,] GenerateGrid(int columnCount, int rowCount)
+        private Queue<EntityType> GeneratePath(int columnCount, int rowCount)
         {
-            var ids = new EntityType[columnCount, rowCount];
+            var count = columnCount * rowCount;
+            var ids = new Queue<EntityType>(count);
 
-            for (var row = 0; row < rowCount; row++)
+            var random = new System.Random();
+            for (int i = 0; i < count; i++)
             {
-                var bufferRow = new EntityType[columnCount];
-                var fillRowWithMovables = false;
-                for (var column = 0; column < columnCount; column++)
+                if (i <= 3)
                 {
-                    if (row == 0)
+                    ids.Enqueue(EntityType.North);
+                    continue;
+                }
+
+                var randomNextStep = ids.ToArray()[i - 1].Negative();
+
+                while (true)
+                {
+                    var bufferStep = RandomDirection(random);
+
+                    if (bufferStep != randomNextStep)
                     {
-                        if (column == Mathf.RoundToInt(columnCount / 2f))
-                        {
-                            bufferRow[column] = EntityType.Movable;
-                        }
-                        else
-                        {
-                            bufferRow[column] = EntityType.Unmovable;
-                        }
-                        continue;
-                    }
-
-                    if (!fillRowWithMovables)
-                    {
-                        var prevRow = ids.GetRow(row - 1);
-
-                        if (prevRow.Any(x => x == EntityType.Left || x == EntityType.Right))
-                        {
-                            if (prevRow.Count(x => x == EntityType.Left || x == EntityType.Right) >= 1)
-                            {
-                                bufferRow[column] =
-                                    (EntityType) Random.Range((int) EntityType.Unmovable,
-                                                              (int) EntityType.AnyUnmovable);
-                                continue;
-                            }
-                        }
-
-                        if (prevRow[column].IsMovable())
-                        {
-                            bufferRow[column] =
-                                (EntityType) Random.Range((int) EntityType.Movable, (int) EntityType.AnyMovable);
-
-                            switch (bufferRow[column])
-                            {
-                                case EntityType.Left:
-                                    column = -1;
-                                    fillRowWithMovables = true;
-                                    continue;
-                                case EntityType.Right:
-                                    fillRowWithMovables = true;
-                                    continue;
-                            }
-                        }
-                        else if (prevRow[column].IsUnMovable())
-                        {
-                            bufferRow[column] =
-                                (EntityType) Random.Range((int) EntityType.Unmovable, (int) EntityType.AnyUnmovable);
-                        }
-                    }
-                    else
-                    {
-                        switch (bufferRow[column])
-                        {
-                            case EntityType.Left:
-                                fillRowWithMovables = false;
-                                continue;
-                            case EntityType.Right:
-                                fillRowWithMovables = false;
-                                continue;
-                        }
-
-                        if (bufferRow.Count(x => x == EntityType.Left || x == EntityType.Right) < 2)
-                        {
-                            var entityType =
-                                (EntityType) Random.Range((int) EntityType.Movable, (int) EntityType.AnyMovable);
-
-                            bufferRow[column] = entityType;
-
-                            if (bufferRow.Count(x => x == entityType) % 2 == 0)
-                            {
-                                bufferRow[column] = EntityType.Movable;
-                            }
-                        }
-                        else
-                        {
-                            bufferRow[column] = EntityType.Movable;
-                        }
+                        randomNextStep = bufferStep;
+                        break;
                     }
                 }
-                ids.SetRow(row, bufferRow);
+                ids.Enqueue(randomNextStep);
+
             }
 
+            return ids;
+        }
+        
+        private EntityType[,] GenerateGrid(int columnCount, int rowCount)
+        {
+            var ids = new EntityType[columnCount , rowCount];
+            
             return ids;
         }
 
@@ -173,24 +192,35 @@ namespace Grid
             return new Vector3(prefabEntity.CellSize.x * x, 0f,
                                prefabEntity.CellSize.z * z);
         }
+
+        private EntityType RandomDirection(System.Random random)
+        {
+            var values = Enum.GetValues(typeof(EntityType));
+            return (EntityType)values.GetValue(random.Next((int)EntityType.None + 1, values.Length));
+        }
     }
-        
-    public enum EntityType : int
+
+    public enum EntityType
     {
-        AnyUnmovable = Unmovable - 1,
-        Unmovable = Any -1,
-        Any = 0,
-        Movable = Any + 1,
-        Left = Movable + 1,
-        Right = Left + 1,
-        AnyMovable = Right + 1
+        None = 0,
+        North = -1,
+        East = 2,
+        South = 1,
+        West = -2
+    }
+    
+
+    public enum Direction
+    {
+        In,
+        Out
     }
 
     public struct GridConfiguration
     {
-        private readonly LineConfiguration[] _rowConfiguration;
-        private readonly LineConfiguration[] _columnsConfiguration;
-        private readonly IEnumerable<ICellEntity> _lineConfigurations;
+        private LineConfiguration[] _rowConfiguration;
+        private LineConfiguration[] _columnsConfiguration;
+        private ICellEntity[] _lineConfigurations;
 
         public GridConfiguration(ICellEntity[,] cellEntities)
         {
@@ -199,7 +229,7 @@ namespace Grid
 
             _columnsConfiguration =
                 cellEntities.FillDimension(MatrixDimension.Column, entities => new LineConfiguration(entities));
-            _lineConfigurations = _columnsConfiguration.Concat(_rowConfiguration).SelectMany(x => x.GetCells());
+            _lineConfigurations = _columnsConfiguration.Concat(_rowConfiguration).SelectMany(x => x.GetCells()).ToArray();
         }
 
         public LineConfiguration[] RowConfiguration => _rowConfiguration;
@@ -212,6 +242,17 @@ namespace Grid
                 var visible = predicate.Invoke(cellEntity.GetOrientation().Position);
                 cellEntity.SetActive(visible);
             }
+        }
+
+        public void Clear()
+        {
+            foreach (var cellEntity in _lineConfigurations)
+            {
+                cellEntity.Destroy();
+            }
+            _rowConfiguration = new LineConfiguration[0];
+            _columnsConfiguration = new LineConfiguration[0];
+            _lineConfigurations = new ICellEntity[0];
         }
     }
 }

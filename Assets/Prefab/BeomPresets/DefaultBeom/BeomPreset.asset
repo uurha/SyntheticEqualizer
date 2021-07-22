@@ -13,16 +13,16 @@ MonoBehaviour:
   m_Name: BeomPreset
   m_EditorClassIdentifier: 
   beomCells:
-  - {fileID: 1654235765531610755, guid: 14ed6fefdb3575e459a60eda5e9cb5f6, type: 3}
+  - {fileID: 1654235765531610755, guid: 172858a61682bad408c28a4248be1b89, type: 3}
+  - {fileID: 1654235765531610755, guid: 022acf1fdf5f3264abeadeea20ba5ecd, type: 3}
+  - {fileID: 1654235765531610755, guid: fe5166960e98d2548a8a8d53e20b8f49, type: 3}
+  - {fileID: 1654235765531610755, guid: 7129ca86b41e45740af6f82777d8a0a0, type: 3}
   - {fileID: 1654235765531610755, guid: e7759eb3e860f3942a477f0d579a9776, type: 3}
+  - {fileID: 1654235765531610755, guid: d8277d7da9ed09d459b8f1da9c9227de, type: 3}
+  - {fileID: 1654235765531610755, guid: 14ed6fefdb3575e459a60eda5e9cb5f6, type: 3}
   - {fileID: 1654235765531610755, guid: 409c88929796e4747a2908ace19692d7, type: 3}
+  - {fileID: 1654235765531610755, guid: 477c84f4807573144ad40b95192cc193, type: 3}
   - {fileID: 1654235765531610755, guid: de68b5e9fe615fc4cb75ab423e89ed4b, type: 3}
-  cellReplacementsArray:
-  - cellID: -1
-    cellIdReplacements: 
-  - cellID: 1
-    cellIdReplacements: 0200000003000000
-  - cellID: 2
-    cellIdReplacements: 0100000003000000
-  - cellID: 3
-    cellIdReplacements: 0100000002000000
+  - {fileID: 1654235765531610755, guid: 48bf6d6f416633c41ac8f325f7947b35, type: 3}
+  - {fileID: 1654235765531610755, guid: f486ac3f717bf1a46bcdff19c416fa28, type: 3}
+  - {fileID: 1654235765531610755, guid: 36dca7eac1a2ecc49aa513dc02f5deca, type: 3}

@@ -1057,12 +1057,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a586b5a6e71441cae02f161ed0fbb27, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cellId: -1
-  nearCellIds:
-    lines:
-    - {x: 0, y: 0, z: 0}
-    - {x: 0, y: -1, z: 0}
-    - {x: 0, y: 0, z: 0}
+  cellId: 0
   cellSize: {x: 10, y: 0, z: 10}
 --- !u!1 &1662400584400496252
 GameObject:

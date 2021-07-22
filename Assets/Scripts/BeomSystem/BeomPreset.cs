@@ -22,33 +22,25 @@ public class BeomPreset : ScriptableObject
 [Serializable] 
 public struct BeomCells
 {
-    public ICellEntity[] UnmovableEntities { get; }
-    public ICellEntity[] MovableEntities { get; }
+    private ICellEntity[] Entities;
 
-    public ICellEntity GetCell(EntityType entityType)
+    public ICellEntity GetCell(EntityType entityType, Direction direction)
     {
-        if (entityType.IsMovable())
-        {
-            return MovableEntities.FirstOrDefault(x => x.CellID == entityType);
-        }
-
-        if (entityType.IsUnMovable())
-        {
-            return UnmovableEntities.FirstOrDefault(x => x.CellID == entityType);
-        }
-        return null;
+        return direction switch
+               {
+                   Direction.In => Entities.FirstOrDefault(x => x.InDirection == entityType),
+                   Direction.Out => Entities.FirstOrDefault(x => x.OutDirection == entityType),
+                   _ => throw new ArgumentOutOfRangeException(nameof(direction), direction, null)
+               };
     }
     
-    public BeomCells(ICellEntity[] cellEntities)
+    public ICellEntity GetCell(EntityType inDir, EntityType outDir)
     {
-        UnmovableEntities = cellEntities.Where(x => x.CellID.IsUnMovable()).ToArray();
-        MovableEntities = cellEntities.Where(x=> x.CellID.IsMovable()).ToArray();
+        return Entities.FirstOrDefault(x => x.InDirection == inDir && x.OutDirection == outDir);
     }
-    
+
     public BeomCells(IEnumerable<ICellEntity> cellEntities)
     {
-        var entities = cellEntities as ICellEntity[] ?? cellEntities.ToArray();
-        UnmovableEntities = entities.Where(x => x.CellID.IsUnMovable()).ToArray();
-        MovableEntities = entities.Where(x=> x.CellID.IsMovable()).ToArray();
+        Entities = cellEntities as ICellEntity[] ?? cellEntities.ToArray();
     }
 }
