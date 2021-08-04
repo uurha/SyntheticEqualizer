@@ -1,14 +1,19 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Grid
 {
-    public interface ICellEntity
+    public interface IInstantiable
+    {
+        public IInstantiable CreateInstance(Transform parent);
+    }
+    
+    public interface ICellEntity : IInstantiable
     {
         public Vector3 CellSize { get; }
 
-        public EntityType InDirection { get; }
-        public EntityType OutDirection { get; }
+        public EntityRoute InDirection { get; }
+        
+        public EntityRoute OutDirection { get; }
         
         public string Name { get; set; }
 
@@ -16,13 +21,11 @@ namespace Grid
 
         public void SetActive(bool state);
 
-        public ICellEntity Orient(Vector3 position);
+        public ICellEntity SetOrientation(Vector3 position);
 
-        public ICellEntity Orient(Quaternion rotation);
+        public ICellEntity SetOrientation(Quaternion rotation);
 
-        public ICellEntity Orient(Vector3 position, Quaternion rotation);
-
-        public ICellEntity CreateInstance(Transform parent);
+        public ICellEntity SetOrientation(Vector3 position, Quaternion rotation);
 
         public void Destroy();
 
@@ -33,9 +36,9 @@ namespace Grid
     {
         public Vector3 CellSize { get; }
         
-        public EntityType InDirection { get; }
+        public EntityRoute InDirection { get; }
         
-        public EntityType OutDirection { get; }
+        public EntityRoute OutDirection { get; }
         
         public string Name { get; set; }
 

@@ -1,0 +1,214 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Base.Deque;
+using Grid;
+
+namespace Extensions
+{
+    public enum MatrixDimension : int
+    {
+        Row = 0,
+        Column = 1
+    }
+    
+    public static class MatrixExtensions
+    {
+        public static int LastDiffer<T>(this IEnumerable<T> collection)
+        {
+            var buffer = collection.ToArray();
+            var last = buffer[0];
+            var lastDiffer = 0;
+            if(buffer.All(x=>EqualityComparer<T>.Default.Equals(last,  x)))
+            {
+                return 0;
+            }
+            
+            for (int i = 1; i < buffer.Length; i++)
+            {
+                if(EqualityComparer<T>.Default.Equals(last,  buffer[i]))
+                {
+                    lastDiffer++;
+                    continue;
+                }
+                break;
+            }
+
+            return lastDiffer;
+        }
+
+        public static T[,] AppendRow<T>(this T[,] matrix, T[] appended)
+        {
+            var rowLength = matrix.GetLength((int)MatrixDimension.Row);
+
+            if (rowLength != appended.Length)
+            {
+                throw new ArgumentException("Matrix row lenght not equal appended lenght");
+            }
+            
+            var colLength = matrix.GetLength((int)MatrixDimension.Column);
+            var newMatrix = new T[rowLength, colLength + 1];
+
+            for (int row = 0; row < rowLength; row++)
+            {
+                for (int col = 0; col < colLength; col++)
+                {
+                    newMatrix[row, col] = matrix[row, col];
+                }
+            }
+            
+            newMatrix.SetColumn(colLength, appended);
+
+            return newMatrix;
+        }
+        
+        public static T[,] PrependRow<T>(this T[,] matrix, T[] appended)
+        {
+            var rowLength = matrix.GetLength((int)MatrixDimension.Row);
+
+            if (rowLength != appended.Length)
+            {
+                throw new ArgumentException("Matrix row lenght not equal appended lenght");
+            }
+            
+            var colLength = matrix.GetLength((int)MatrixDimension.Column);
+            var newMatrix = new T[rowLength, colLength + 1];
+
+            for (int row = 0; row < rowLength; row++)
+            {
+                for (int col = 0; col < colLength; col++)
+                {
+                    newMatrix[row, col + 1] = matrix[row, col];
+                }
+            }
+            
+            newMatrix.SetColumn(0, appended);
+
+            return newMatrix;
+        }
+        
+        public static T[,] AppendColumn<T>(this T[,] matrix, T[] appended)
+        {
+            var colLength = matrix.GetLength((int)MatrixDimension.Column);
+            if (colLength != appended.Length)
+            {
+                throw new ArgumentException("Matrix column lenght not equal appended lenght");
+            }
+            var rowLength = matrix.GetLength((int)MatrixDimension.Row);
+
+            var newMatrix = new T[rowLength + 1, colLength];
+
+            for (int row = 0; row < rowLength; row++)
+            {
+                for (int col = 0; col < colLength; col++)
+                {
+                    newMatrix[row, col] = matrix[row, col];
+                }
+            }
+            
+            newMatrix.SetRow(rowLength, appended);
+
+            return newMatrix;
+        }
+        
+        public static T[,] PrependColumn<T>(this T[,] matrix, T[] appended)
+        {
+            var colLength = matrix.GetLength((int)MatrixDimension.Column);
+            if (colLength != appended.Length)
+            {
+                throw new ArgumentException("Matrix column lenght not equal appended lenght");
+            }
+            var rowLength = matrix.GetLength((int)MatrixDimension.Row);
+
+            var newMatrix = new T[rowLength + 1, colLength];
+
+            for (int row = 0; row < rowLength; row++)
+            {
+                for (int col = 0; col < colLength; col++)
+                {
+                    newMatrix[row + 1, col] = matrix[row, col];
+                }
+            }
+            
+            newMatrix.SetRow(0, appended);
+
+            return newMatrix;
+        }
+     
+        /// <summary>
+        /// Returns the row with number 'row' of this matrix as a 1D-Array.
+        /// </summary>
+        public static T[] GetRow<T>(this T[,] matrix, int row)
+        {
+            var rowLength = matrix.GetLength((int)MatrixDimension.Row);
+            var rowVector = new T[rowLength];
+
+            for (var i = 0; i < rowLength; i++)
+                rowVector[i] = matrix[i, row];
+
+            return rowVector;
+        }
+
+        /// <summary>
+        /// Sets the row with number 'row' of this 2D-matrix to the parameter 'rowVector'.
+        /// </summary>
+        public static void SetColumn<T>(this T[,] matrix, int row, T[] rowVector)
+        {
+            var rowLength = matrix.GetLength((int)MatrixDimension.Row);
+
+            for (var i = 0; i < rowLength; i++)
+                matrix[i, row] = rowVector[i];
+        }
+
+        /// <summary>
+        /// Returns the column with number 'col' of this matrix as a 1D-Array.
+        /// </summary>
+        public static T[] GetColumn<T>(this T[,] matrix, int column)
+        {
+            var colLength = matrix.GetLength((int)MatrixDimension.Column);
+            var colVector = new T[colLength];
+
+            for (var i = 0; i < colLength; i++)
+                colVector[i] = matrix[column, i];
+
+            return colVector;
+        }
+
+
+        /// <summary>
+        /// Sets the column with number 'col' of this 2D-matrix to the parameter 'colVector'.
+        /// </summary>
+        public static void SetRow<T>(this T[,] matrix, int column, T[] colVector)
+        {
+            var colLength = matrix.GetLength((int)MatrixDimension.Column);
+
+            for (var i = 0; i < colLength; i++)
+                matrix[column, i] = colVector[i];
+        }
+        
+        public static Deque<T> FillDimension<T, V>(this V[,] bufferList, MatrixDimension dimension, Func<V[], T> onCreateInstance = null) where T : new()
+        {
+            var lineCount = bufferList.GetLength((int)dimension);
+            var bufferLines = new Deque<T>();
+
+            switch (dimension)
+            {
+                case MatrixDimension.Row:
+                    for (var z = 0; z < lineCount; z++)
+                    {
+                        bufferLines.AddLast(onCreateInstance == null ? new T() : onCreateInstance.Invoke(bufferList.GetColumn(z)));
+                    }
+                    break;
+                case MatrixDimension.Column:
+                    for (var z = 0; z < lineCount; z++)
+                    {
+                        bufferLines.AddLast(onCreateInstance == null ? new T() : onCreateInstance.Invoke(bufferList.GetRow(z)));
+                    }
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(dimension), dimension, null);
+            }
+            return bufferLines;
+        }
+    }
+}

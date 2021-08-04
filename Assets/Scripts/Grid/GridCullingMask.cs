@@ -1,5 +1,4 @@
-﻿using System;
-using CorePlugin.Attributes.Headers;
+﻿using CorePlugin.Attributes.Headers;
 using Extensions;
 using UnityEngine;
 

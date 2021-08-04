@@ -24,7 +24,7 @@ public struct BeomCells
 {
     private ICellEntity[] Entities;
 
-    public ICellEntity GetCell(EntityType entityType, Direction direction)
+    public ICellEntity GetCell(EntityRoute entityType, Direction direction)
     {
         return direction switch
                {
@@ -34,7 +34,7 @@ public struct BeomCells
                };
     }
     
-    public ICellEntity GetCell(EntityType inDir, EntityType outDir)
+    public readonly ICellEntity GetCell(EntityRoute inDir, EntityRoute outDir)
     {
         return Entities.FirstOrDefault(x => x.InDirection == inDir && x.OutDirection == outDir);
     }

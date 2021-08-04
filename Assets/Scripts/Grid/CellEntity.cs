@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Grid
 {
     public class CellEntity : MonoBehaviour, ICellEntity
     {
-        [SerializeField] private EntityType inDirection;
-        [SerializeField] private EntityType outDirection;
+        [SerializeField] private EntityRoute inDirection;
+        [SerializeField] private EntityRoute outDirection;
         [SerializeField] private Vector3 cellSize;
 
         public Vector3 CellSize => cellSize;
@@ -19,9 +16,9 @@ namespace Grid
             set => gameObject.name = value;
         }
 
-        public EntityType InDirection => inDirection;
+        public EntityRoute InDirection => inDirection;
 
-        public EntityType OutDirection => outDirection;
+        public EntityRoute OutDirection => outDirection;
 
         public ICellEntity Initialize()
         {
@@ -33,26 +30,26 @@ namespace Grid
             if (gameObject.activeSelf != state) gameObject.SetActive(state);
         }
 
-        public ICellEntity Orient(Vector3 position)
+        public ICellEntity SetOrientation(Vector3 position)
         {
             transform.position = position;
             return this;
         }
 
-        public ICellEntity Orient(Quaternion rotation)
+        public ICellEntity SetOrientation(Quaternion rotation)
         {
             transform.rotation = rotation;
             return this;
         }
 
-        public ICellEntity Orient(Vector3 position, Quaternion rotation)
+        public ICellEntity SetOrientation(Vector3 position, Quaternion rotation)
         {
-            Orient(position);
-            Orient(rotation);
+            SetOrientation(position);
+            SetOrientation(rotation);
             return this;
         }
 
-        public ICellEntity CreateInstance(Transform parent)
+        public IInstantiable CreateInstance(Transform parent)
         {
             return Instantiate(this, parent);
         }

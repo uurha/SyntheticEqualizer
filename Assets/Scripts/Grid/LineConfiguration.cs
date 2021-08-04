@@ -29,9 +29,9 @@ namespace Grid
         {
             var buffer = new int[3, 3];
 
-            for (int x = 0; x < 3; x++)
+            for (var x = 0; x < 3; x++)
             {
-                for (int y = 0; y < 3; y++)
+                for (var y = 0; y < 3; y++)
                 {
                     buffer[x, y] = lines[x][y];
                 }
