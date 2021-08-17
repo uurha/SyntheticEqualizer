@@ -1,12 +1,30 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Cell.CellItem.Interfaces;
+using Cell.Interfaces;
+using CorePlugin.Attributes.Headers;
+using CorePlugin.Attributes.Validation;
+using Grid;
+using UnityEngine;
 
-namespace Grid
+namespace Cell
 {
     public class CellEntity : MonoBehaviour, ICellEntity
     {
+        [ReferencesHeader]
+        [HasComponent(typeof(ICellItem))] 
+        [SerializeField] private GameObject[] leftItems;
+        
+        [HasComponent(typeof(ICellItem))] 
+        [SerializeField] private GameObject[] rightItems;
+        
+        [SettingsHeader]
         [SerializeField] private EntityRoute inDirection;
         [SerializeField] private EntityRoute outDirection;
         [SerializeField] private Vector3 cellSize;
+        
+        private IEnumerable<ICellEntity> _leftCellItems;
+        private IEnumerable<ICellEntity> _rightCellItems;
 
         public Vector3 CellSize => cellSize;
 
@@ -22,6 +40,8 @@ namespace Grid
 
         public ICellEntity Initialize()
         {
+            _leftCellItems = leftItems.Select(x => x.GetComponent<ICellEntity>());
+            _rightCellItems = rightItems.Select(x => x.GetComponent<ICellEntity>());
             return this;
         }
 
@@ -46,6 +66,12 @@ namespace Grid
         {
             SetOrientation(position);
             SetOrientation(rotation);
+            return this;
+        }
+
+        public ICellEntity SetOrientation(Orientation orientation)
+        {
+            SetOrientation(orientation.Position, orientation.Rotation);
             return this;
         }
 

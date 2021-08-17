@@ -21,9 +21,12 @@ namespace Grid
 
         private void CheckMask()
         {
-            var buffer = gridInitializer.InstancedGrid;
+            var buffer = gridInitializer.InstancedGrids;
 
-            buffer.CalculateCellInBound(position => position.Between(cullingStart, cullingEnd));
+            foreach (var gridConfiguration in buffer)
+            {
+                gridConfiguration.CalculateCellInBound(position => position.Between(cullingStart, cullingEnd));
+            }
         }
     }
 }

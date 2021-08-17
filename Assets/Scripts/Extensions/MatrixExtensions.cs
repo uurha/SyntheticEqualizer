@@ -3,15 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using Base.Deque;
 using Grid;
+using UnityEngine;
 
 namespace Extensions
 {
-    public enum MatrixDimension : int
-    {
-        Row = 0,
-        Column = 1
-    }
-    
     public static class MatrixExtensions
     {
         public static int LastDiffer<T>(this IEnumerable<T> collection)
@@ -186,23 +181,27 @@ namespace Extensions
                 matrix[column, i] = colVector[i];
         }
         
-        public static Deque<T> FillDimension<T, V>(this V[,] bufferList, MatrixDimension dimension, Func<V[], T> onCreateInstance = null) where T : new()
+        public static T[] FillDimension<T, V>(this V[,] bufferList, MatrixDimension dimension, Func<V[], T> onCreateInstance = null) where T : new()
         {
             var lineCount = bufferList.GetLength((int)dimension);
-            var bufferLines = new Deque<T>();
+            var bufferLines = new T[lineCount];
 
             switch (dimension)
             {
                 case MatrixDimension.Row:
                     for (var z = 0; z < lineCount; z++)
                     {
-                        bufferLines.AddLast(onCreateInstance == null ? new T() : onCreateInstance.Invoke(bufferList.GetColumn(z)));
+                        bufferLines[z] = onCreateInstance == null
+                                             ? new T()
+                                             : onCreateInstance.Invoke(bufferList.GetColumn(z));
                     }
                     break;
                 case MatrixDimension.Column:
                     for (var z = 0; z < lineCount; z++)
                     {
-                        bufferLines.AddLast(onCreateInstance == null ? new T() : onCreateInstance.Invoke(bufferList.GetRow(z)));
+                        bufferLines[z] = onCreateInstance == null
+                                             ? new T()
+                                             : onCreateInstance.Invoke(bufferList.GetRow(z));
                     }
                     break;
                 default:

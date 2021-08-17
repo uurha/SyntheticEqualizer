@@ -1,7 +1,15 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using Base.BaseTypes;
+using Base.Deque;
+using BeomSystem;
+using Cell;
+using Cell.Interfaces;
 using CorePlugin.Attributes.Headers;
 using Extensions;
+using Grid.Generator;
+using Grid.Model;
 using UnityEngine;
 
 namespace Grid
@@ -12,18 +20,20 @@ namespace Grid
         [SerializeField] private BeomPreset preset;
 
         [SettingsHeader]
+        [Min(1)][SerializeField] private int maxGridCount;
         [SerializeField] private int rowCount;
         [SerializeField] private int columnCount;
         [SerializeField] private int seedValue;
 
-        private GridConfiguration _gridConfiguration;
+        private Conveyor<GridConfiguration> _gridConfigurations;
         private bool _isInitialized;
         private GridGenerator _gridGenerator;
+        private Vector3 _initialPosition = Vector3.zero;
+        private EntityRoute _previousGridExit;
 
         public bool IsInitialized => _isInitialized;
 
-        public GridConfiguration InstancedGrid => _gridConfiguration;
-
+        public Conveyor<GridConfiguration> InstancedGrids => _gridConfigurations;
 
         // Start is called before the first frame update
         private void Start()
@@ -38,48 +48,36 @@ namespace Grid
             if (_isInitialized)
             {
                 _isInitialized = false;
-                _gridConfiguration.Clear();
+
+                if (_gridConfigurations != null)
+                    foreach (var gridConfiguration in _gridConfigurations)
+                    {
+                        gridConfiguration.Clear();
+                    }
             }
+            _gridConfigurations = new Conveyor<GridConfiguration>(maxGridCount, (configuration => configuration.Clear()));
+            _initialPosition = Vector3.zero;
             InstantiateGrid(preset);
         }
 
         public void GenerateNextGrid()
         {
-            _gridGenerator.GenerateNextGrid(preset.GetBeomEntities(), OnGridGenerated);
+            _gridGenerator.GenerateNextGrid(OnGridGenerated);
         }
 
         private void InstantiateGrid(BeomPreset preset)
         {
-            _gridGenerator = new GridGenerator(columnCount, rowCount, seedValue);
-            _gridGenerator.GenerateGrid(preset.GetBeomEntities(), OnGridGenerated);
+            _gridGenerator = new GridGenerator(columnCount, rowCount, preset.GetBeomEntities(), seedValue);
+            _gridGenerator.GenerateGrid(OnGridGenerated);
         }
 
         private void OnGridGenerated(GridGeneratorOutput gridGeneratorOutput)
         {
             var bufferList = new ICellEntity[columnCount, rowCount];
             var bufferGrid = gridGeneratorOutput.Grid;
+            var previousGrid = _gridConfigurations.IsEmpty ? default : _gridConfigurations.Last;
 
-            var additionalColumn = 0;
-            var additionalRow = 0;
-
-            if (_gridConfiguration.IsInitialized)
-            {
-                switch (gridGeneratorOutput.LastDirection)
-                {
-                    case EntityRoute.North:
-                        additionalRow = _gridConfiguration.ColumnLenght;
-                        break;
-                    case EntityRoute.East:
-                        additionalColumn = _gridConfiguration.RowLenght;
-                        break;
-                    case EntityRoute.South:
-                        additionalRow = _gridConfiguration.ColumnLenght * -1;
-                        break;
-                    case EntityRoute.West:
-                        additionalColumn = _gridConfiguration.RowLenght * -1;
-                        break;
-                }
-            }
+            var lineSize = Vector3.zero;
 
             for (var row = 0; row < rowCount; row++)
             {
@@ -87,31 +85,28 @@ namespace Grid
                 {
                     var cellEntity = (ICellEntity) bufferGrid[column, row].CreateInstance(transform);
 
-                    cellEntity.Initialize()
-                              .SetOrientation(cellEntity.Orient(column + additionalColumn, row + additionalRow));
+                    var positionInGrid = new TupleInt(column, row);
+                    if (previousGrid.IsInitialized)
+                    {
+                        lineSize = previousGrid.LineSize(_previousGridExit, positionInGrid);
+                    }
+
+                    var bufferPosition = new Orientation(_initialPosition + lineSize, Quaternion.identity);
+
+
+                    cellEntity.Initialize().SetOrientation(cellEntity.Orient(bufferPosition, positionInGrid));
                     cellEntity.Name = $"{cellEntity.Name} {column}X{row}";
                     bufferList[column, row] = cellEntity;
                 }
             }
+            var gridConfiguration = new GridConfiguration(bufferList);
+            _gridConfigurations.AddLast(gridConfiguration);
+            _previousGridExit = gridGeneratorOutput.GridExit;
+            var entity = gridConfiguration.ColumnsConfiguration[0].GetCells()[0];
 
-            _gridConfiguration = new GridConfiguration(bufferList);
+            _initialPosition = entity.GetOrientation().Position;
+
             _isInitialized = true;
         }
-    }
-
-    public enum EntityRoute
-    {
-        None = 0,
-        North = -1,
-        East = 2,
-        South = 1,
-        West = -2
-    }
-    
-
-    public enum Direction
-    {
-        In,
-        Out
     }
 }

@@ -1,16 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Base.Deque;
 using Extensions;
+using Grid;
 using UnityEngine;
 using Random = System.Random;
 using TaskExtensions = Extensions.TaskExtensions;
 
-namespace Grid
+namespace Route.Generator
 {
-    public class PathGenerator
+    public class RouteGenerator
     {
         private readonly int _lenght;
         private readonly Deque<EntityRoute> _turns;
@@ -18,7 +18,7 @@ namespace Grid
         private readonly Deque<EntityRoute> _routes;
         private int _seed;
 
-        public PathGenerator(int lenght, int seed = 0)
+        public RouteGenerator(int lenght, int seed = 0)
         {
             _lenght = lenght;
             _seed = seed == 0 ? Environment.TickCount : seed;

@@ -1,46 +1,21 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Cell.Interfaces;
 using CorePlugin.Attributes.Validation;
-using Extensions;
-using Grid;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Beom System/Create Beom Preset", fileName = "BeomPreset", order = 0)] 
-public class BeomPreset : ScriptableObject
+namespace BeomSystem
 {
-    [HasComponent(typeof(ICellEntity))] 
-    [SerializeField] private List<GameObject> beomCells;
-
-    public BeomCells GetBeomEntities()
+    [CreateAssetMenu(menuName = "Beom System/Create Beom Preset", fileName = "BeomPreset", order = 0)] 
+    public class BeomPreset : ScriptableObject
     {
-        return new BeomCells(beomCells.Select(x => x.GetComponent<ICellEntity>()));
-    }
-}
+        [HasComponent(typeof(ICellEntity))] 
+        [SerializeField] private List<GameObject> beomCells;
 
-[Serializable] 
-public struct BeomCells
-{
-    private ICellEntity[] Entities;
-
-    public ICellEntity GetCell(EntityRoute entityType, Direction direction)
-    {
-        return direction switch
-               {
-                   Direction.In => Entities.FirstOrDefault(x => x.InDirection == entityType),
-                   Direction.Out => Entities.FirstOrDefault(x => x.OutDirection == entityType),
-                   _ => throw new ArgumentOutOfRangeException(nameof(direction), direction, null)
-               };
-    }
-    
-    public readonly ICellEntity GetCell(EntityRoute inDir, EntityRoute outDir)
-    {
-        return Entities.FirstOrDefault(x => x.InDirection == inDir && x.OutDirection == outDir);
-    }
-
-    public BeomCells(IEnumerable<ICellEntity> cellEntities)
-    {
-        Entities = cellEntities as ICellEntity[] ?? cellEntities.ToArray();
+        public BeomCells GetBeomEntities()
+        {
+            return new BeomCells(beomCells.Select(x => x.GetComponent<ICellEntity>()));
+        }
     }
 }

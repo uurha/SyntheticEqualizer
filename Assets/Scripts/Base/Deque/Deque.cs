@@ -38,6 +38,22 @@ namespace Base.Deque
                 temp.Previous = node;
             _count++;
         }
+        
+        public virtual void AddRangeFirst(IEnumerable<T> range)
+        {
+            foreach (var data in range)
+            {
+                AddFirst(data);
+            }
+        }
+        
+        public virtual void AddRangeLast(IEnumerable<T> range)
+        {
+            foreach (var data in range)
+            {
+                AddLast(data);
+            }
+        }
 
         public T RemoveFirst()
         {
@@ -130,38 +146,6 @@ namespace Base.Deque
                 yield return current.Data;
                 current = current.Next;
             }
-        }
-    }
-
-    public class Conveyor<T> : Deque<T>
-    {
-        private readonly int _capacity;
-
-        public Conveyor(int capacity)
-        {
-            _capacity = capacity;
-        }
-
-        public int Capacity => _capacity;
-
-        public bool IsFull => _capacity == _count;
-
-        public override void AddFirst(T data)
-        {
-            if (_count >= _capacity)
-            {
-                RemoveLast();
-            }
-            base.AddFirst(data);
-        }
-
-        public override void AddLast(T data)
-        {
-            if (_count >= _capacity)
-            {
-                RemoveFirst();
-            }
-            base.AddLast(data);
         }
     }
 }
