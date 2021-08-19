@@ -18,7 +18,6 @@ namespace Cells
     {
         [ReferencesHeader]
         [SerializeField] private CellItem[] leftItems;
-        
         [SerializeField] private CellItem[] rightItems;
         
         [SettingsHeader]
