@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Cell.Interfaces
+namespace Cells.Interfaces
 {
     public interface IInstantiable
     {

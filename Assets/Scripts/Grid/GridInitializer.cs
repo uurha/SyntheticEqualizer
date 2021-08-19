@@ -4,8 +4,8 @@ using System.Linq;
 using Base.BaseTypes;
 using Base.Deque;
 using BeomSystem;
-using Cell;
-using Cell.Interfaces;
+using Cells;
+using Cells.Interfaces;
 using CorePlugin.Attributes.Headers;
 using Extensions;
 using Grid.Generator;
@@ -65,9 +65,9 @@ namespace Grid
             _gridGenerator.GenerateNextGrid(OnGridGenerated);
         }
 
-        private void InstantiateGrid(BeomPreset preset)
+        private void InstantiateGrid(BeomPreset beomPreset)
         {
-            _gridGenerator = new GridGenerator(columnCount, rowCount, preset.GetBeomEntities(), seedValue);
+            _gridGenerator = new GridGenerator(columnCount, rowCount, beomPreset.GetBeomEntities(), seedValue);
             _gridGenerator.GenerateGrid(OnGridGenerated);
         }
 

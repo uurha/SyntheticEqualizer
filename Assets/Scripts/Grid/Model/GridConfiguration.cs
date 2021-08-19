@@ -1,5 +1,5 @@
 ﻿using System;
-using Cell.Interfaces;
+using Cells.Interfaces;
 using Extensions;
 using UnityEngine;
 

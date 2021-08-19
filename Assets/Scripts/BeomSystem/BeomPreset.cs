@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Cell.Interfaces;
+using Cells.Interfaces;
 using CorePlugin.Attributes.Validation;
 using UnityEngine;
 

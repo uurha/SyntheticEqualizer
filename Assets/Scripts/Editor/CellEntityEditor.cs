@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
-using Cell;
-using Cell.Interfaces;
+using Cells;
+using Cells.Interfaces;
 using CorePlugin.Attributes.Editor;
 using Grid;
 using UnityEditor;

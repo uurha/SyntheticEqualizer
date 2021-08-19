@@ -1,7 +1,7 @@
 ﻿using Grid;
 using UnityEngine;
 
-namespace Cell.Interfaces
+namespace Cells.Interfaces
 {
     public interface ICellEntity : IInstantiable
     {

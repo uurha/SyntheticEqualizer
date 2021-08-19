@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Cell
+namespace Cells
 {
     [Serializable]
     public struct Orientation

@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Base.BaseTypes;
-using Cell;
-using Cell.Interfaces;
+using Cells;
+using Cells.Interfaces;
 using Grid;
 using UnityEngine;
 
