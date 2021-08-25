@@ -1,4 +1,5 @@
 ﻿using Cells.Interfaces;
+using Cells.Model;
 
 namespace Grid.Model
 {

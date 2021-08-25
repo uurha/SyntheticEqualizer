@@ -4,6 +4,7 @@ using Base.BaseTypes;
 using Base.Deque;
 using BeomSystem;
 using Cells.Interfaces;
+using Cells.Model;
 using Extensions;
 using Grid.Model;
 using Route.Generator;

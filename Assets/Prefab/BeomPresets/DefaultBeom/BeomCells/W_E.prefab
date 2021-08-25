@@ -106,6 +106,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7045517379847676862}
   - component: {fileID: 7586429260266786638}
+  - component: {fileID: 3290944801483726983}
   m_Layer: 0
   m_Name: W_E
   m_TagString: Untagged
@@ -156,6 +157,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a586b5a6e71441cae02f161ed0fbb27, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  inDirection: -2
+  outDirection: 2
+  cellSize: {x: 10, y: 0, z: 10}
+--- !u!114 &3290944801483726983
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1654235765531610755}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4959dd0400ec4209869e1bb8725f2f70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   leftItems:
   - {fileID: 5462716030821868963}
   - {fileID: 4529267624317024430}
@@ -174,9 +190,6 @@ MonoBehaviour:
   - {fileID: 6623302247511450990}
   - {fileID: 1152590078969272535}
   - {fileID: 7337358390028924097}
-  inDirection: -2
-  outDirection: 2
-  cellSize: {x: 10, y: 0, z: 10}
 --- !u!1 &1662400584400496252
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,4 +1,6 @@
-﻿using Grid;
+﻿using BehaviourSystem.Interfaces;
+using Cells.Model;
+using Grid;
 using UnityEngine;
 
 namespace Cells.Interfaces
@@ -10,6 +12,8 @@ namespace Cells.Interfaces
         public EntityRoute InDirection { get; }
         
         public EntityRoute OutDirection { get; }
+        
+        public ICellVisualBehaviour VisualBehaviour { get; }
         
         public string Name { get; set; }
 

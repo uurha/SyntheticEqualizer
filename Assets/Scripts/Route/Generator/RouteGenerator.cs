@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Base.Deque;
+using Cells.Model;
 using Extensions;
 using Grid;
 using UnityEngine;

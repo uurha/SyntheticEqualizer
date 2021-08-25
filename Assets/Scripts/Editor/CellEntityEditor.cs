@@ -2,6 +2,7 @@
 using System.Linq;
 using Cells;
 using Cells.Interfaces;
+using Cells.Model;
 using CorePlugin.Attributes.Editor;
 using Grid;
 using UnityEditor;

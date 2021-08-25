@@ -4,6 +4,7 @@ using System.Linq;
 using Base.BaseTypes;
 using Cells;
 using Cells.Interfaces;
+using Cells.Model;
 using Grid;
 using UnityEngine;
 

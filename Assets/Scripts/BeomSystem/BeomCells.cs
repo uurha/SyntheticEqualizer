@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Cells.Interfaces;
+using Cells.Model;
 using Grid;
 
 namespace BeomSystem
