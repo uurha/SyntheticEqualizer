@@ -1,4 +1,5 @@
 ﻿using Base.BaseTypes;
+using Cells.Model;
 using Grid;
 using Grid.Model;
 using UnityEngine;

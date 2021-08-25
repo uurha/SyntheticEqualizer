@@ -1,12 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Base;
 using Base.BaseTypes;
 using Base.Deque;
 using BeomSystem;
 using Cells;
 using Cells.Interfaces;
+using Cells.Model;
 using CorePlugin.Attributes.Headers;
+using CorePlugin.Cross.Events.Interface;
 using Extensions;
 using Grid.Generator;
 using Grid.Model;
@@ -14,7 +17,7 @@ using UnityEngine;
 
 namespace Grid
 {
-    public class GridInitializer : MonoBehaviour
+    public class GridInitializer : MonoBehaviour, IEventHandler
     {
         [PrefabHeader]
         [SerializeField] private BeomPreset preset;
@@ -30,6 +33,8 @@ namespace Grid
         private GridGenerator _gridGenerator;
         private Vector3 _initialPosition = Vector3.zero;
         private EntityRoute _previousGridExit;
+
+        private event CrossEventsType.OnGridChanged onGridChanged; 
 
         public bool IsInitialized => _isInitialized;
 
@@ -92,8 +97,7 @@ namespace Grid
                     }
 
                     var bufferPosition = new Orientation(_initialPosition + lineSize, Quaternion.identity);
-
-
+                    
                     cellEntity.Initialize().SetOrientation(cellEntity.Orient(bufferPosition, positionInGrid));
                     cellEntity.Name = $"{cellEntity.Name} {column}X{row}";
                     bufferList[column, row] = cellEntity;
@@ -107,6 +111,28 @@ namespace Grid
             _initialPosition = entity.GetOrientation().Position;
 
             _isInitialized = true;
+            onGridChanged?.Invoke(_gridConfigurations);
+        }
+
+        public void InvokeEvents()
+        {
+            
+        }
+
+        public void Subscribe(IEnumerable<Delegate> subscribers)
+        {
+            foreach (var gridChanged in subscribers.OfType<CrossEventsType.OnGridChanged>())
+            {
+                onGridChanged += gridChanged;
+            }
+        }
+
+        public void Unsubscribe(IEnumerable<Delegate> unsubscribers)
+        {
+            foreach (var gridChanged in unsubscribers.OfType<CrossEventsType.OnGridChanged>())
+            {
+                onGridChanged -= gridChanged;
+            }
         }
     }
 }
