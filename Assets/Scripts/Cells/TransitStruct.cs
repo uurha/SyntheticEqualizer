@@ -2,6 +2,7 @@
 using BehaviourSystem;
 using BehaviourSystem.Interfaces;
 using Cells.Items;
+using Unity.Collections;
 using UnityEngine.Jobs;
 
 namespace Cells
@@ -9,14 +10,14 @@ namespace Cells
     public struct TransitStruct
     {
         public IJobBehaviour JobBehaviour { get; }
-        public Orientation[] InitialOrientations { get; }
+        public NativeArray<Orientation> InitialOrientations { get; }
         public TransformAccessArray AccessArray { get; }
         public bool IsCreated { get; }
 
         public TransitStruct(CellItem[] cellItems, IJobBehaviour behaviour)
         {
             JobBehaviour = behaviour;
-            InitialOrientations = cellItems.Select(x => x.Initialize().InitialOrientation).ToArray();
+            InitialOrientations = new NativeArray<Orientation>(cellItems.Select(x => x.Initialize().InitialOrientation).ToArray(), Allocator.Persistent);
             AccessArray = new TransformAccessArray(cellItems.Select(x => x.transform).ToArray());
             IsCreated = true;
         }
@@ -30,6 +31,7 @@ namespace Cells
         public void Dispose()
         {
             if (AccessArray.isCreated) AccessArray.Dispose();
+            if (InitialOrientations.IsCreated) InitialOrientations.Dispose();
         }
     }
 }

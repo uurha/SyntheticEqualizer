@@ -9,7 +9,6 @@ namespace BehaviourSystem.Default
     [BurstCompile]
     public struct DefaultMoveBehaviour : IJobBehaviour
     {
-        [DeallocateOnJobCompletion]
         private BehaviourData _data;
         
         public void Execute(int index, TransformAccess transform)
@@ -20,11 +19,6 @@ namespace BehaviourSystem.Default
         public void SetData(IBehaviourData data)
         {
             _data = (BehaviourData) data;
-        }
-
-        public void Dispose()
-        {
-            _data.Dispose();
         }
     }
 }

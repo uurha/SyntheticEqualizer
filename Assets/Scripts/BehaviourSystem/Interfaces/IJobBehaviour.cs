@@ -5,7 +5,5 @@ namespace BehaviourSystem.Interfaces
     public interface IJobBehaviour : IJobParallelForTransform
     {
         public void SetData(IBehaviourData data);
-
-        public void Dispose();
     }
 }

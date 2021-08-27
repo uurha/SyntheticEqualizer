@@ -49,8 +49,8 @@ namespace Cells
         {
             if (!(_handleLeft.IsCompleted && _handleRight.IsCompleted))
                 return;
-            var bufferLeftData = new BehaviourData(_leftTransitData.InitialOrientations, data, Allocator.TempJob);
-            var bufferRightData = new BehaviourData(_rightTransitData.InitialOrientations, data, Allocator.TempJob);
+            var bufferLeftData = new BehaviourData(_leftTransitData.InitialOrientations, data);
+            var bufferRightData = new BehaviourData(_rightTransitData.InitialOrientations, data);
             _handleLeft = JobsExtensions.JobHandleConverter(_leftTransitData.UpdateData(bufferLeftData));
             _handleRight = JobsExtensions.JobHandleConverter(_rightTransitData.UpdateData(bufferRightData));
 
