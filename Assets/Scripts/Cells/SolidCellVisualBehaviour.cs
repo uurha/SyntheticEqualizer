@@ -39,7 +39,7 @@ namespace Cells
         public void RunBehaviour(Orientation[] data)
         {
             if (!_handle.IsCompleted) return;
-            var bufferData = new BehaviourData(_transitData.InitialOrientations, data, Allocator.TempJob);
+            var bufferData = new BehaviourData(_transitData.InitialOrientations, data);
             _handle = JobsExtensions.JobHandleConverter(_transitData.UpdateData(bufferData));
 
             _handle.Complete();
