@@ -6,23 +6,24 @@ using Base.Deque;
 using BehaviourSystem.Interfaces;
 using Cells;
 using CorePlugin.Cross.Events.Interface;
+using CorePlugin.Logger;
 using Grid.Model;
 using UnityEngine;
 
-namespace AudioSystem.DataProcessor
+namespace AudioProcessingSystem.DataProcessor
 {
     public class AudioDataProcessor : MonoBehaviour, IEventSubscriber
     {
         [SerializeField] private float valueMultiplier;
         private ICellVisualBehaviour[] _cellVisualBehaviours;
-        
+
         private void OnGridDataUpdated(Conveyor<GridConfiguration> newGridConfigurations)
         {
             _cellVisualBehaviours = newGridConfigurations.SelectMany(x => x.RowConfiguration.SelectMany(y => y.GetCells().Select(z=>z.VisualBehaviour.Initialize())))
                                                   .ToArray();
         }
 
-        private void OnMeanLevelsUpdated(float[] levels)
+        private void OnSpectrumUpdated(float[] levels)
         {
             if (_cellVisualBehaviours == null) return;
             var orientations = levels.Select(y =>
@@ -37,10 +38,25 @@ namespace AudioSystem.DataProcessor
             }
         }
 
+        private void OnBeatDetected()
+        {
+            DebugLogger.Log("Beat");
+        }
+
+        private void OnBMPChanged(int bpm)
+        {
+            DebugLogger.Log($"{bpm} bpm");
+        }
 
         public IEnumerable<Delegate> GetSubscribers()
         {
-            return new Delegate[] {(CrossEventsType.OnGridChanged) OnGridDataUpdated, (CrossEventsType.AudioMeanLevelsUpdated)OnMeanLevelsUpdated};
+            return new Delegate[]
+                   {
+                       (CrossEventsType.OnGridUpdatedEvent) OnGridDataUpdated,
+                       (CrossEventsType.OnSpectrumUpdatedEvent) OnSpectrumUpdated,
+                       (CrossEventsType.OnBeatDetectedEvent) OnBeatDetected,
+                       (CrossEventsType.OnBPMChangedEvent) OnBMPChanged
+                   };
         }
     }
 }

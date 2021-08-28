@@ -34,7 +34,7 @@ namespace Grid
         private Vector3 _initialPosition = Vector3.zero;
         private EntityRoute _previousGridExit;
 
-        private event CrossEventsType.OnGridChanged onGridChanged; 
+        private event CrossEventsType.OnGridUpdatedEvent onGridChanged; 
 
         public bool IsInitialized => _isInitialized;
 
@@ -121,7 +121,7 @@ namespace Grid
 
         public void Subscribe(IEnumerable<Delegate> subscribers)
         {
-            foreach (var gridChanged in subscribers.OfType<CrossEventsType.OnGridChanged>())
+            foreach (var gridChanged in subscribers.OfType<CrossEventsType.OnGridUpdatedEvent>())
             {
                 onGridChanged += gridChanged;
             }
@@ -129,7 +129,7 @@ namespace Grid
 
         public void Unsubscribe(IEnumerable<Delegate> unsubscribers)
         {
-            foreach (var gridChanged in unsubscribers.OfType<CrossEventsType.OnGridChanged>())
+            foreach (var gridChanged in unsubscribers.OfType<CrossEventsType.OnGridUpdatedEvent>())
             {
                 onGridChanged -= gridChanged;
             }
