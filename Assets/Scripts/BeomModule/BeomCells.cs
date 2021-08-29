@@ -4,7 +4,7 @@ using System.Linq;
 using CellModule.Interfaces;
 using CellModule.Model;
 
-namespace BeomSystem
+namespace BeomModule
 {
     [Serializable] 
     public struct BeomCells

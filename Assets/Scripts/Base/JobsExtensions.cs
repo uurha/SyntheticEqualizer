@@ -1,5 +1,5 @@
 ﻿using System;
-using CellItemModule.BehaviourSystem.Default;
+using CellItemModule.Behaviours;
 using CellModule;
 using Unity.Jobs;
 using UnityEngine.Jobs;

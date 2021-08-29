@@ -3,16 +3,16 @@ using Base.BehaviourModel.Interfaces;
 using Unity.Burst;
 using UnityEngine.Jobs;
 
-namespace CellItemModule.BehaviourSystem.Default
+namespace CellItemModule.Behaviours
 {
     [BurstCompile]
-    public struct DefaultMoveBehaviour : IJobBehaviour
+    public struct DefaultRotateBehaviour : IJobBehaviour
     {
         private BehaviourData _data;
         
         public void Execute(int index, TransformAccess transform)
         {
-            transform.localPosition = _data.InitialData[index].Position + _data.AdditionalData[index % _data.Lenght].Position;
+            transform.localRotation = _data.InitialData[index].Rotation * _data.AdditionalData[index % _data.Lenght].Rotation;
         }
 
         public void SetData(IBehaviourData data)

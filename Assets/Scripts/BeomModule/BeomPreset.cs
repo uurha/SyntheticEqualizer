@@ -1,11 +1,10 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using CellModule.Interfaces;
 using CorePlugin.Attributes.Validation;
 using UnityEngine;
 
-namespace BeomSystem
+namespace BeomModule
 {
     [CreateAssetMenu(menuName = "Beom System/Create Beom Preset", fileName = "BeomPreset", order = 0)] 
     public class BeomPreset : ScriptableObject

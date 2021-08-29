@@ -2,12 +2,12 @@
 using Base.BehaviourModel;
 using Base.BehaviourModel.Interfaces;
 using CellItemModule;
-using CellItemModule.BehaviourSystem.Default;
+using CellItemModule.Behaviours;
 using CorePlugin.Attributes.Headers;
 using Unity.Jobs;
 using UnityEngine;
 
-namespace CellModule.BehaviourSystem
+namespace CellModule.Behaviours
 {
     public class SolidCellVisualBehaviour : MonoBehaviour, ICellVisualBehaviour
     {

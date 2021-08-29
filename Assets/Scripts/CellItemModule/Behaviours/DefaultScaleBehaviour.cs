@@ -3,7 +3,7 @@ using Base.BehaviourModel.Interfaces;
 using Unity.Burst;
 using UnityEngine.Jobs;
 
-namespace CellItemModule.BehaviourSystem.Default
+namespace CellItemModule.Behaviours
 {
     [BurstCompile]
     public struct DefaultScaleBehaviour : IJobBehaviour
