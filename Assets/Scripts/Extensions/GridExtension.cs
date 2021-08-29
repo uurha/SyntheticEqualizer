@@ -1,7 +1,6 @@
 ﻿using Base.BaseTypes;
-using Cells.Model;
-using Grid;
-using Grid.Model;
+using CellModule.Model;
+using GridModule.Model;
 using UnityEngine;
 
 namespace Extensions

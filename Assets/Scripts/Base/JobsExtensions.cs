@@ -1,6 +1,6 @@
 ﻿using System;
-using BehaviourSystem.Default;
-using Cells;
+using CellItemModule.BehaviourSystem.Default;
+using CellModule;
 using Unity.Jobs;
 using UnityEngine.Jobs;
 

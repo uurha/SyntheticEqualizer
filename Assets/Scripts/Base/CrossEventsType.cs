@@ -1,7 +1,7 @@
 ﻿using System;
-using AudioPlayerSystem;
+using AudioModule.AudioPlayerSystem;
 using Base.Deque;
-using Grid.Model;
+using GridModule.Model;
 
 namespace Base
 {
