@@ -11,7 +11,8 @@ namespace Base
         
         public delegate void OnBeatDetectedEvent();
         public delegate void OnAudioPlayerStateEvent(AudioPlayerState state);
-        public delegate void OnSpectrumUpdatedEvent(float[] spectrum);
+        public delegate void OnAudioAnalyzedDataUpdateEvent(float[] data);
+        public delegate void OnSpectrumListenerDataUpdateEvent(SpectrumListenerData listenerData);
         public delegate void OnBPMChangedEvent(int bpm);
     }
 }

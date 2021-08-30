@@ -16,15 +16,31 @@ namespace AudioModule.SpectrumAnalyzer
         [ReferencesHeader]
         [SerializeField] private AudioAnalyzer analyzer;
         
-        private void Start()
-        {
-            var audioPlayer = ReferenceDistributor.GetReference<AudioPlayer>();
-            analyzer.InitializeAudio(audioPlayer);
-        }
-
         private void OnPlayerStateChanged(AudioPlayerState state)
         {
-            analyzer.ReinitializeAudio();
+            switch (state)
+            {
+                case AudioPlayerState.Play:
+                    analyzer.SetStateAnalyzing(true);
+                    break;
+                case AudioPlayerState.Stop:
+                    analyzer.SetStateAnalyzing(false);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(state), state, null);
+            }
+        }
+
+        private void SpectrumListenerDataReceived(SpectrumListenerData listenerData)
+        {
+            if (!analyzer.IsInitialized)
+            {
+                analyzer.InitializeAudio(listenerData.Frequency, listenerData.NumberOfSamples);
+                analyzer.OnSpectrumReceived(listenerData.SpectrumData);
+                return;
+            }
+            
+            analyzer.OnSpectrumReceived(listenerData.SpectrumData);
         }
         
         public void InvokeEvents()
@@ -34,9 +50,9 @@ namespace AudioModule.SpectrumAnalyzer
 
         public void Subscribe(IEnumerable<Delegate> subscribers)
         {
-            foreach (var onSpectrumUpdated in subscribers.OfType<CrossEventsType.OnSpectrumUpdatedEvent>())
+            foreach (var onAudioAnalyzedDataUpdated in subscribers.OfType<CrossEventsType.OnAudioAnalyzedDataUpdateEvent>())
             {
-                analyzer.OnSpectrumEvent += new Action<float[]>(onSpectrumUpdated);
+                analyzer.OnAudioAnalyzedDataUpdated += new Action<float[]>(onAudioAnalyzedDataUpdated);
             }
             
             foreach (var onBeatDetected in subscribers.OfType<CrossEventsType.OnBeatDetectedEvent>())
@@ -52,9 +68,9 @@ namespace AudioModule.SpectrumAnalyzer
 
         public void Unsubscribe(IEnumerable<Delegate> unsubscribers)
         {
-            foreach (var onSpectrumUpdated in unsubscribers.OfType<CrossEventsType.OnSpectrumUpdatedEvent>())
+            foreach (var onSpectrumUpdated in unsubscribers.OfType<CrossEventsType.OnAudioAnalyzedDataUpdateEvent>())
             {
-                analyzer.OnSpectrumEvent -= new Action<float[]>(onSpectrumUpdated);
+                analyzer.OnAudioAnalyzedDataUpdated -= new Action<float[]>(onSpectrumUpdated);
             }
             
             foreach (var onBeatDetected in unsubscribers.OfType<CrossEventsType.OnBeatDetectedEvent>())
@@ -72,7 +88,8 @@ namespace AudioModule.SpectrumAnalyzer
         {
             return new Delegate[]
                    {
-                       (CrossEventsType.OnAudioPlayerStateEvent) OnPlayerStateChanged
+                       (CrossEventsType.OnAudioPlayerStateEvent) OnPlayerStateChanged,
+                       (CrossEventsType.OnSpectrumListenerDataUpdateEvent)SpectrumListenerDataReceived
                    };
         }
     }

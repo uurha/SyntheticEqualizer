@@ -23,7 +23,7 @@ namespace AudioModule.DataProcessor
                                                   .ToArray();
         }
 
-        private void OnSpectrumUpdated(float[] levels)
+        private void OnAnalyzedDataUpdated(float[] levels)
         {
             if (_cellVisualBehaviours == null) return;
             var orientations = levels.Select(y =>
@@ -53,7 +53,7 @@ namespace AudioModule.DataProcessor
             return new Delegate[]
                    {
                        (CrossEventsType.OnGridUpdatedEvent) OnGridDataUpdated,
-                       (CrossEventsType.OnSpectrumUpdatedEvent) OnSpectrumUpdated,
+                       (CrossEventsType.OnAudioAnalyzedDataUpdateEvent) OnAnalyzedDataUpdated,
                        (CrossEventsType.OnBeatDetectedEvent) OnBeatDetected,
                        (CrossEventsType.OnBPMChangedEvent) OnBMPChanged
                    };

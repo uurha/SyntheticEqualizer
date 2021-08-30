@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using AudioModule.AudioPlayerSystem.Interfaces;
 using Base;
+using CorePlugin.Attributes.Validation;
 using CorePlugin.Cross.Events.Interface;
 using CorePlugin.ReferenceDistribution.Interface;
 using UnityEngine;
@@ -12,13 +13,11 @@ namespace AudioModule.AudioPlayerSystem
     public enum AudioPlayerState
     {
         Play,
-        Stop,
-        Restart,
-        ChangeClip
+        Stop
     }
-    
-    [RequireComponent(typeof(AudioSource))]
-    public class AudioPlayer : MonoBehaviour, IAudioPlayer, IDistributingReference, IEventHandler
+
+    [RequireComponent(typeof(AudioSource))][OneAndOnly]
+    public class AudioPlayer : MonoBehaviour, IAudioPlayer, IEventHandler
     {
         [SerializeField] private AudioSource audioSource;
 
@@ -53,17 +52,12 @@ namespace AudioModule.AudioPlayerSystem
         public void Play(AudioClip clip)
         {
             audioSource.PlayOneShot(clip);
-            OnAudioPlayerState?.Invoke(AudioPlayerState.ChangeClip);
-        }
-
-        public void GetSpectrumData(float[] spectrum, int channel, FFTWindow fftWindow)
-        {
-            audioSource.GetSpectrumData(spectrum, channel, fftWindow);
+            OnAudioPlayerState?.Invoke(AudioPlayerState.Play);
         }
 
         public void InvokeEvents()
         {
-            
+            Play();
         }
 
         public void Subscribe(IEnumerable<Delegate> subscribers)

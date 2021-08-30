@@ -17,7 +17,5 @@ namespace AudioModule.AudioPlayerSystem.Interfaces
         public void Play();
 
         public void Play(AudioClip clip);
-
-        public void GetSpectrumData(float[] spectrum, int channel, FFTWindow blackmanHarris);
     }
 }

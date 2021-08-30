@@ -67,20 +67,19 @@ namespace AudioModule.SpectrumAnalyzer
         };
 
         [SerializeField] private BandType bandType;
-        [SerializeField] private int numberOfSamples = 1024;
         [SerializeField] private float sensitivity = 0.1f;
         [SerializeField] private float sensibility = 8.0f;
         [SerializeField] private float fallSpeed = 0.08f;
 
-        private IAudioPlayer _audioPlayer;
-        private bool isInitialized;
+        private bool _isInitialized;
         
         private float[] _levels;
         private float[] _peakLevels;
         private float[] _meanLevels;
 
         // fft sampling frequency
-        private int _samplingRate = 44100;
+        private int _samplingRate;
+        private int _numberOfSamples;
 
         // log-frequency averaging controls 
 
@@ -120,10 +119,11 @@ namespace AudioModule.SpectrumAnalyzer
         private int _lastBPM;
 
         private Action _onBeat;
-        private Action<float[]> _onSpectrum;
+        private Action<float[]> _onAudioAnalyzedDataUpdated;
         private Action<int> _onBPMChanged;
 
         private BitRateData _bitRateData;
+        private bool _analysingState;
 
         public event Action OnBeatEvent
         {
@@ -137,11 +137,13 @@ namespace AudioModule.SpectrumAnalyzer
             remove => _onBPMChanged -= value;
         }
 
-        public event Action<float[]> OnSpectrumEvent
+        public event Action<float[]> OnAudioAnalyzedDataUpdated
         {
-            add => _onSpectrum += value;
-            remove => _onSpectrum -= value;
+            add => _onAudioAnalyzedDataUpdated += value;
+            remove => _onAudioAnalyzedDataUpdated -= value;
         }
+
+        public bool IsInitialized => _isInitialized;
 
         private long GetCurrentTimeMillis()
         {
@@ -165,9 +167,9 @@ namespace AudioModule.SpectrumAnalyzer
         private void CheckAnalyzedArrays()
         {
             if (_spectrum == null ||
-                _spectrum.Length != numberOfSamples)
+                _spectrum.Length != _numberOfSamples)
             {
-                _spectrum = new float[numberOfSamples];
+                _spectrum = new float[_numberOfSamples];
             }
             var bandCount = middleFrequenciesForBands[(int) bandType].Length;
 
@@ -180,23 +182,26 @@ namespace AudioModule.SpectrumAnalyzer
             _meanLevels = new float[bandCount];
         }
 
-        public void ReinitializeAudio()
+        public void SetStateAnalyzing(bool state)
         {
-            if (!isInitialized) return;
-            isInitialized = false;
-            InitializeAudio(_audioPlayer);
+            _analysingState = state;
+
+            if (!state)
+            {
+                _isInitialized = false;
+            }
         }
 
         /// <summary>
         /// Use this for initialization
         /// </summary>
-        public void InitializeAudio(IAudioPlayer audioSource)
+        public void InitializeAudio(int frequency, int numberOfSamples)
         {
-            _audioPlayer = audioSource;
             InitArrays();
             _bitRateData = new BitRateData {LastT = GetCurrentTimeMillis()};
-            _samplingRate = audioSource.Clip.frequency;
-            _framePeriod = numberOfSamples / (float) _samplingRate;
+            _samplingRate = frequency;
+            _numberOfSamples = numberOfSamples;
+            _framePeriod = _numberOfSamples / (float) _samplingRate;
 
             // initialize record of previous spectrum
             var bandCount = middleFrequenciesForBands[(int) bandType].Length;
@@ -204,7 +209,7 @@ namespace AudioModule.SpectrumAnalyzer
             for (var i = 0; i < bandCount; ++i) _spec[i] = 100.0f;
             var bandWidth = bandWidthForBands[(int) bandType];
             _autoCorrelation = new AutoCorrelation(_maxlag, _decay, _framePeriod, bandWidth);
-            isInitialized = true;
+            _isInitialized = true;
         }
 
         public void TapTempo()
@@ -218,13 +223,13 @@ namespace AudioModule.SpectrumAnalyzer
             Debug.Log("average = " + average);
         }
 
-        private void Update()
+        public void OnSpectrumReceived(float[] spectrum)
         {
-            if (!isInitialized) return;
-            if (!_audioPlayer.IsPlaying) return;
-            _audioPlayer.GetSpectrumData(_spectrum, 0, FFTWindow.BlackmanHarris);
+            if (!IsInitialized) return;
+            if (!_analysingState) return;
+            _spectrum = spectrum;
             ComputeAverages(_spectrum);
-            _onSpectrum?.Invoke(_meanLevels);
+            _onAudioAnalyzedDataUpdated?.Invoke(_meanLevels);
 
             // calculate the value of the onset function in this frame 
             float onset = 0;
