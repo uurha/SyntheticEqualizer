@@ -1,5 +1,5 @@
 ﻿using System;
-using AudioModule.AudioPlayerSystem;
+using AudioPlayerModule;
 using Base.Deque;
 using GridModule.Model;
 

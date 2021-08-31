@@ -6,19 +6,21 @@ using CorePlugin.Attributes.Headers;
 using CorePlugin.Cross.Events.Interface;
 using UnityEngine;
 
-namespace AudioModule.AudioPlayerSystem
+namespace AudioPlayerModule
 {
     public struct SpectrumListenerData
     {
         public int Frequency { get; }
         public int NumberOfSamples { get; }
+        public int Channel { get; }
         public float[] SpectrumData { get; }
 
-        public SpectrumListenerData(int frequency, int numberOfSamples, float[] spectrumData)
+        public SpectrumListenerData(int frequency, int numberOfSamples, int channel, float[] spectrumData)
         {
             Frequency = frequency;
             NumberOfSamples = numberOfSamples;
             SpectrumData = spectrumData;
+            Channel = channel;
         }
     }
     
@@ -73,7 +75,8 @@ namespace AudioModule.AudioPlayerSystem
             CheckSettings();
             audioSource.GetSpectrumData(_spectrum, channel, fftWindow);
 
-            var spectrumListenerData = new SpectrumListenerData(audioSource.clip.frequency, numberOfSamples ,_spectrum);
+            var spectrumListenerData =
+                new SpectrumListenerData(audioSource.clip.frequency, numberOfSamples, channel, _spectrum);
             OnSpectrumDataUpdated?.Invoke(spectrumListenerData);
         }
 

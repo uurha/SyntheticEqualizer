@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using AudioModule.AudioPlayerSystem.Interfaces;
+using AudioPlayerModule.Interfaces;
 using Base;
 using CorePlugin.Attributes.Validation;
 using CorePlugin.Cross.Events.Interface;
 using CorePlugin.ReferenceDistribution.Interface;
 using UnityEngine;
 
-namespace AudioModule.AudioPlayerSystem
+namespace AudioPlayerModule
 {
     public enum AudioPlayerState
     {
@@ -17,7 +17,7 @@ namespace AudioModule.AudioPlayerSystem
     }
 
     [RequireComponent(typeof(AudioSource))][OneAndOnly]
-    public class AudioPlayer : MonoBehaviour, IAudioPlayer, IEventHandler
+    public class AudioPlayer : MonoBehaviour, IAudioPlayer, IEventHandler, IDistributingReference
     {
         [SerializeField] private AudioSource audioSource;
 
@@ -57,7 +57,7 @@ namespace AudioModule.AudioPlayerSystem
 
         public void InvokeEvents()
         {
-            Play();
+            Stop();
         }
 
         public void Subscribe(IEnumerable<Delegate> subscribers)

@@ -1,5 +1,4 @@
 ﻿using System;
-using AudioModule.AudioPlayerSystem.Interfaces;
 using UnityEngine;
 
 namespace AudioModule.SpectrumAnalyzer
