@@ -52,12 +52,7 @@ namespace AudioPlayerModule
 
         private void OnPlayerStateChanged(AudioPlayerState state)
         {
-            _currentState = state switch
-                            {
-                                AudioPlayerState.Play => state,
-                                AudioPlayerState.Stop => state,
-                                _ => throw new ArgumentOutOfRangeException(nameof(state), state, null)
-                            };
+            _currentState = state;
         }
 
         private void CheckSettings()
