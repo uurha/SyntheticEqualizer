@@ -3,25 +3,33 @@ using System.Collections.Generic;
 using System.Linq;
 using AudioPlayerModule.Interfaces;
 using Base;
+using CorePlugin.Attributes.Headers;
 using CorePlugin.Attributes.Validation;
 using CorePlugin.Cross.Events.Interface;
 using CorePlugin.ReferenceDistribution.Interface;
+using Extensions;
 using UnityEngine;
 
 namespace AudioPlayerModule
 {
+    [Flags]
     public enum AudioPlayerState
     {
         None,
         Play,
         Stop,
-        Pause
+        Pause,
+        Muted
     }
-
+    
     [RequireComponent(typeof(AudioSource))] [OneAndOnly]
-    public class AudioPlayer : MonoBehaviour, IAudioPlayer, IEventHandler, IDistributingReference
+    public class AudioPlayer : MonoBehaviour, IAudioPlayer, IEventHandler
     {
+        [ReferencesHeader]
         [SerializeField] private AudioSource audioSource;
+
+        [SettingsHeader]
+        [SerializeField] private float initialVolume = 0.5f;
 
         private event CrossEventsType.OnAudioPlayerStateEvent OnAudioPlayerState;
 
@@ -54,20 +62,26 @@ namespace AudioPlayerModule
             set => audioSource.time = Mathf.Lerp(0, audioSource.clip.length, value);
         }
 
+        public float Volume
+        {
+            get => audioSource.volume;
+            set => audioSource.volume = value;
+        }
+
         public bool IsPlaying => _currentState == AudioPlayerState.Play;
 
-        public bool IsPaused => _currentState == AudioPlayerState.Pause;
+        public bool IsPaused => _currentState.HasFlag(AudioPlayerState.Pause);
 
         public void Pause()
         {
             audioSource.Pause();
-            CurrentState = AudioPlayerState.Pause;
+            CurrentState = CurrentState.Set(AudioPlayerState.Pause);
         }
 
         public void UpPause()
         {
             audioSource.UnPause();
-            CurrentState = AudioPlayerState.Play;
+            CurrentState = CurrentState.Unset(AudioPlayerState.Pause);
         }
 
         public void Stop()
@@ -98,6 +112,7 @@ namespace AudioPlayerModule
         public void InvokeEvents()
         {
             Stop();
+            audioSource.volume = initialVolume;
         }
 
         public void Subscribe(IEnumerable<Delegate> subscribers)

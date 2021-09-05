@@ -26,8 +26,6 @@ namespace AudioModule.SpectrumAnalyzer
                 case AudioPlayerState.Stop:
                     analyzer.SetStateAnalyzing(false);
                     break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(state), state, null);
             }
         }
 

@@ -4,6 +4,7 @@ using Base.BehaviourModel.Interfaces;
 using CellItemModule;
 using CellItemModule.Behaviours;
 using CorePlugin.Attributes.Headers;
+using Extensions;
 using Unity.Jobs;
 using UnityEngine;
 

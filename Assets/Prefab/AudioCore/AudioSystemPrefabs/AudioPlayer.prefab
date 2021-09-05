@@ -142,6 +142,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioSource: {fileID: 8293997399359033991}
+  initialVolume: 0.5
 --- !u!114 &363933632534298441
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -155,6 +156,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioSource: {fileID: 8293997399359033991}
+  audioPlayer: {fileID: 1055778164410356060}
   numberOfSamples: 1024
   channel: 0
   fftWindow: 5

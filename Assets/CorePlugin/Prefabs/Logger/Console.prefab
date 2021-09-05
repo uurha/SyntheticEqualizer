@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 3490353247132987279}
   - component: {fileID: 6250303732279735710}
   - component: {fileID: 3880760084643707359}
-  - component: {fileID: 7306418090332319165}
   - component: {fileID: 5500036827488450194}
   m_Layer: 5
   m_Name: Console
@@ -103,23 +102,6 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &7306418090332319165
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6975579025964686845}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_IgnoreReversedGraphics: 1
-  m_BlockingObjects: 0
-  m_BlockingMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
 --- !u!114 &5500036827488450194
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -133,6 +115,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   initializeMinimized: 1
+  icons: {fileID: 11400000, guid: 9da8b4df2e02f4144ba35e538e130458, type: 2}
   maximizedConsole: {fileID: 6281896614218804954}
   minimizedConsole: {fileID: 5500036828825184287}
 --- !u!1001 &2256279071146331023

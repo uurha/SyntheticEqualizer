@@ -184,11 +184,6 @@ namespace AudioModule.SpectrumAnalyzer
         public void SetStateAnalyzing(bool state)
         {
             _analysingState = state;
-
-            if (!state)
-            {
-                _isInitialized = false;
-            }
         }
 
         /// <summary>
@@ -224,7 +219,7 @@ namespace AudioModule.SpectrumAnalyzer
 
         public void OnSpectrumReceived(float[] spectrum)
         {
-            if (!IsInitialized) return;
+            if (!_isInitialized) return;
             if (!_analysingState) return;
             _spectrum = spectrum;
             ComputeAverages(_spectrum);

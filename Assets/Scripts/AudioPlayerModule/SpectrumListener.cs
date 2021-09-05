@@ -4,6 +4,8 @@ using System.Linq;
 using Base;
 using CorePlugin.Attributes.Headers;
 using CorePlugin.Cross.Events.Interface;
+using Unity.Collections;
+using Unity.Jobs;
 using UnityEngine;
 
 namespace AudioPlayerModule
@@ -24,11 +26,12 @@ namespace AudioPlayerModule
         }
     }
     
-    [RequireComponent(typeof(AudioPlayer), typeof(AudioSource))]
-    public class SpectrumListener : MonoBehaviour, IEventHandler, IEventSubscriber
+    [RequireComponent(typeof(AudioSource), typeof(AudioPlayer))]
+    public class SpectrumListener : MonoBehaviour, IEventHandler
     {
         [ReferencesHeader]
         [SerializeField] private AudioSource audioSource;
+        [SerializeField] private AudioPlayer audioPlayer;
         
         [SettingsHeader]
         [SerializeField] private int numberOfSamples = 1024;
@@ -37,8 +40,8 @@ namespace AudioPlayerModule
         
         private event CrossEventsType.OnSpectrumListenerDataUpdateEvent OnSpectrumDataUpdated;
 
-        private AudioPlayerState _currentState;
         private float[] _spectrum;
+        private JobHandle _handle;
 
         private void Awake()
         {
@@ -48,11 +51,6 @@ namespace AudioPlayerModule
         public void InvokeEvents()
         {
 
-        }
-
-        private void OnPlayerStateChanged(AudioPlayerState state)
-        {
-            _currentState = state;
         }
 
         private void CheckSettings()
@@ -66,13 +64,50 @@ namespace AudioPlayerModule
 
         private void Update()
         {
-            if (_currentState != AudioPlayerState.Play) return;
-            CheckSettings();
-            audioSource.GetSpectrumData(_spectrum, channel, fftWindow);
+            if (!audioPlayer.IsPlaying) return;
 
-            var spectrumListenerData =
-                new SpectrumListenerData(audioSource.clip.frequency, numberOfSamples, channel, _spectrum);
-            OnSpectrumDataUpdated?.Invoke(spectrumListenerData);
+            if (_handle.IsCompleted)
+            {
+                CheckSettings();
+                audioSource.GetSpectrumData(_spectrum, channel, fftWindow);
+
+                var volume = audioSource.volume;
+                var multiplier = volume > 0 ? 1 / volume : 0f;
+
+                var job = new MultiplyJob(_spectrum, multiplier);
+                _handle = job.Schedule(_spectrum.Length, 1);
+                _handle.Complete();
+
+                var spectrumListenerData =
+                    new SpectrumListenerData(audioSource.clip.frequency, numberOfSamples, channel,
+                                             job.Output.ToArray());
+                job.Output.Dispose();
+                OnSpectrumDataUpdated?.Invoke(spectrumListenerData);
+            }
+        }
+        
+        private struct MultiplyJob : IJobParallelFor
+        {
+            private readonly float _multiplier;
+
+            [ReadOnly][DeallocateOnJobCompletion]
+            private NativeArray<float> _input;
+            [WriteOnly]
+            private NativeArray<float> _output;
+
+            public MultiplyJob(float[] input, float multiplier)
+            {
+                _multiplier = multiplier;
+                _input = new NativeArray<float>(input, Allocator.TempJob);
+                _output = new NativeArray<float>(input.Length, Allocator.TempJob);
+            }
+
+            public NativeArray<float> Output => _output;
+
+            public void Execute(int index)
+            {
+                _output[index] = _input[index] * _multiplier;
+            }
         }
 
         public void Subscribe(IEnumerable<Delegate> subscribers)
@@ -89,11 +124,6 @@ namespace AudioPlayerModule
             {
                 OnSpectrumDataUpdated -= spectrumUpdateEvent;
             }
-        }
-
-        public IEnumerable<Delegate> GetSubscribers()
-        {
-            return new Delegate[] {(CrossEventsType.OnAudioPlayerStateEvent) OnPlayerStateChanged};
         }
     }
 }

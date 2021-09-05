@@ -4,7 +4,7 @@ using CellModule;
 using Unity.Jobs;
 using UnityEngine.Jobs;
 
-namespace Base
+namespace Extensions
 {
     public struct JobsExtensions
     {
