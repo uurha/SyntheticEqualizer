@@ -59,6 +59,26 @@ namespace CorePlugin.ReferenceDistribution
         }
 
         /// <summary>
+        /// Getting reference by type from list
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static T GetInterfaceReference<T>() where T : IDistributingReference
+        {
+            return _instance._isInitialized ? _instance._distributingReferences.OfType<T>().First() : default;
+        }
+        
+        /// <summary>
+        /// Getting reference by type from list
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static IEnumerable<T> GetInterfaceReferences<T>() where T : IDistributingReference
+        {
+            return _instance._isInitialized ? _instance._distributingReferences.OfType<T>() : default;
+        }
+
+        /// <summary>
         /// Finding reference if passed parameter is null.
         /// Use this if you need reference not in Start() and/or reference should be received in some event
         /// </summary>

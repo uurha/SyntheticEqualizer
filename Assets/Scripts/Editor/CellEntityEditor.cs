@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Linq;
-using Cells;
-using Cells.Interfaces;
-using Cells.Model;
+using CellModule;
+using CellModule.Interfaces;
+using CellModule.Model;
 using CorePlugin.Attributes.Editor;
-using Grid;
 using UnityEditor;
 using UnityEngine;
 

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8431596863103022332}
   - component: {fileID: 427132566127133126}
   m_Layer: 0
-  m_Name: Audio Core
+  m_Name: AudioCore
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -46,3 +46,5 @@ MonoBehaviour:
   elements:
   - {fileID: 242623621922258479, guid: 593363d0f6d0524408f318c08418fe04, type: 3}
   - {fileID: 2254586435833828713, guid: 4b0fc5469369c6842a93e7f5126f24bc, type: 3}
+  - {fileID: 8980921040509830416, guid: bd417f5f1322f8d4784fe2e982ec0f85, type: 3}
+  - {fileID: 7805604884026603009, guid: 071cc78ecdcaef740985dc75785144cf, type: 3}

@@ -1,15 +1,18 @@
 ﻿using System;
+using AudioPlayerModule;
 using Base.Deque;
-using Grid.Model;
+using GridModule.Model;
 
 namespace Base
 {
     public static class CrossEventsType
     {
-        public delegate void OnGridChanged(Conveyor<GridConfiguration> gridConfigurations);
+        public delegate void OnGridUpdatedEvent(Conveyor<GridConfiguration> gridConfigurations);
         
-        public delegate void AudioMeanLevelsUpdated(float[] gridConfigurations);
-        public delegate void AudioPeakLevelsUpdated(float[] gridConfigurations);
-        public delegate void AudioLevelsUpdated(float[] gridConfigurations);
+        public delegate void OnBeatDetectedEvent();
+        public delegate void OnAudioPlayerStateEvent(AudioPlayerState state);
+        public delegate void OnAudioAnalyzedDataUpdateEvent(float[] data);
+        public delegate void OnSpectrumListenerDataUpdateEvent(SpectrumListenerData listenerData);
+        public delegate void OnBPMChangedEvent(int bpm);
     }
 }
