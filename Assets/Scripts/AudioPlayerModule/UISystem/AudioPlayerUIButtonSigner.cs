@@ -70,7 +70,7 @@ namespace AudioPlayerModule.UISystem
 
         private void PlayButtonTextUpdate(AudioPlayerState state)
         {
-            if (state.HasFlag(AudioPlayerState.Play))
+            if (state.HasFlag(AudioPlayerState.Play) && !state.HasFlag(AudioPlayerState.Pause))
             {
                 _playButton.Text = "Stop";
             }

@@ -15,11 +15,11 @@ namespace AudioPlayerModule
     [Flags]
     public enum AudioPlayerState
     {
-        None,
-        Play,
-        Stop,
-        Pause,
-        Muted
+        None = 0,
+        Play = 1,
+        Stop = 2,
+        Pause = 4,
+        Muted = 8
     }
     
     [RequireComponent(typeof(AudioSource))] [OneAndOnly]
