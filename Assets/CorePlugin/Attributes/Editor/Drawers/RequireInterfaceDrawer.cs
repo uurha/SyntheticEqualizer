@@ -21,20 +21,18 @@ namespace CorePlugin.Attributes.Editor.Drawers
             if (property.propertyType == SerializedPropertyType.ObjectReference)
             {
                 var requiredAttribute = (RequireInterfaceAttribute) attribute;
-                
                 EditorGUI.BeginProperty(position, label, property);
-                
-                property.objectReferenceValue = EditorGUI.ObjectField(position, label, property.objectReferenceValue, requiredAttribute.RequiredType, true);
 
+                property.objectReferenceValue =
+                    EditorGUI.ObjectField(position, label, property.objectReferenceValue,
+                                          requiredAttribute.RequiredType, true);
                 EditorGUI.EndProperty();
             }
             else
             {
                 var previousColor = GUI.color;
                 GUI.color = Color.red;
-
                 EditorGUI.LabelField(position, label, new GUIContent("Property is not a reference type"));
-
                 GUI.color = previousColor;
             }
         }

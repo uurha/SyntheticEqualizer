@@ -1,13 +1,14 @@
 ﻿using Base.BaseTypes;
-using CellModule.Model;
-using GridModule.Model;
+using Modules.Grid.Model;
+using SubModules.Cell.Model;
 using UnityEngine;
 
 namespace Extensions
 {
     public static class GridExtension
     {
-        public static Vector3 LineSize(this GridConfiguration gridConfiguration, EntityRoute outDirection, TupleInt position)
+        public static Vector3 LineSize(this GridConfiguration gridConfiguration, EntityRoute outDirection,
+                                       TupleInt position)
         {
             var lineSize = outDirection switch
                            {

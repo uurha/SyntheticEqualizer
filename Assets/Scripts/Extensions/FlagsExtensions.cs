@@ -1,5 +1,4 @@
-﻿using System;
-using AudioPlayerModule;
+﻿using Modules.AudioPlayer;
 
 namespace Extensions
 {
@@ -9,7 +8,7 @@ namespace Extensions
         {
             return flag | value;
         }
-        
+
         public static AudioPlayerState Unset(this AudioPlayerState flag, AudioPlayerState value)
         {
             return flag & ~value;

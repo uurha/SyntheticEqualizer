@@ -1,5 +1,5 @@
 ﻿using System;
-using AudioPlayerModule.UISystem;
+using Modules.AudioPlayer.UISystem;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -12,7 +12,7 @@ namespace Base.UI
     {
         [SerializeField] private Button button;
         [SerializeField] private TMP_Text textField;
-        
+
         public string Text
         {
             get => textField.text;

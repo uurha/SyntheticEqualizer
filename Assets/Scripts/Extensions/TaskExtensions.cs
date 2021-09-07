@@ -5,9 +5,8 @@ namespace Extensions
 {
     public static class TaskExtensions
     {
-
         /// <summary>
-        /// Blocks while condition is true or timeout occurs.
+        ///     Blocks while condition is true or timeout occurs.
         /// </summary>
         /// <param name="condition">The condition that will perpetuate the block.</param>
         /// <param name="frequency">The frequency at which the condition will be check, in milliseconds.</param>
@@ -20,12 +19,11 @@ namespace Extensions
                                     {
                                         while (condition()) await Task.Delay(frequency);
                                     });
-
             if (waitTask != await Task.WhenAny(waitTask, Task.Delay(timeout))) throw new TimeoutException();
         }
 
         /// <summary>
-        /// Blocks until condition is true or timeout occurs.
+        ///     Blocks until condition is true or timeout occurs.
         /// </summary>
         /// <param name="condition">The break condition.</param>
         /// <param name="frequency">The frequency at which the condition will be checked.</param>
@@ -44,7 +42,7 @@ namespace Extensions
         }
 
         /// <summary>
-        /// Creates task with factory method
+        ///     Creates task with factory method
         /// </summary>
         /// <param name="action"></param>
         /// <typeparam name="T"></typeparam>

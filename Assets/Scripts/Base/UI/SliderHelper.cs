@@ -1,5 +1,5 @@
 using System;
-using AudioPlayerModule.UISystem;
+using Modules.AudioPlayer.UISystem;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -15,6 +15,13 @@ namespace Base.UI
         {
             slider ??= GetComponent<Slider>();
         }
+
+        #if UNITY_EDITOR
+        private void Reset()
+        {
+            slider ??= GetComponent<Slider>();
+        }
+        #endif
 
         public event Action<float> OnValueChanged
         {
@@ -32,12 +39,5 @@ namespace Base.UI
         {
             slider.SetValueWithoutNotify(value);
         }
-    
-        #if UNITY_EDITOR
-        private void Reset()
-        {
-            slider ??= GetComponent<Slider>();
-        }
-        #endif
     }
 }

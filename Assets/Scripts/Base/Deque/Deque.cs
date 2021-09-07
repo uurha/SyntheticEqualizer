@@ -6,16 +6,56 @@ namespace Base.Deque
 {
     public class Deque<T> : IEnumerable<T>
     {
+        private protected int _count;
         private DoublyNode<T> _head;
         private DoublyNode<T> _tail;
-        private protected int _count;
-        
+
+        public T First
+        {
+            get
+            {
+                if (IsEmpty) throw new InvalidOperationException();
+                return _head.Data;
+            }
+        }
+
+        public T Last
+        {
+            get
+            {
+                if (IsEmpty) throw new InvalidOperationException();
+                return _tail.Data;
+            }
+        }
+
+        public int Count => _count;
+
+        public bool IsEmpty => _count == 0;
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IEnumerable) this).GetEnumerator();
+        }
+
+        IEnumerator<T> IEnumerable<T>.GetEnumerator()
+        {
+            var current = _head;
+
+            while (current != null)
+            {
+                yield return current.Data;
+                current = current.Next;
+            }
+        }
+
         public virtual void AddLast(T data)
         {
             var node = new DoublyNode<T>(data);
 
             if (_head == null)
+            {
                 _head = node;
+            }
             else
             {
                 _tail.Next = node;
@@ -38,21 +78,15 @@ namespace Base.Deque
                 temp.Previous = node;
             _count++;
         }
-        
+
         public virtual void AddRangeFirst(IEnumerable<T> range)
         {
-            foreach (var data in range)
-            {
-                AddFirst(data);
-            }
+            foreach (var data in range) AddFirst(data);
         }
-        
+
         public virtual void AddRangeLast(IEnumerable<T> range)
         {
-            foreach (var data in range)
-            {
-                AddLast(data);
-            }
+            foreach (var data in range) AddLast(data);
         }
 
         public T RemoveFirst()
@@ -91,28 +125,6 @@ namespace Base.Deque
             return output;
         }
 
-        public T First
-        {
-            get
-            {
-                if (IsEmpty) throw new InvalidOperationException();
-                return _head.Data;
-            }
-        }
-
-        public T Last
-        {
-            get
-            {
-                if (IsEmpty) throw new InvalidOperationException();
-                return _tail.Data;
-            }
-        }
-
-        public int Count => _count;
-
-        public bool IsEmpty => _count == 0;
-
         public void Clear()
         {
             _head = null;
@@ -130,22 +142,6 @@ namespace Base.Deque
                 current = current.Next;
             }
             return false;
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return ((IEnumerable) this).GetEnumerator();
-        }
-
-        IEnumerator<T> IEnumerable<T>.GetEnumerator()
-        {
-            var current = _head;
-
-            while (current != null)
-            {
-                yield return current.Data;
-                current = current.Next;
-            }
         }
     }
 }
