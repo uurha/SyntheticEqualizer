@@ -1,5 +1,5 @@
 ﻿using Base.BehaviourModel.Interfaces;
-using SubModules.Cell;
+using SubModules.Cell.Model;
 using Unity.Burst;
 using Unity.Collections;
 

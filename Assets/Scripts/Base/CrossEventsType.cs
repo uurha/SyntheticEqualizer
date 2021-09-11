@@ -1,13 +1,18 @@
-﻿using Base.Deque;
-using Modules.AudioPlayer;
+﻿using System;
+using Base.Deque;
+using Modules.AudioLoader.Model;
+using Modules.AudioPlayer.Model;
 using Modules.Grid.Model;
-using UnityEngine;
 
 namespace Base
 {
     public static class CrossEventsType
     {
         public delegate void OnAudioAnalyzedDataUpdateEvent(float[] data);
+
+        public delegate void OnAudioClipEndedEvent();
+
+        public delegate void OnAudioLoadRequested(AudioLoaderSettings loaderSettings, Action<AudioDataProgress> action);
 
         public delegate void OnAudioPlayerStateEvent(AudioPlayerState state);
 
@@ -16,8 +21,6 @@ namespace Base
         public delegate void OnBPMChangedEvent(int bpm);
 
         public delegate void OnGridUpdatedEvent(Conveyor<GridConfiguration> gridConfigurations);
-
-        public delegate KeyCode OnKeyCodeEvent();
 
         public delegate void OnSpectrumListenerDataUpdateEvent(SpectrumListenerData listenerData);
     }

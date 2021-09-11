@@ -1,4 +1,4 @@
-﻿using Modules.AudioPlayer;
+﻿using Modules.AudioPlayer.Model;
 
 namespace Extensions
 {

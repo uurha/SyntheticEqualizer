@@ -1,5 +1,6 @@
 ﻿using System;
 using CorePlugin.ReferenceDistribution.Interface;
+using Modules.AudioPlayer.Model;
 using UnityEngine;
 
 namespace Modules.AudioPlayer.Interfaces

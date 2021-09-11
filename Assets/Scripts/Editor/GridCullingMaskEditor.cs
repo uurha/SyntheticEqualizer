@@ -1,5 +1,5 @@
 ﻿using CorePlugin.Attributes.Editor;
-using Modules.Grid;
+using Modules.Grid.SubSystems;
 using UnityEditor;
 using UnityEngine;
 
@@ -9,6 +9,15 @@ namespace Editor
     public class GridCullingMaskEditor : ValidationAttributeEditor
     {
         private bool showHandles;
+
+        public override void OnInspectorGUI()
+        {
+            base.OnInspectorGUI();
+            EditorGUILayout.Space();
+            if (!GUILayout.Button("Toggle culling boundary handles")) return;
+            showHandles = !showHandles;
+            SceneView.RepaintAll();
+        }
 
         public void OnSceneGUI()
         {
@@ -34,15 +43,6 @@ namespace Editor
                 endProperty.vector3Value = newEnd;
                 serializedObject.ApplyModifiedProperties();
             }
-        }
-
-        public override void OnInspectorGUI()
-        {
-            base.OnInspectorGUI();
-            EditorGUILayout.Space();
-            if (!GUILayout.Button("Toggle culling boundary handles")) return;
-            showHandles = !showHandles;
-            SceneView.RepaintAll();
         }
     }
 }

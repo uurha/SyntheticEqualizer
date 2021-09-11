@@ -9,15 +9,21 @@ namespace SubModules.Cell
 {
     public class CellEntity : MonoBehaviour, ICellEntity
     {
+        [SerializeField] private Vector3 cellSize;
+
         [SettingsHeader]
         [SerializeField] private EntityRoute inDirection;
 
         [SerializeField] private EntityRoute outDirection;
-        [SerializeField] private Vector3 cellSize;
-
         private ICellVisualBehaviour _behaviour;
 
         public Vector3 CellSize => cellSize;
+
+        public EntityRoute InDirection => inDirection;
+
+        public EntityRoute OutDirection => outDirection;
+
+        public ICellVisualBehaviour VisualBehaviour => _behaviour;
 
         public string Name
         {
@@ -25,11 +31,20 @@ namespace SubModules.Cell
             set => gameObject.name = value;
         }
 
-        public EntityRoute InDirection => inDirection;
+        public IInstantiable CreateInstance(Transform parent)
+        {
+            return Instantiate(this, Vector3.zero, Quaternion.identity, parent);
+        }
 
-        public EntityRoute OutDirection => outDirection;
+        public void Destroy()
+        {
+            Destroy(gameObject);
+        }
 
-        public ICellVisualBehaviour VisualBehaviour => _behaviour;
+        public Orientation GetOrientation()
+        {
+            return new Orientation(transform);
+        }
 
         public ICellEntity Initialize()
         {
@@ -66,21 +81,6 @@ namespace SubModules.Cell
         {
             SetOrientation(orientation.Position, orientation.Rotation);
             return this;
-        }
-
-        public IInstantiable CreateInstance(Transform parent)
-        {
-            return Instantiate(this, Vector3.zero, Quaternion.identity, parent);
-        }
-
-        public void Destroy()
-        {
-            Destroy(gameObject);
-        }
-
-        public Orientation GetOrientation()
-        {
-            return new Orientation(transform);
         }
     }
 }

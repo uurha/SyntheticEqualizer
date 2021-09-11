@@ -2,6 +2,7 @@
 using Base.BehaviourModel.Interfaces;
 using CorePlugin.Attributes.Headers;
 using Extensions;
+using SubModules.Cell.Model;
 using SubModules.CellItem.Behaviours;
 using Unity.Jobs;
 using UnityEngine;
@@ -17,11 +18,6 @@ namespace SubModules.Cell.Behaviours
 
         private TransitStruct _transitData;
 
-        private void OnDisable()
-        {
-            _transitData.Dispose();
-        }
-
         public ICellVisualBehaviour Initialize()
         {
             if (_transitData.IsCreated) _transitData.Dispose();
@@ -34,6 +30,11 @@ namespace SubModules.Cell.Behaviours
             if (_transitData.IsCreated) _transitData.Dispose();
             _transitData = new TransitStruct(items, jobBehaviour);
             return this;
+        }
+
+        private void OnDisable()
+        {
+            _transitData.Dispose();
         }
 
         public void RunBehaviour(Orientation[] data)

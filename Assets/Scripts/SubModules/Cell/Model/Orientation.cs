@@ -1,7 +1,7 @@
 ﻿using Unity.Burst;
 using UnityEngine;
 
-namespace SubModules.Cell
+namespace SubModules.Cell.Model
 {
     [BurstCompile]
     public struct Orientation

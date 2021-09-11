@@ -14,10 +14,23 @@ namespace CorePlugin.Singletons
 
         public static bool IsInitialised => _instance != null;
 
+        private protected static void Initialize()
+        {
+            if (IsInitialised) return;
+            CreateInstance(out _instance);
+        }
+
         private protected static T GetInstance()
         {
             if (IsInitialised) return _instance;
-            return _instance = new GameObject(typeof(T).Name).AddComponent<T>();
+            
+            CreateInstance(out _instance);
+            return _instance;
+        }
+
+        private static void CreateInstance(out T instance)
+        {
+            instance = new GameObject(typeof(T).Name).AddComponent<T>();
         }
 
         protected virtual void OnDestroy()

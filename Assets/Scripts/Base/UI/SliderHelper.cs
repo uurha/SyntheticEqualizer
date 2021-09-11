@@ -1,5 +1,5 @@
 using System;
-using Modules.AudioPlayer.UISystem;
+using SubModules.UI;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -10,18 +10,6 @@ namespace Base.UI
     public class SliderHelper : MonoBehaviour, ISlider<float>
     {
         [SerializeField] private Slider slider;
-
-        private void Awake()
-        {
-            slider ??= GetComponent<Slider>();
-        }
-
-        #if UNITY_EDITOR
-        private void Reset()
-        {
-            slider ??= GetComponent<Slider>();
-        }
-        #endif
 
         public event Action<float> OnValueChanged
         {
@@ -34,6 +22,18 @@ namespace Base.UI
             get => slider.value;
             set => slider.value = value;
         }
+
+        private void Awake()
+        {
+            slider ??= GetComponent<Slider>();
+        }
+
+        #if UNITY_EDITOR
+        private void Reset()
+        {
+            slider ??= GetComponent<Slider>();
+        }
+        #endif
 
         public void SetValueWithoutNotify(float value)
         {

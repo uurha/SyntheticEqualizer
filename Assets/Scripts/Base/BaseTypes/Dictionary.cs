@@ -3,9 +3,8 @@ using System.Collections.Generic;
 
 namespace Base.BaseTypes
 {
-    public class Dictionary<TKey1,TKey2,TValue> :  Dictionary<Tuple<TKey1, TKey2>, TValue>
+    public class Dictionary<TKey1, TKey2, TValue> : Dictionary<Tuple<TKey1, TKey2>, TValue>
     {
-
         public TValue this[TKey1 key1, TKey2 key2]
         {
             get => base[Tuple.Create(key1, key2)];

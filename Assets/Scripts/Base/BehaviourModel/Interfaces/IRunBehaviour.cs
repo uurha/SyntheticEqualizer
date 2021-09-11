@@ -1,4 +1,4 @@
-﻿using SubModules.Cell;
+﻿using SubModules.Cell.Model;
 
 namespace Base.BehaviourModel.Interfaces
 {

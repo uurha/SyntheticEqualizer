@@ -4,7 +4,7 @@ using Base.BehaviourModel.Interfaces;
 using Unity.Collections;
 using UnityEngine.Jobs;
 
-namespace SubModules.Cell
+namespace SubModules.Cell.Model
 {
     public struct TransitStruct
     {
