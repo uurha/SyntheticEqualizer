@@ -28,7 +28,6 @@ namespace Extensions
             if (transform.hasChanged)
             {
                 var thisTransform = transform;
-
                 thisTransform.position = Restore(thisTransform.position, storedPosition, positionRestrictedAxis);
 
                 thisTransform.rotation = Quaternion.Euler(Restore(thisTransform.rotation.eulerAngles,
@@ -42,22 +41,9 @@ namespace Extensions
         private Vector3 Restore(Vector3 current, Vector3 stored, Axis axis)
         {
             var restored = current;
-
-            if (axis.HasFlag(Axis.X))
-            {
-                restored.x = stored.x;
-            }
-
-            if (axis.HasFlag(Axis.Y))
-            {
-                restored.y = stored.y;
-            }
-
-            if (axis.HasFlag(Axis.Z))
-            {
-                restored.z = stored.z;
-            }
-
+            if (axis.HasFlag(Axis.X)) restored.x = stored.x;
+            if (axis.HasFlag(Axis.Y)) restored.y = stored.y;
+            if (axis.HasFlag(Axis.Z)) restored.z = stored.z;
             return restored;
         }
         #endif

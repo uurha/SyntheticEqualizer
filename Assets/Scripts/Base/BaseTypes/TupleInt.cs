@@ -2,7 +2,7 @@
 {
     public class TupleInt : TupleItems<int, int>
     {
-        public TupleInt() : base()
+        public TupleInt()
         {
         }
 

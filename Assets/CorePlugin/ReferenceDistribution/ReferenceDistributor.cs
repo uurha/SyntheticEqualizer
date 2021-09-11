@@ -1,22 +1,11 @@
-﻿#region license
-
-// Copyright 2021 Arcueid Elizabeth D'athemon
-// Licensed under the Apache License, Version 2.0 (the "License"); 
-// you may not use this file except in compliance with the License. 
-// You may obtain a copy of the License at 
-//     http://www.apache.org/licenses/LICENSE-2.0 
-// Unless required by applicable law or agreed to in writing, software 
-// distributed under the License is distributed on an "AS IS" BASIS, 
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-// See the License for the specific language governing permissions and 
-// limitations under the License.
-
-#endregion
-
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using CorePlugin.Attributes.Validation;
+using CorePlugin.Core;
 using CorePlugin.Extensions;
+using CorePlugin.Logger;
 using CorePlugin.ReferenceDistribution.Interface;
 using UnityEngine;
 
@@ -26,13 +15,14 @@ namespace CorePlugin.ReferenceDistribution
     /// Class responsible for reference distribution inside one scene.
     /// <remarks> Strongly recommended to use <see cref="CorePlugin.Cross.Events"/> and <see cref="CorePlugin.Cross.Events.Interface"/> instead of direct reference serialization.</remarks>
     /// </summary>
-    [RequireComponent(typeof(Core.CoreManager))]
+    [RequireComponent(typeof(CoreManager))]
     [OneAndOnly]
     public class ReferenceDistributor : MonoBehaviour
     {
         private static ReferenceDistributor _instance;
         private IEnumerable<IDistributingReference> _distributingReferences;
         private bool _isInitialized;
+        private static readonly string[] warningCallers = {"Awake", "OnEnable"};
 
         private void OnDisable()
         {
@@ -53,8 +43,9 @@ namespace CorePlugin.ReferenceDistribution
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static T GetReference<T>() where T : MonoBehaviour, IDistributingReference
+        public static T GetReference<T>([CallerMemberName] string callerName = "") where T : MonoBehaviour, IDistributingReference
         {
+            ValidateCaller(callerName);
             return _instance._isInitialized ? _instance._distributingReferences.OfType<T>().First() : null;
         }
 
@@ -63,19 +54,32 @@ namespace CorePlugin.ReferenceDistribution
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static T GetInterfaceReference<T>() where T : IDistributingReference
+        public static T GetInterfaceReference<T>([CallerMemberName] string callerName = "") where T : IDistributingReference
         {
+            ValidateCaller(callerName);
             return _instance._isInitialized ? _instance._distributingReferences.OfType<T>().First() : default;
         }
-        
+
         /// <summary>
         /// Getting reference by type from list
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static IEnumerable<T> GetInterfaceReferences<T>() where T : IDistributingReference
+        public static IEnumerable<T> GetInterfaceReferences<T>([CallerMemberName] string callerName = "") where T : IDistributingReference
         {
+            ValidateCaller(callerName);
             return _instance._isInitialized ? _instance._distributingReferences.OfType<T>() : default;
+        }
+
+        /// <summary>
+        /// Getting references by type from list
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static IEnumerable<T> GetReferences<T>([CallerMemberName] string callerName = "") where T : MonoBehaviour, IDistributingReference
+        {
+            ValidateCaller(callerName);
+            return _instance._isInitialized ? _instance._distributingReferences.OfType<T>() : null;
         }
 
         /// <summary>
@@ -85,20 +89,18 @@ namespace CorePlugin.ReferenceDistribution
         /// <param name="reference"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static bool AskReference<T>(ref T reference) where T : MonoBehaviour, IDistributingReference
+        public static bool AskReference<T>(ref T reference, [CallerMemberName] string callerName = "") where T : MonoBehaviour, IDistributingReference
         {
+            ValidateCaller(callerName);
             reference ??= GetReference<T>();
             return ReferenceEquals(reference, null);
         }
-
-        /// <summary>
-        /// Getting references by type from list
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        public static IEnumerable<T> GetReferences<T>() where T : MonoBehaviour, IDistributingReference
+        
+        private static void ValidateCaller(string callerName)
         {
-            return _instance._isInitialized ? _instance._distributingReferences.OfType<T>() : null;
+            if (warningCallers.Contains(callerName))
+                DebugLogger.LogError($"It's not safe to call {nameof(ReferenceDistributor)} from {nameof(UnityEngine)}.{callerName}",
+                                     _instance);
         }
     }
 }

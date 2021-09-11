@@ -1,5 +1,5 @@
 ﻿using CorePlugin.Attributes.Editor;
-using GridModule;
+using Modules.Grid.SubSystems;
 using UnityEditor;
 using UnityEngine;
 
@@ -11,19 +11,16 @@ namespace Editor
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
-        
             EditorGUILayout.Space();
             var obj = target as GridInitializer;
-        
+
             if (GUILayout.Button("Initialize"))
-            {
-                if (obj is { }) obj.Initialize();
-            }
-        
+                if (obj is { })
+                    obj.Initialize();
+
             if (GUILayout.Button("Generate Next Grid"))
-            {
-                if (obj is { }) obj.GenerateNextGrid();
-            }
+                if (obj is { })
+                    obj.GenerateNextGrid();
         }
     }
 }

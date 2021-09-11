@@ -1,4 +1,4 @@
-﻿using CellModule;
+﻿using SubModules.Cell.Model;
 
 namespace Base.BehaviourModel.Interfaces
 {
@@ -7,7 +7,7 @@ namespace Base.BehaviourModel.Interfaces
         public void RunBehaviour(Orientation[] data);
 
         public ICellVisualBehaviour Initialize();
-        
+
         public ICellVisualBehaviour Initialize(IJobBehaviour jobBehaviour);
     }
 }
