@@ -32,7 +32,7 @@ namespace Modules.InputManagement.Handlers
             if (Input.mouseScrollDelta != Vector2.zero) OnMouseScrollDelta?.Invoke(Input.mouseScrollDelta);
         }
 
-        private static void AddKeyEvent(KeyCode keyCode, ActionType actionType, Action keyAction)
+        public static void AddKeyEvent(KeyCode keyCode, ActionType actionType, Action keyAction)
         {
             if (Contains(keyCode, actionType))
                 _instance._keyEventDictionary[keyCode, actionType] += keyAction;
@@ -66,7 +66,7 @@ namespace Modules.InputManagement.Handlers
             }
         }
 
-        private static void RemoveKeyEvent(KeyCode keyCode, ActionType actionType, Action keyAction)
+        public static void RemoveKeyEvent(KeyCode keyCode, ActionType actionType, Action keyAction)
         {
             if (!Contains(keyCode, actionType)) return;
             _instance._keyEventDictionary[keyCode, actionType] -= keyAction;

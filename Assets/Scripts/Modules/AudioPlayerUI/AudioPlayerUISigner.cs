@@ -10,9 +10,9 @@ using Modules.AudioPlayer.Model;
 using SubModules.UI;
 using UnityEngine;
 
-namespace Modules.AudioPlayer.SubSystems.UI
+namespace Modules.AudioPlayerUI
 {
-    public class AudioPlayerUIButtonSigner : MonoBehaviour, IEventSubscriber
+    public class AudioPlayerUISigner : MonoBehaviour, IEventSubscriber
     {
         [RequireInterface(typeof(ISlider<float>))] [SerializeField]
         private Component playbackSlider;
