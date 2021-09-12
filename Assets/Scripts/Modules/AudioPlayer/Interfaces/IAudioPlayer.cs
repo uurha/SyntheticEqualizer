@@ -16,6 +16,7 @@ namespace Modules.AudioPlayer.Interfaces
         public float Volume { get; set; }
         public bool IsPlaying { get; }
         public bool IsPaused { get; }
+        public bool IsMuted { get; }
 
         public event Action<float> OnPlaybackTimeChangedEvent;
         public event Action<float> OnPlaybackTime01ChangedEvent;
@@ -27,6 +28,10 @@ namespace Modules.AudioPlayer.Interfaces
         public void Stop();
 
         public void Play();
+
+        public void Mute();
+
+        public void UnMute();
 
         public void Play(AudioClip clip);
     }

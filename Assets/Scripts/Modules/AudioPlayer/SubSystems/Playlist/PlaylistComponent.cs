@@ -53,6 +53,35 @@ namespace Modules.AudioPlayer.SubSystems.Playlist
             _audioPlayer.Play(clip);
         }
 
+        public void Play()
+        {
+            if(_audioPlayer.Clip != null)
+                _audioPlayer.Play();
+            else
+                PlayNext();
+        }
+        
+        public void Stop()
+        {
+            _audioPlayer.Play();
+        }
+
+        public void SwitchMute()
+        {
+            if (_audioPlayer.IsMuted)
+                _audioPlayer.UnMute();
+            else
+                _audioPlayer.Mute();
+        }
+
+        public void SwitchPause()
+        {
+            if (_audioPlayer.IsPaused)
+                _audioPlayer.UpPause();
+            else
+                _audioPlayer.Pause();
+        }
+
         public void PlayPrevious()
         {
             if (_audioClips.IsEmpty) return;

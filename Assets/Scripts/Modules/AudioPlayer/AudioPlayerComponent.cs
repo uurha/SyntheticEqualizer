@@ -32,6 +32,7 @@ namespace Modules.AudioPlayer
         public AudioClip Clip => audioSource.clip;
 
         public bool IsPlaying => _currentState == AudioPlayerState.Play;
+        public bool IsMuted => audioSource.mute;
 
         public bool IsPaused => _currentState.HasFlag(AudioPlayerState.Pause);
 
@@ -92,6 +93,16 @@ namespace Modules.AudioPlayer
         {
             audioSource.Play();
             CurrentState = AudioPlayerState.Play;
+        }
+
+        public void Mute()
+        {
+            audioSource.mute = true;
+        }
+
+        public void UnMute()
+        {
+            audioSource.mute = false;
         }
 
         public void Play(AudioClip clip)

@@ -1,4 +1,4 @@
-using Modules.InputManagement.Handlers;
+using Modules.InputManagement;
 using UnityEngine;
 
 namespace SubModules.UI
@@ -23,7 +23,6 @@ namespace SubModules.UI
         private void OnMouseScrollDelta(Vector2 value)
         {
             _slider.Value += value.y * sensivity;
-            Debug.Log(value);
         }
     }
 }

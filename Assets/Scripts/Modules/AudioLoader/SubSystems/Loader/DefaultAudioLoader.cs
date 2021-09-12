@@ -20,9 +20,8 @@ namespace Modules.AudioLoader.SubSystems.Loader
 
         [SettingsHeader]
         [SerializeField] private string defaultPath = Application.streamingAssetsPath;
-
-        [SerializeField] private bool isStreaming;
-        [SerializeField] private AudioType type;
+        [SerializeField] private bool isStreaming = true;
+        [SerializeField] private AudioType type = AudioType.OGGVORBIS;
 
         private event CrossEventsType.OnAudioLoadRequested RequestAudioLoad;
 
