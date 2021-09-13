@@ -7,12 +7,13 @@ using CorePlugin.Cross.Events.Interface;
 using CorePlugin.ReferenceDistribution;
 using Modules.AudioPlayer.Interfaces;
 using Modules.AudioPlayer.Model;
+using Modules.AudioPlayer.SubSystems.ExternActions;
 using SubModules.UI;
 using UnityEngine;
 
-namespace Modules.AudioPlayer.SubSystems.UI
+namespace Modules.AudioPlayerUserInput
 {
-    public class AudioPlayerUIButtonSigner : MonoBehaviour, IEventSubscriber
+    public class AudioPlayerUISigner : MonoBehaviour, IEventSubscriber
     {
         [RequireInterface(typeof(ISlider<float>))] [SerializeField]
         private Component playbackSlider;
@@ -25,6 +26,7 @@ namespace Modules.AudioPlayer.SubSystems.UI
         private Component volumeSlider;
 
         private IAudioPlayer _audioPlayer;
+        private AudioPlayerExternAction _externAction;
         private ISlider<float> _playbackSlider;
 
         private IButton _playButton;
@@ -40,7 +42,9 @@ namespace Modules.AudioPlayer.SubSystems.UI
         private void Start()
         {
             _audioPlayer = ReferenceDistributor.GetInterfaceReference<IAudioPlayer>();
-            _playButton.OnClick += PlayButtonBehaviour;
+            _externAction = ReferenceDistributor.GetReference<AudioPlayerExternAction>();
+            
+            _playButton.OnClick += _externAction.SwitchPlay;
             _playbackSlider.OnValueChanged += SetPlaybackTime01;
             _audioPlayer.OnPlaybackTime01ChangedEvent += _playbackSlider.SetValueWithoutNotify;
             _volumeSlider.Value = _audioPlayer.Volume;
@@ -50,20 +54,6 @@ namespace Modules.AudioPlayer.SubSystems.UI
         public IEnumerable<Delegate> GetSubscribers()
         {
             return new Delegate[] {(CrossEventsType.OnAudioPlayerStateEvent) PlayButtonTextUpdate};
-        }
-
-        private void PlayButtonBehaviour()
-        {
-            if (_audioPlayer.IsPlaying)
-            {
-                _audioPlayer.Pause();
-                return;
-            }
-
-            if (_audioPlayer.IsPaused)
-                _audioPlayer.UpPause();
-            else
-                _audioPlayer.Play();
         }
 
         private void PlayButtonTextUpdate(AudioPlayerState state)

@@ -8,7 +8,6 @@ using SubModules.Beom;
 using SubModules.Cell.Interfaces;
 using SubModules.Cell.Model;
 using SubModules.Route.Generator;
-using UnityEngine;
 using TaskExtensions = Extensions.TaskExtensions;
 
 namespace Modules.Grid.SubSystems.Generator
@@ -138,7 +137,6 @@ namespace Modules.Grid.SubSystems.Generator
             _lastColumn = currentPosition.Item1;
             _lastRow = currentPosition.Item2;
             _lastEntity = stepInOut.PreviousCellEntity.OutDirection;
-            Debug.Log($"Remaining Count: {generatedPath.Count}");
 
             return new GridGeneratorOutput
                    {

@@ -32,6 +32,7 @@ namespace Modules.AudioPlayer
         public AudioClip Clip => audioSource.clip;
 
         public bool IsPlaying => _currentState == AudioPlayerState.Play;
+        public bool IsMuted => audioSource.mute;
 
         public bool IsPaused => _currentState.HasFlag(AudioPlayerState.Pause);
 
@@ -82,6 +83,11 @@ namespace Modules.AudioPlayer
             audioSource.volume = initialVolume;
         }
 
+        public void Mute()
+        {
+            audioSource.mute = true;
+        }
+
         public void Pause()
         {
             audioSource.Pause();
@@ -116,6 +122,17 @@ namespace Modules.AudioPlayer
                 OnAudioClipEnded += audioClipEnded;
         }
 
+        public void UnMute()
+        {
+            audioSource.mute = false;
+        }
+
+        public void UnPause()
+        {
+            audioSource.UnPause();
+            CurrentState = CurrentState.Unset(AudioPlayerState.Pause);
+        }
+
         public void Unsubscribe(IEnumerable<Delegate> unsubscribers)
         {
             foreach (var audioPlayerStateEvent in unsubscribers.OfType<CrossEventsType.OnAudioPlayerStateEvent>())
@@ -123,12 +140,6 @@ namespace Modules.AudioPlayer
 
             foreach (var audioClipEnded in unsubscribers.OfType<CrossEventsType.OnAudioClipEndedEvent>())
                 OnAudioClipEnded -= audioClipEnded;
-        }
-
-        public void UpPause()
-        {
-            audioSource.UnPause();
-            CurrentState = CurrentState.Unset(AudioPlayerState.Pause);
         }
 
         private bool WaitUntilEnd()

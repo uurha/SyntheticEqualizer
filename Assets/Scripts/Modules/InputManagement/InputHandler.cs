@@ -2,14 +2,15 @@
 using Base.BaseTypes;
 using CorePlugin.Logger;
 using CorePlugin.Singletons;
+using Modules.InputManagement.Model;
 using UnityEngine;
 
-namespace Modules.InputManagement.Handlers
+namespace Modules.InputManagement
 {
     public enum ActionType
     {
-        Held,
-        Down
+        Down,
+        Held
     }
 
     public class InputHandler : StaticObjectSingleton<InputHandler>
@@ -32,12 +33,17 @@ namespace Modules.InputManagement.Handlers
             if (Input.mouseScrollDelta != Vector2.zero) OnMouseScrollDelta?.Invoke(Input.mouseScrollDelta);
         }
 
-        private static void AddKeyEvent(KeyCode keyCode, ActionType actionType, Action keyAction)
+        public static void AddKeyEvent(KeyCode keyCode, ActionType actionType, Action keyAction)
         {
             if (Contains(keyCode, actionType))
                 _instance._keyEventDictionary[keyCode, actionType] += keyAction;
             else
                 _instance._keyEventDictionary.Add(keyCode, actionType, keyAction);
+        }
+
+        public static void AddKeyEvent(KeyPreset keyPreset, Action keyAction)
+        {
+            AddKeyEvent(keyPreset.Code, keyPreset.Type, keyAction);
         }
 
         private static bool Contains(KeyCode keyCode, ActionType actionType)
@@ -66,10 +72,15 @@ namespace Modules.InputManagement.Handlers
             }
         }
 
-        private static void RemoveKeyEvent(KeyCode keyCode, ActionType actionType, Action keyAction)
+        public static void RemoveKeyEvent(KeyCode keyCode, ActionType actionType, Action keyAction)
         {
             if (!Contains(keyCode, actionType)) return;
             _instance._keyEventDictionary[keyCode, actionType] -= keyAction;
+        }
+
+        public static void RemoveKeyEvent(KeyPreset keyPreset, Action keyAction)
+        {
+            RemoveKeyEvent(keyPreset.Code, keyPreset.Type, keyAction);
         }
     }
 }
