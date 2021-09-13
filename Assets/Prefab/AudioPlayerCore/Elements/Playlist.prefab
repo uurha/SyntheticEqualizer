@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 6952345489579929849}
   - component: {fileID: 3741395007154183029}
   - component: {fileID: 5401044997887433912}
-  - component: {fileID: 2722129115429115492}
   m_Layer: 0
   m_Name: Playlist
   m_TagString: Untagged
@@ -45,7 +44,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f596e2eaafa446aae926c17c32ab364, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  autoStartNextClip: 1
 --- !u!114 &5401044997887433912
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -59,20 +57,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playlistComponent: {fileID: 3741395007154183029}
-  defaultPath: D:/unity/PetProjects/Synth/SyntheticEqualizer/Assets/StreamingAssets
   isStreaming: 1
   type: 14
---- !u!114 &2722129115429115492
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2709045108674773359}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 81f3a82fb6b148a783bcacfe5745dcdf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playlistComponent: {fileID: 3741395007154183029}
-  settings: {fileID: 11400000, guid: dcf72956ee392364294c4eecb8ec6624, type: 2}

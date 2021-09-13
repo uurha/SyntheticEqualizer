@@ -40,7 +40,7 @@ namespace Modules.InputManagement
             else
                 _instance._keyEventDictionary.Add(keyCode, actionType, keyAction);
         }
-        
+
         public static void AddKeyEvent(KeyPreset keyPreset, Action keyAction)
         {
             AddKeyEvent(keyPreset.Code, keyPreset.Type, keyAction);
@@ -77,7 +77,7 @@ namespace Modules.InputManagement
             if (!Contains(keyCode, actionType)) return;
             _instance._keyEventDictionary[keyCode, actionType] -= keyAction;
         }
-        
+
         public static void RemoveKeyEvent(KeyPreset keyPreset, Action keyAction)
         {
             RemoveKeyEvent(keyPreset.Code, keyPreset.Type, keyAction);

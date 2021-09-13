@@ -23,7 +23,7 @@ namespace Modules.AudioPlayer.Interfaces
 
         public void Pause();
 
-        public void UpPause();
+        public void UnPause();
 
         public void Stop();
 

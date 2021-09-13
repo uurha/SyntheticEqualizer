@@ -9,6 +9,10 @@ namespace Modules.InputManagement.Model
         [SerializeField] private KeyCode keyCode;
         [SerializeField] private ActionType actionType;
 
+        public KeyCode Code => keyCode;
+
+        public ActionType Type => actionType;
+
         public KeyPreset()
         {
         }
@@ -18,10 +22,6 @@ namespace Modules.InputManagement.Model
             keyCode = code;
             actionType = type;
         }
-
-        public KeyCode Code => keyCode;
-
-        public ActionType Type => actionType;
 
         public void Set(KeyCode code)
         {

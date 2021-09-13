@@ -1,10 +1,9 @@
-﻿using System;
-using Modules.InputManagement.Model;
+﻿using Modules.InputManagement.Model;
 using UnityEngine;
 
 namespace Modules.AudioPlayer.Model
 {
-    [CreateAssetMenu(menuName = "Playlist/Keyboard Settings", fileName = "KeyboardSettings", order = 0)] 
+    [CreateAssetMenu(menuName = "Playlist/Keyboard Settings", fileName = "KeyboardSettings", order = 0)]
     public class PlaylistKeyboardSettings : ScriptableObject
     {
         [SerializeField] private KeyPreset nextClipKey;
@@ -13,7 +12,7 @@ namespace Modules.AudioPlayer.Model
         [SerializeField] private KeyPreset stopClipKey;
         [SerializeField] private KeyPreset pauseClipKey;
         [SerializeField] private KeyPreset muteClipKey;
-        
+
         public KeyPreset NextClipKey => nextClipKey;
 
         public KeyPreset PreviousClipKey => previousClipKey;
