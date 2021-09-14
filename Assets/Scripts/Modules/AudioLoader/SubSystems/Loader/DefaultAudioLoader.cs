@@ -44,10 +44,6 @@ namespace Modules.AudioLoader.SubSystems.Loader
             }
         }
 
-        public void InvokeEvents()
-        {
-        }
-
         private void Loading(AudioDataProgress dataProgress)
         {
             if (dataProgress.State != AudioDataProgress.StateProgress.Done) return;
@@ -57,6 +53,10 @@ namespace Modules.AudioLoader.SubSystems.Loader
         private void Reset()
         {
             playlistComponent ??= GetComponent<PlaylistComponent>();
+        }
+
+        public void InvokeEvents()
+        {
         }
 
         public void Subscribe(IEnumerable<Delegate> subscribers)

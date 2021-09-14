@@ -15,19 +15,6 @@ namespace Modules.Audio.SubSystems.SpectrumAnalyzer
         [ReferencesHeader]
         [SerializeField] private AudioAnalyzer analyzer;
 
-        public IEnumerable<Delegate> GetSubscribers()
-        {
-            return new Delegate[]
-                   {
-                       (CrossEventsType.OnAudioPlayerStateEvent) OnPlayerStateChanged,
-                       (CrossEventsType.OnSpectrumListenerDataUpdateEvent) SpectrumListenerDataReceived
-                   };
-        }
-
-        public void InvokeEvents()
-        {
-        }
-
         private void OnPlayerStateChanged(AudioPlayerState state)
         {
             switch (state)
@@ -50,6 +37,10 @@ namespace Modules.Audio.SubSystems.SpectrumAnalyzer
                 return;
             }
             analyzer.OnSpectrumReceived(listenerData.SpectrumData);
+        }
+
+        public void InvokeEvents()
+        {
         }
 
         public void Subscribe(IEnumerable<Delegate> subscribers)
@@ -75,6 +66,15 @@ namespace Modules.Audio.SubSystems.SpectrumAnalyzer
 
             foreach (var onBPMChanged in unsubscribers.OfType<CrossEventsType.OnBPMChangedEvent>())
                 analyzer.OnBPMChanged -= new Action<int>(onBPMChanged);
+        }
+
+        public IEnumerable<Delegate> GetSubscribers()
+        {
+            return new Delegate[]
+                   {
+                       (CrossEventsType.OnAudioPlayerStateEvent) OnPlayerStateChanged,
+                       (CrossEventsType.OnSpectrumListenerDataUpdateEvent) SpectrumListenerDataReceived
+                   };
         }
     }
 }

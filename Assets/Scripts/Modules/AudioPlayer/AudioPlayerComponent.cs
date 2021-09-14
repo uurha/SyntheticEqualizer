@@ -13,7 +13,7 @@ using UnityEngine;
 namespace Modules.AudioPlayer
 {
     [RequireComponent(typeof(AudioSource))] [OneAndOnly]
-    public class AudioPlayerComponent : MonoBehaviour, IAudioPlayer, IEventHandler
+    public class AudioPlayerComponent : MonoBehaviour, IAudioPlayer, IEventHandler, IEventSubscriber
     {
         [ReferencesHeader]
         [SerializeField] private AudioSource audioSource;
@@ -25,9 +25,7 @@ namespace Modules.AudioPlayer
 
         private event CrossEventsType.OnAudioPlayerStateEvent OnAudioPlayerState;
         private event CrossEventsType.OnAudioClipEndedEvent OnAudioClipEnded;
-
-        public event Action<float> OnPlaybackTimeChangedEvent;
-        public event Action<float> OnPlaybackTime01ChangedEvent;
+        private event CrossEventsType.OnPlaybackTime01ChangedEvent OnPlaybackTime01ChangedEvent;
 
         public AudioClip Clip => audioSource.clip;
 
@@ -54,8 +52,8 @@ namespace Modules.AudioPlayer
 
         public float Time01
         {
-            get => Mathf.InverseLerp(0, audioSource.clip.length, audioSource.time);
-            set => audioSource.time = Mathf.Lerp(0, audioSource.clip.length, value);
+            get => Clip != null ? Mathf.InverseLerp(0, audioSource.clip.length, audioSource.time) : 0;
+            set => audioSource.time = Clip != null ? Mathf.Lerp(0, audioSource.clip.length, value) : 0;
         }
 
         public float Volume
@@ -67,7 +65,6 @@ namespace Modules.AudioPlayer
         private void Update()
         {
             if (!IsPlaying) return;
-            OnPlaybackTimeChangedEvent?.Invoke(Time);
             OnPlaybackTime01ChangedEvent?.Invoke(Time01);
 
             if (WaitUntilEnd())
@@ -77,10 +74,19 @@ namespace Modules.AudioPlayer
             }
         }
 
-        public void InvokeEvents()
+        private AudioPlayerData AskAudioPlayerData()
         {
-            Stop();
-            audioSource.volume = initialVolume;
+            return new AudioPlayerData(this);
+        }
+
+        private void SetPlayerState(IPlayerState playerState)
+        {
+            playerState.Execute(this);
+        }
+
+        private bool WaitUntilEnd()
+        {
+            return audioSource.time >= audioSource.clip.length;
         }
 
         public void Mute()
@@ -113,15 +119,6 @@ namespace Modules.AudioPlayer
             CurrentState = AudioPlayerState.Stop;
         }
 
-        public void Subscribe(IEnumerable<Delegate> subscribers)
-        {
-            foreach (var audioPlayerStateEvent in subscribers.OfType<CrossEventsType.OnAudioPlayerStateEvent>())
-                OnAudioPlayerState += audioPlayerStateEvent;
-
-            foreach (var audioClipEnded in subscribers.OfType<CrossEventsType.OnAudioClipEndedEvent>())
-                OnAudioClipEnded += audioClipEnded;
-        }
-
         public void UnMute()
         {
             audioSource.mute = false;
@@ -133,18 +130,45 @@ namespace Modules.AudioPlayer
             CurrentState = CurrentState.Unset(AudioPlayerState.Pause);
         }
 
+        public void InvokeEvents()
+        {
+            Stop();
+            audioSource.volume = initialVolume;
+        }
+
+        public void Subscribe(IEnumerable<Delegate> subscribers)
+        {
+            foreach (var audioPlayerStateEvent in subscribers.OfType<CrossEventsType.OnAudioPlayerStateEvent>())
+                OnAudioPlayerState += audioPlayerStateEvent;
+
+            foreach (var playbackTime01ChangedEvent in
+                subscribers.OfType<CrossEventsType.OnPlaybackTime01ChangedEvent>())
+                OnPlaybackTime01ChangedEvent += playbackTime01ChangedEvent;
+
+            foreach (var audioClipEnded in subscribers.OfType<CrossEventsType.OnAudioClipEndedEvent>())
+                OnAudioClipEnded += audioClipEnded;
+        }
+
         public void Unsubscribe(IEnumerable<Delegate> unsubscribers)
         {
             foreach (var audioPlayerStateEvent in unsubscribers.OfType<CrossEventsType.OnAudioPlayerStateEvent>())
                 OnAudioPlayerState -= audioPlayerStateEvent;
 
+            foreach (var playbackTime01ChangedEvent in unsubscribers
+               .OfType<CrossEventsType.OnPlaybackTime01ChangedEvent>())
+                OnPlaybackTime01ChangedEvent -= playbackTime01ChangedEvent;
+
             foreach (var audioClipEnded in unsubscribers.OfType<CrossEventsType.OnAudioClipEndedEvent>())
                 OnAudioClipEnded -= audioClipEnded;
         }
 
-        private bool WaitUntilEnd()
+        public IEnumerable<Delegate> GetSubscribers()
         {
-            return audioSource.time >= audioSource.clip.length;
+            return new Delegate[]
+                   {
+                       (CrossEventsType.UpdatePlayerState) SetPlayerState,
+                       (CrossEventsType.AskAudioPlayerData) AskAudioPlayerData
+                   };
         }
     }
 }

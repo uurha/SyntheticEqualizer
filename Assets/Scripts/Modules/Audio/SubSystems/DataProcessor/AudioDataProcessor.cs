@@ -17,17 +17,6 @@ namespace Modules.Audio.SubSystems.DataProcessor
         [SerializeField] private float valueMultiplier;
         private ICellVisualBehaviour[] _cellVisualBehaviours;
 
-        public IEnumerable<Delegate> GetSubscribers()
-        {
-            return new Delegate[]
-                   {
-                       (CrossEventsType.OnGridUpdatedEvent) OnGridDataUpdated,
-                       (CrossEventsType.OnAudioAnalyzedDataUpdateEvent) OnAnalyzedDataUpdated,
-                       (CrossEventsType.OnBeatDetectedEvent) OnBeatDetected,
-                       (CrossEventsType.OnBPMChangedEvent) OnBMPChanged
-                   };
-        }
-
         private void OnAnalyzedDataUpdated(float[] levels)
         {
             if (_cellVisualBehaviours == null) return;
@@ -56,6 +45,17 @@ namespace Modules.Audio.SubSystems.DataProcessor
                                    .SelectMany(x => x.RowConfiguration.SelectMany(y => y.GetCells()
                                                   .Select(z => z.VisualBehaviour.Initialize())))
                                    .ToArray();
+        }
+
+        public IEnumerable<Delegate> GetSubscribers()
+        {
+            return new Delegate[]
+                   {
+                       (CrossEventsType.OnGridUpdatedEvent) OnGridDataUpdated,
+                       (CrossEventsType.OnAudioAnalyzedDataUpdateEvent) OnAnalyzedDataUpdated,
+                       (CrossEventsType.OnBeatDetectedEvent) OnBeatDetected,
+                       (CrossEventsType.OnBPMChangedEvent) OnBMPChanged
+                   };
         }
     }
 }

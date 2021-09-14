@@ -43,14 +43,14 @@ namespace Modules.AudioLoader.SubSystems.Loader
             request.Dispose();
         }
 
-        public IEnumerable<Delegate> GetSubscribers()
-        {
-            return new[] {(CrossEventsType.OnAudioLoadRequested) LoadRequested};
-        }
-
         private void LoadRequested(AudioLoaderSettings loaderSettings, Action<AudioDataProgress> action)
         {
             StartCoroutine(FetchAudioClip(loaderSettings, action));
+        }
+
+        public IEnumerable<Delegate> GetSubscribers()
+        {
+            return new[] {(CrossEventsType.OnAudioLoadRequested) LoadRequested};
         }
     }
 }

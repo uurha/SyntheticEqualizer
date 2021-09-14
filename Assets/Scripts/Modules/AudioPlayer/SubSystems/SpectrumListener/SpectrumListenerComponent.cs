@@ -61,23 +61,6 @@ namespace Modules.AudioPlayer.SubSystems.SpectrumListener
                 _spectrum = new float[numberOfSamples];
         }
 
-        public void InvokeEvents()
-        {
-        }
-
-        public void Subscribe(IEnumerable<Delegate> subscribers)
-        {
-            foreach (var spectrumUpdateEvent in subscribers.OfType<CrossEventsType.OnSpectrumListenerDataUpdateEvent>())
-                OnSpectrumDataUpdated += spectrumUpdateEvent;
-        }
-
-        public void Unsubscribe(IEnumerable<Delegate> unsubscribers)
-        {
-            foreach (var spectrumUpdateEvent in
-                unsubscribers.OfType<CrossEventsType.OnSpectrumListenerDataUpdateEvent>())
-                OnSpectrumDataUpdated -= spectrumUpdateEvent;
-        }
-
         private struct MultiplyJob : IJobParallelFor
         {
             private readonly float _multiplier;
@@ -101,6 +84,23 @@ namespace Modules.AudioPlayer.SubSystems.SpectrumListener
             {
                 _output[index] = _input[index] * _multiplier;
             }
+        }
+
+        public void InvokeEvents()
+        {
+        }
+
+        public void Subscribe(IEnumerable<Delegate> subscribers)
+        {
+            foreach (var spectrumUpdateEvent in subscribers.OfType<CrossEventsType.OnSpectrumListenerDataUpdateEvent>())
+                OnSpectrumDataUpdated += spectrumUpdateEvent;
+        }
+
+        public void Unsubscribe(IEnumerable<Delegate> unsubscribers)
+        {
+            foreach (var spectrumUpdateEvent in
+                unsubscribers.OfType<CrossEventsType.OnSpectrumListenerDataUpdateEvent>())
+                OnSpectrumDataUpdated -= spectrumUpdateEvent;
         }
     }
 }

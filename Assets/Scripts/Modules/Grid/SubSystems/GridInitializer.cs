@@ -72,10 +72,6 @@ namespace Modules.Grid.SubSystems
             _gridGenerator.GenerateGrid(OnGridGenerated);
         }
 
-        public void InvokeEvents()
-        {
-        }
-
         private void OnGridGenerated(GridGeneratorOutput gridGeneratorOutput)
         {
             var bufferList = new ICellEntity[columnCount, rowCount];
@@ -103,6 +99,10 @@ namespace Modules.Grid.SubSystems
             _initialPosition = entity.GetOrientation().Position;
             IsInitialized = true;
             onGridChanged?.Invoke(InstancedGrids);
+        }
+
+        public void InvokeEvents()
+        {
         }
 
         public void Subscribe(IEnumerable<Delegate> subscribers)
