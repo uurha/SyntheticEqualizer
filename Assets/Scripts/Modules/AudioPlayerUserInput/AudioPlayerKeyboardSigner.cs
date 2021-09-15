@@ -4,6 +4,7 @@ using System.Linq;
 using Base;
 using CorePlugin.Attributes.Headers;
 using CorePlugin.Cross.Events.Interface;
+using CorePlugin.Extensions;
 using Modules.AudioPlayer.Model;
 using Modules.AudioPlayer.SubSystems.PlayerStates;
 using Modules.AudioPlayer.SubSystems.Playlist;
@@ -72,22 +73,16 @@ namespace Modules.AudioPlayerUserInput
         {
         }
 
-        public void Subscribe(IEnumerable<Delegate> subscribers)
+        public void Subscribe(Delegate[] subscribers)
         {
-            foreach (var askPlaylistClip in subscribers.OfType<CrossEventsType.AskPlaylistClip>())
-                AskPlaylistClip += askPlaylistClip;
-
-            foreach (var updatePlayerState in subscribers.OfType<CrossEventsType.UpdatePlayerState>())
-                UpdatePlayerState += updatePlayerState;
+            AskPlaylistClip += subscribers.Combine<CrossEventsType.AskPlaylistClip>();
+            UpdatePlayerState += subscribers.Combine<CrossEventsType.UpdatePlayerState>();
         }
 
-        public void Unsubscribe(IEnumerable<Delegate> unsubscribers)
+        public void Unsubscribe(Delegate[] unsubscribers)
         {
-            foreach (var askPlaylistClip in unsubscribers.OfType<CrossEventsType.AskPlaylistClip>())
-                AskPlaylistClip -= askPlaylistClip;
-
-            foreach (var updatePlayerState in unsubscribers.OfType<CrossEventsType.UpdatePlayerState>())
-                UpdatePlayerState -= updatePlayerState;
+            AskPlaylistClip -= unsubscribers.Combine<CrossEventsType.AskPlaylistClip>();
+            UpdatePlayerState -= unsubscribers.Combine<CrossEventsType.UpdatePlayerState>();
         }
     }
 }

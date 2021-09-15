@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Base;
 using Base.Deque;
 using CorePlugin.Cross.Events.Interface;
@@ -66,7 +65,7 @@ namespace Modules.AudioPlayer.SubSystems.Playlist
             return clip;
         }
 
-        public IEnumerable<Delegate> GetSubscribers()
+        public Delegate[] GetSubscribers()
         {
             return new[] {(CrossEventsType.AskPlaylistClip) AskPlaylistClip};
         }

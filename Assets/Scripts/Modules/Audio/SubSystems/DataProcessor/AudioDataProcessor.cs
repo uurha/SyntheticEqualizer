@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using Base;
 using Base.BehaviourModel.Interfaces;
@@ -47,7 +46,7 @@ namespace Modules.Audio.SubSystems.DataProcessor
                                    .ToArray();
         }
 
-        public IEnumerable<Delegate> GetSubscribers()
+        public Delegate[] GetSubscribers()
         {
             return new Delegate[]
                    {

@@ -13,6 +13,7 @@
 
 #endregion
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using CorePlugin.Cross.Events.Interface;
@@ -37,7 +38,7 @@ namespace CorePlugin.Core
             if (!UnityExtensions.TryToFindObjectsOfType(out _handlers) ||
                 !UnityExtensions.TryToFindObjectsOfType(out IList<IEventSubscriber> crossEventSubscribers))
                 return;
-            foreach (var crossEventHandler in _handlers) crossEventHandler.Subscribe(crossEventSubscribers.SelectMany(x => x.GetSubscribers()));
+            foreach (var crossEventHandler in _handlers) crossEventHandler.Subscribe(SelectSubscribers(crossEventSubscribers));
         }
 
         /// <summary>
@@ -70,8 +71,13 @@ namespace CorePlugin.Core
             if (!subscriptionsNeeded) return;
 
             if (UnityExtensions.TryToFindObjectsOfType(out IList<IEventSubscriber> crossEventSubscribers))
-                handler.Subscribe(crossEventSubscribers.SelectMany(x => x.GetSubscribers()));
+                handler.Subscribe(SelectSubscribers(crossEventSubscribers));
             if (invokeNeeded) handler.InvokeEvents();
+        }
+
+        private static Delegate[] SelectSubscribers(IEnumerable<IEventSubscriber> crossEventSubscribers)
+        {
+            return crossEventSubscribers.SelectMany(x => x.GetSubscribers()).ToArray();
         }
 
         /// <summary>

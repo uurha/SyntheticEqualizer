@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Base;
 using Base.BaseTypes;
@@ -105,13 +104,13 @@ namespace Modules.Grid.SubSystems
         {
         }
 
-        public void Subscribe(IEnumerable<Delegate> subscribers)
+        public void Subscribe(Delegate[] subscribers)
         {
             foreach (var gridChanged in subscribers.OfType<CrossEventsType.OnGridUpdatedEvent>())
                 onGridChanged += gridChanged;
         }
 
-        public void Unsubscribe(IEnumerable<Delegate> unsubscribers)
+        public void Unsubscribe(Delegate[] unsubscribers)
         {
             foreach (var gridChanged in unsubscribers.OfType<CrossEventsType.OnGridUpdatedEvent>())
                 onGridChanged -= gridChanged;

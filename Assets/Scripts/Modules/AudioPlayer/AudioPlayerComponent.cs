@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using Base;
 using CorePlugin.Attributes.Headers;
@@ -136,7 +135,7 @@ namespace Modules.AudioPlayer
             audioSource.volume = initialVolume;
         }
 
-        public void Subscribe(IEnumerable<Delegate> subscribers)
+        public void Subscribe(Delegate[] subscribers)
         {
             foreach (var audioPlayerStateEvent in subscribers.OfType<CrossEventsType.OnAudioPlayerStateEvent>())
                 OnAudioPlayerState += audioPlayerStateEvent;
@@ -149,7 +148,7 @@ namespace Modules.AudioPlayer
                 OnAudioClipEnded += audioClipEnded;
         }
 
-        public void Unsubscribe(IEnumerable<Delegate> unsubscribers)
+        public void Unsubscribe(Delegate[] unsubscribers)
         {
             foreach (var audioPlayerStateEvent in unsubscribers.OfType<CrossEventsType.OnAudioPlayerStateEvent>())
                 OnAudioPlayerState -= audioPlayerStateEvent;
@@ -162,7 +161,7 @@ namespace Modules.AudioPlayer
                 OnAudioClipEnded -= audioClipEnded;
         }
 
-        public IEnumerable<Delegate> GetSubscribers()
+        public Delegate[] GetSubscribers()
         {
             return new Delegate[]
                    {

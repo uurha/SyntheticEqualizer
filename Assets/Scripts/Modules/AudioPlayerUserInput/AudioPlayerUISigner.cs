@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Base;
 using CorePlugin.Attributes.Headers;
@@ -84,7 +83,7 @@ namespace Modules.AudioPlayerUserInput
         {
         }
 
-        public void Subscribe(IEnumerable<Delegate> subscribers)
+        public void Subscribe(Delegate[] subscribers)
         {
             foreach (var askPlaylistClip in subscribers.OfType<CrossEventsType.AskPlaylistClip>())
                 AskPlaylistClip += askPlaylistClip;
@@ -96,7 +95,7 @@ namespace Modules.AudioPlayerUserInput
                 AskAudioPlayerData += askAudioPlayerData;
         }
 
-        public void Unsubscribe(IEnumerable<Delegate> unsubscribers)
+        public void Unsubscribe(Delegate[] unsubscribers)
         {
             foreach (var askPlaylistClip in unsubscribers.OfType<CrossEventsType.AskPlaylistClip>())
                 AskPlaylistClip -= askPlaylistClip;
@@ -108,7 +107,7 @@ namespace Modules.AudioPlayerUserInput
                 AskAudioPlayerData -= askAudioPlayerData;
         }
 
-        public IEnumerable<Delegate> GetSubscribers()
+        public Delegate[] GetSubscribers()
         {
             return new Delegate[]
                    {

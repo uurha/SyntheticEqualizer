@@ -42,12 +42,12 @@ namespace CorePlugin.Cross.Events.Interface
         /// Subscribing delegates to event
         /// </summary>
         /// <param name="subscribers"></param>
-        public void Subscribe(IEnumerable<Delegate> subscribers);
+        public void Subscribe(Delegate[] subscribers);
 
         /// <summary>
         /// Unsubscribing delegates to event
         /// </summary>
         /// <param name="unsubscribers"></param>
-        public void Unsubscribe(IEnumerable<Delegate> unsubscribers);
+        public void Unsubscribe(Delegate[] unsubscribers);
     }
 }

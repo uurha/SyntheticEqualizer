@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Base;
@@ -59,13 +58,13 @@ namespace Modules.AudioLoader.SubSystems.Loader
         {
         }
 
-        public void Subscribe(IEnumerable<Delegate> subscribers)
+        public void Subscribe(Delegate[] subscribers)
         {
             foreach (var audioLoadRequested in subscribers.OfType<CrossEventsType.OnAudioLoadRequested>())
                 RequestAudioLoad += audioLoadRequested;
         }
 
-        public void Unsubscribe(IEnumerable<Delegate> unsubscribers)
+        public void Unsubscribe(Delegate[] unsubscribers)
         {
             foreach (var audioLoadRequested in unsubscribers.OfType<CrossEventsType.OnAudioLoadRequested>())
                 RequestAudioLoad -= audioLoadRequested;

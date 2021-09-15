@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using Base;
 using CorePlugin.Attributes.Headers;
@@ -43,7 +42,7 @@ namespace Modules.Audio.SubSystems.SpectrumAnalyzer
         {
         }
 
-        public void Subscribe(IEnumerable<Delegate> subscribers)
+        public void Subscribe(Delegate[] subscribers)
         {
             foreach (var onAudioAnalyzedDataUpdated in
                 subscribers.OfType<CrossEventsType.OnAudioAnalyzedDataUpdateEvent>())
@@ -56,7 +55,7 @@ namespace Modules.Audio.SubSystems.SpectrumAnalyzer
                 analyzer.OnBPMChanged += new Action<int>(onBPMChanged);
         }
 
-        public void Unsubscribe(IEnumerable<Delegate> unsubscribers)
+        public void Unsubscribe(Delegate[] unsubscribers)
         {
             foreach (var onSpectrumUpdated in unsubscribers.OfType<CrossEventsType.OnAudioAnalyzedDataUpdateEvent>())
                 analyzer.OnAudioAnalyzedDataUpdated -= new Action<float[]>(onSpectrumUpdated);
@@ -68,7 +67,7 @@ namespace Modules.Audio.SubSystems.SpectrumAnalyzer
                 analyzer.OnBPMChanged -= new Action<int>(onBPMChanged);
         }
 
-        public IEnumerable<Delegate> GetSubscribers()
+        public Delegate[] GetSubscribers()
         {
             return new Delegate[]
                    {
