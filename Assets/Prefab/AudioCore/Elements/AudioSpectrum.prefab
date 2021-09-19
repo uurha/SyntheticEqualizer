@@ -45,10 +45,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bandType: 5
-  numberOfSamples: 1024
-  sensitivity: 0.1
-  sensibility: 8
   fallSpeed: 0.08
+  sensibility: 8
+  sensitivity: 0.005
+  beatCoefficient: 4
 --- !u!114 &8567271021170139056
 MonoBehaviour:
   m_ObjectHideFlags: 0

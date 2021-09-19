@@ -4,6 +4,7 @@ using Base;
 using CorePlugin.Attributes.Headers;
 using CorePlugin.Attributes.Validation;
 using CorePlugin.Cross.Events.Interface;
+using CorePlugin.Extensions;
 using Extensions;
 using Modules.AudioPlayer.Interfaces;
 using Modules.AudioPlayer.Model;
@@ -137,28 +138,16 @@ namespace Modules.AudioPlayer
 
         public void Subscribe(Delegate[] subscribers)
         {
-            foreach (var audioPlayerStateEvent in subscribers.OfType<CrossEventsType.OnAudioPlayerStateEvent>())
-                OnAudioPlayerState += audioPlayerStateEvent;
-
-            foreach (var playbackTime01ChangedEvent in
-                subscribers.OfType<CrossEventsType.OnPlaybackTime01ChangedEvent>())
-                OnPlaybackTime01ChangedEvent += playbackTime01ChangedEvent;
-
-            foreach (var audioClipEnded in subscribers.OfType<CrossEventsType.OnAudioClipEndedEvent>())
-                OnAudioClipEnded += audioClipEnded;
+            OnAudioPlayerState += subscribers.Combine<CrossEventsType.OnAudioPlayerStateEvent>();
+            OnPlaybackTime01ChangedEvent += subscribers.Combine<CrossEventsType.OnPlaybackTime01ChangedEvent>();
+            OnAudioClipEnded += subscribers.Combine<CrossEventsType.OnAudioClipEndedEvent>();
         }
 
         public void Unsubscribe(Delegate[] unsubscribers)
         {
-            foreach (var audioPlayerStateEvent in unsubscribers.OfType<CrossEventsType.OnAudioPlayerStateEvent>())
-                OnAudioPlayerState -= audioPlayerStateEvent;
-
-            foreach (var playbackTime01ChangedEvent in unsubscribers
-               .OfType<CrossEventsType.OnPlaybackTime01ChangedEvent>())
-                OnPlaybackTime01ChangedEvent -= playbackTime01ChangedEvent;
-
-            foreach (var audioClipEnded in unsubscribers.OfType<CrossEventsType.OnAudioClipEndedEvent>())
-                OnAudioClipEnded -= audioClipEnded;
+            OnAudioPlayerState -= unsubscribers.Combine<CrossEventsType.OnAudioPlayerStateEvent>();
+            OnPlaybackTime01ChangedEvent -= unsubscribers.Combine<CrossEventsType.OnPlaybackTime01ChangedEvent>();
+            OnAudioClipEnded -= unsubscribers.Combine<CrossEventsType.OnAudioClipEndedEvent>();
         }
 
         public Delegate[] GetSubscribers()

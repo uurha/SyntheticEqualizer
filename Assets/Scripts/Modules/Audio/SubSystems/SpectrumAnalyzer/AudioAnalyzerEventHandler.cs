@@ -3,6 +3,7 @@ using System.Linq;
 using Base;
 using CorePlugin.Attributes.Headers;
 using CorePlugin.Cross.Events.Interface;
+using CorePlugin.Extensions;
 using Modules.AudioPlayer.Model;
 using UnityEngine;
 
@@ -47,7 +48,7 @@ namespace Modules.Audio.SubSystems.SpectrumAnalyzer
             foreach (var onAudioAnalyzedDataUpdated in
                 subscribers.OfType<CrossEventsType.OnAudioAnalyzedDataUpdateEvent>())
                 analyzer.OnAudioAnalyzedDataUpdated += new Action<float[]>(onAudioAnalyzedDataUpdated);
-
+            
             foreach (var onBeatDetected in subscribers.OfType<CrossEventsType.OnBeatDetectedEvent>())
                 analyzer.OnBeatEvent += new Action(onBeatDetected);
 

@@ -18,58 +18,24 @@ namespace Modules.Audio.SubSystems.SpectrumAnalyzer
         [SerializeField] private float fallSpeed = 0.08f;
         [SerializeField] private float sensibility = 8.0f;
         [SerializeField] private float sensitivity = 0.1f;
+        [SerializeField] private int beatCoefficient = 4;
 
-        // log-frequency averaging controls 
-
-        private readonly int _blipDelayLen = 16;
-
-        // storage space 
-        private readonly int _colMax = 120;
-
-        // smoothing constant for running average
-        private readonly float _decay = 0.997f;
-
-        /* Autocorrelation structure */
-        // (in frames) largest lag to track
-        private readonly int _maxlag = 100;
-        private float[] _actualValues;
-
-        // trade-off constant between tempo deviation penalty and onset strength
-        private float _alpha;
         private bool _analysingState;
-        private AutoCorrelation _autoCorrelation;
-
-        private BitRateData _bitRateData;
-        private int[] _blipDelay;
-        private float[] _doBeat;
-
-        private float _framePeriod;
-
-        private int _lastBPM;
 
         private float[] _levels;
         private float[] _meanLevels;
+        private float[] _spectrum;
 
-        // time index for circular buffer within above
-        private int _now;
         private int _numberOfSamples;
         private Action<float[]> _onAudioAnalyzedDataUpdated;
-
         private Action _onBeat;
         private Action<int> _onBPMChanged;
-        private float[] _onsets;
+
         private float[] _peakLevels;
 
-        // fft sampling frequency
-        private int _samplingRate;
-        private float[] _scoreFun;
+        private BeatDetector _beatDetector;
 
-        // counter to suppress double-beats
-        private int _sinceLast;
-
-        // the spectrum of the previous step
-        private float[] _spec;
-        private float[] _spectrum;
+        private int _lastBPM;
 
         private static readonly float[][] middleFrequenciesForBands =
         {
@@ -157,7 +123,7 @@ namespace Modules.Audio.SubSystems.SpectrumAnalyzer
             _meanLevels = new float[bandCount];
         }
 
-        private void ComputeAverages(float[] data)
+        private void ComputeSpectrum(float[] data)
         {
             var middleFrequencies = middleFrequenciesForBands[(int) bandType];
             var bandwidth = bandWidthForBands[(int) bandType];
@@ -176,58 +142,25 @@ namespace Modules.Audio.SubSystems.SpectrumAnalyzer
             }
         }
 
-        public float Constrain(float value, float inclusiveMinimum, float inclusiveMaximum)
-        {
-            if (!(value >= inclusiveMinimum)) return inclusiveMinimum;
-            return value <= inclusiveMaximum ? value : inclusiveMaximum;
-        }
-
         private int FrequencyToSpectrumIndex(float f)
         {
             var i = Mathf.FloorToInt(f / AudioSettings.outputSampleRate * 2.0f * _spectrum.Length);
             return Mathf.Clamp(i, 0, _spectrum.Length - 1);
         }
 
-        private long GetCurrentTimeMillis()
-        {
-            var milliseconds = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
-            return milliseconds;
-        }
-
-        private void InitArrays()
-        {
-            _blipDelay = new int[_blipDelayLen];
-            _onsets = new float[_colMax];
-            _scoreFun = new float[_colMax];
-            _doBeat = new float[_colMax];
-            _actualValues = new float[_maxlag];
-            CheckAnalyzedArrays();
-            _alpha = 100 * sensitivity;
-        }
-
         /// <summary>
-        ///     Use this for initialization
+        /// Use this for initialization
         /// </summary>
-        public void InitializeAudio(int frequency, int numberOfSamples)
+        public void InitializeAudio(int samplingRate, int numberOfSamples)
         {
-            InitArrays();
-            _bitRateData = new BitRateData {LastT = GetCurrentTimeMillis()};
-            _samplingRate = frequency;
+            CheckAnalyzedArrays();
+            _lastBPM = 0;
+
+            var data = new BeatDetector.InitializingData(samplingRate, numberOfSamples, beatCoefficient, sensitivity);
+            
+            _beatDetector = new BeatDetector(data);
             _numberOfSamples = numberOfSamples;
-            _framePeriod = _numberOfSamples / (float) _samplingRate;
-
-            // initialize record of previous spectrum
-            var bandCount = middleFrequenciesForBands[(int) bandType].Length;
-            _spec = new float[bandCount];
-            for (var i = 0; i < bandCount; ++i) _spec[i] = 100.0f;
-            var bandWidth = bandWidthForBands[(int) bandType];
-            _autoCorrelation = new AutoCorrelation(_maxlag, _decay, _framePeriod, bandWidth);
             IsInitialized = true;
-        }
-
-        private float Map(float s, float a1, float a2, float b1, float b2)
-        {
-            return b1 + (s - a1) * (b2 - b1) / (a2 - a1);
         }
 
         public void OnSpectrumReceived(float[] spectrum)
@@ -235,115 +168,10 @@ namespace Modules.Audio.SubSystems.SpectrumAnalyzer
             if (!IsInitialized) return;
             if (!_analysingState) return;
             _spectrum = spectrum;
-            ComputeAverages(_spectrum);
+            ComputeSpectrum(_spectrum);
             _onAudioAnalyzedDataUpdated?.Invoke(_meanLevels);
-
-            // calculate the value of the onset function in this frame 
-            float onset = 0;
-            var bandCount = middleFrequenciesForBands[(int) bandType].Length;
-
-            for (var i = 0; i < bandCount; i++)
-            {
-                var specVal =
-                    Math.Max(-100.0f,
-                             20.0f * (float) Math.Log10(_meanLevels[i]) + 160); // dB value of this band
-                specVal *= 0.025f;
-
-                // dB increment since last frame
-                var dbInc = specVal - _spec[i];
-
-                // record this from to use next time around
-                _spec[i] = specVal;
-
-                // onset function is the sum of dB increments        
-                onset += dbInc;
-            }
-            _onsets[_now] = onset;
-
-            // update auto correlator and find peak lag = current tempo 
-            _autoCorrelation.NewVal(onset);
-
-            // record largest value in (weighted) autocorrelation as it will be the tempo
-            var aMax = 0.0f;
-            var tempopd = 0;
-
-            for (var i = 0; i < _maxlag; ++i)
-            {
-                var acVal = (float) Math.Sqrt(_autoCorrelation.AutoCorrelator(i));
-
-                if (acVal > aMax)
-                {
-                    aMax = acVal;
-                    tempopd = i;
-                }
-
-                // store in array backwards, so it displays right-to-left, in line with traces
-                _actualValues[_maxlag - 1 - i] = acVal;
-            }
-
-            // calculate DP-ish function to update the best-score function 
-            float sMax = -999999;
-            int smaxix;
-
-            // weight can be varied dynamically with the mouse
-            _alpha = 100 * sensitivity;
-
-            // consider all possible preceding beat times from 0.5 to 2.0 x current tempo period
-            for (var i = tempopd / 2; i < Math.Min(_colMax, 2 * tempopd); ++i)
-            {
-                // objective function - this beat's cost + score to last beat + transition penalty
-                var score = onset + _scoreFun[(_now - i + _colMax) % _colMax] -
-                            _alpha * (float) Math.Pow(Math.Log(i / (float) tempopd), 2);
-
-                // keep track of the best-scoring predecessor
-                if (!(score > sMax)) continue;
-                sMax = score;
-            }
-            _scoreFun[_now] = sMax;
-
-            // keep the smallest value in the score fn window as zero, by substring the min val
-            var sMin = _scoreFun[0];
-
-            for (var i = 0; i < _colMax; ++i)
-                if (_scoreFun[i] < sMin)
-                    sMin = _scoreFun[i];
-            for (var i = 0; i < _colMax; ++i) _scoreFun[i] -= sMin;
-
-            // find the largest value in the score fn window, to decide if we emit a blip 
-            sMax = _scoreFun[0];
-            smaxix = 0;
-
-            for (var i = 0; i < _colMax; ++i)
-            {
-                if (!(_scoreFun[i] > sMax)) continue;
-                sMax = _scoreFun[i];
-                smaxix = i;
-            }
-
-            // do beat array records where we actually place beats
-            _doBeat[_now] = 0; // default is no beat this frame
-            ++_sinceLast;
-
-            // if current value is largest in the array, probably means we're on a beat
-            if (smaxix == _now)
-
-                // TapTempo();
-                // make sure the most recent beat wasn't too recently
-                if (_sinceLast > tempopd / 4)
-                {
-                    _onBeat?.Invoke();
-                    _blipDelay[0] = 1;
-
-                    // record that we did actually mark a beat this frame
-                    _doBeat[_now] = 1;
-
-                    // reset counter of frames since last beat
-                    _sinceLast = 0;
-                }
-
-            // update column index (for ring buffer) 
-            if (++_now == _colMax) _now = 0;
-            var bpm = (int) Math.Round(60 / (tempopd * _framePeriod));
+            var beatDetected = _beatDetector.CalculateBeat(_spectrum, out var bpm);
+            if (beatDetected) _onBeat?.Invoke();
             if (_lastBPM == bpm) return;
             _lastBPM = bpm;
             _onBPMChanged?.Invoke(_lastBPM);
@@ -352,72 +180,6 @@ namespace Modules.Audio.SubSystems.SpectrumAnalyzer
         public void SetStateAnalyzing(bool state)
         {
             _analysingState = state;
-        }
-
-        public void TapTempo()
-        {
-            _bitRateData.NowT = GetCurrentTimeMillis();
-            _bitRateData.Diff = _bitRateData.NowT - _bitRateData.LastT;
-            _bitRateData.LastT = _bitRateData.NowT;
-            _bitRateData.Sum += _bitRateData.Diff;
-            _bitRateData.Entries++;
-            var average = (int) (_bitRateData.Sum / _bitRateData.Entries);
-            Debug.Log("average = " + average);
-        }
-
-        // class to compute an array of online auto correlators
-        private class AutoCorrelation
-        {
-            private readonly float _decay;
-            private readonly float[] _delays;
-            private readonly int _delLength;
-            private readonly float[] _outputs;
-
-            private readonly float[] _weight;
-            private readonly float _weightMiddleBPM = 120f;
-            private int _index;
-
-            public AutoCorrelation(int len, float decay, float framePeriod, float bandwidth)
-            {
-                _decay = decay;
-                _delLength = len;
-                _delays = new float[_delLength];
-                _outputs = new float[_delLength];
-                _index = 0;
-
-                // calculate a log-lag gaussian weighting function, to prefer tempi around 120 bpm
-                _weight = new float[_delLength];
-
-                for (var i = 0; i < _delLength; ++i)
-                {
-                    var bpm = 60.0f / (framePeriod * i);
-
-                    // weighting is Gaussian on log-BPM axis, centered at weight middle BPM, SD = woctavewidth octaves
-                    _weight[i] =
-                        (float) Math.Exp(-0.5f * Math.Pow(Math.Log(bpm / _weightMiddleBPM) / Math.Log(2.0f) / bandwidth,
-                                                          2.0f));
-                }
-            }
-
-            public void NewVal(float val)
-            {
-                _delays[_index] = val;
-
-                // update running auto correlator values
-                for (var i = 0; i < _delLength; ++i)
-                {
-                    var delix = (_index - i + _delLength) % _delLength;
-                    _outputs[i] += (1 - _decay) * (_delays[_index] * _delays[delix] - _outputs[i]);
-                }
-                if (++_index == _delLength) _index = 0;
-            }
-
-            // read back the current auto correlator value at a particular lag
-            public float AutoCorrelator(int del)
-            {
-                var correlated = _weight[del] * _outputs[del];
-                return correlated;
-            }
         }
     }
 }

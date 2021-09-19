@@ -4,6 +4,7 @@ using System.Linq;
 using Base;
 using CorePlugin.Attributes.Headers;
 using CorePlugin.Cross.Events.Interface;
+using CorePlugin.Extensions;
 using Extensions;
 using Modules.AudioLoader.Model;
 using Modules.AudioPlayer.SubSystems.Playlist;
@@ -60,14 +61,12 @@ namespace Modules.AudioLoader.SubSystems.Loader
 
         public void Subscribe(Delegate[] subscribers)
         {
-            foreach (var audioLoadRequested in subscribers.OfType<CrossEventsType.OnAudioLoadRequested>())
-                RequestAudioLoad += audioLoadRequested;
+            RequestAudioLoad += subscribers.Combine<CrossEventsType.OnAudioLoadRequested>();
         }
 
         public void Unsubscribe(Delegate[] unsubscribers)
         {
-            foreach (var audioLoadRequested in unsubscribers.OfType<CrossEventsType.OnAudioLoadRequested>())
-                RequestAudioLoad -= audioLoadRequested;
+            RequestAudioLoad -= unsubscribers.Combine<CrossEventsType.OnAudioLoadRequested>();
         }
     }
 }

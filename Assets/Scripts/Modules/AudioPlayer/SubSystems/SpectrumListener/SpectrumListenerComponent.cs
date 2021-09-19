@@ -3,6 +3,7 @@ using System.Linq;
 using Base;
 using CorePlugin.Attributes.Headers;
 using CorePlugin.Cross.Events.Interface;
+using CorePlugin.Extensions;
 using Modules.AudioPlayer.Model;
 using Unity.Collections;
 using Unity.Jobs;
@@ -91,15 +92,12 @@ namespace Modules.AudioPlayer.SubSystems.SpectrumListener
 
         public void Subscribe(Delegate[] subscribers)
         {
-            foreach (var spectrumUpdateEvent in subscribers.OfType<CrossEventsType.OnSpectrumListenerDataUpdateEvent>())
-                OnSpectrumDataUpdated += spectrumUpdateEvent;
+            OnSpectrumDataUpdated += subscribers.Combine<CrossEventsType.OnSpectrumListenerDataUpdateEvent>();
         }
 
         public void Unsubscribe(Delegate[] unsubscribers)
         {
-            foreach (var spectrumUpdateEvent in
-                unsubscribers.OfType<CrossEventsType.OnSpectrumListenerDataUpdateEvent>())
-                OnSpectrumDataUpdated -= spectrumUpdateEvent;
+            OnSpectrumDataUpdated -= unsubscribers.Combine<CrossEventsType.OnSpectrumListenerDataUpdateEvent>();
         }
     }
 }

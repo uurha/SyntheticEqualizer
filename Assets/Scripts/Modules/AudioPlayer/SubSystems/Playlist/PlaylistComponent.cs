@@ -47,27 +47,31 @@ namespace Modules.AudioPlayer.SubSystems.Playlist
             return clip;
         }
 
+        private AudioClip _currentClip;
+
         private AudioClip GetNextClip()
         {
             if (_audioClips.IsEmpty) return null;
+            if (_currentClip != null) _audioClips.AddLast(_currentClip);
             var clip = _audioClips.First;
             _audioClips.RemoveFirst();
-            _audioClips.AddLast(clip);
+            _currentClip = clip;
             return clip;
         }
 
         private AudioClip GetPreviousClip()
         {
             if (_audioClips.IsEmpty) return null;
+            if (_currentClip != null) _audioClips.AddFirst(_currentClip);
             var clip = _audioClips.Last;
             _audioClips.RemoveLast();
-            _audioClips.AddFirst(clip);
+            _currentClip = clip;
             return clip;
         }
 
         public Delegate[] GetSubscribers()
         {
-            return new[] {(CrossEventsType.AskPlaylistClip) AskPlaylistClip};
+            return new Delegate[] {(CrossEventsType.AskPlaylistClip) AskPlaylistClip};
         }
     }
 }

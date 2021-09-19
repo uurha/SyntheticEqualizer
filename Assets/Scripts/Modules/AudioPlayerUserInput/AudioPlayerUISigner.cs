@@ -4,6 +4,7 @@ using Base;
 using CorePlugin.Attributes.Headers;
 using CorePlugin.Attributes.Validation;
 using CorePlugin.Cross.Events.Interface;
+using CorePlugin.Extensions;
 using Modules.AudioPlayer.Model;
 using Modules.AudioPlayer.SubSystems.PlayerStates;
 using SubModules.UI;
@@ -85,26 +86,16 @@ namespace Modules.AudioPlayerUserInput
 
         public void Subscribe(Delegate[] subscribers)
         {
-            foreach (var askPlaylistClip in subscribers.OfType<CrossEventsType.AskPlaylistClip>())
-                AskPlaylistClip += askPlaylistClip;
-
-            foreach (var updatePlayerState in subscribers.OfType<CrossEventsType.UpdatePlayerState>())
-                UpdatePlayerState += updatePlayerState;
-
-            foreach (var askAudioPlayerData in subscribers.OfType<CrossEventsType.AskAudioPlayerData>())
-                AskAudioPlayerData += askAudioPlayerData;
+            AskPlaylistClip += subscribers.Combine<CrossEventsType.AskPlaylistClip>();
+            UpdatePlayerState += subscribers.Combine<CrossEventsType.UpdatePlayerState>();
+            AskAudioPlayerData += subscribers.Combine<CrossEventsType.AskAudioPlayerData>();
         }
 
         public void Unsubscribe(Delegate[] unsubscribers)
         {
-            foreach (var askPlaylistClip in unsubscribers.OfType<CrossEventsType.AskPlaylistClip>())
-                AskPlaylistClip -= askPlaylistClip;
-
-            foreach (var updatePlayerState in unsubscribers.OfType<CrossEventsType.UpdatePlayerState>())
-                UpdatePlayerState -= updatePlayerState;
-
-            foreach (var askAudioPlayerData in unsubscribers.OfType<CrossEventsType.AskAudioPlayerData>())
-                AskAudioPlayerData -= askAudioPlayerData;
+            AskPlaylistClip -= unsubscribers.Combine<CrossEventsType.AskPlaylistClip>();
+            UpdatePlayerState -= unsubscribers.Combine<CrossEventsType.UpdatePlayerState>();
+            AskAudioPlayerData -= unsubscribers.Combine<CrossEventsType.AskAudioPlayerData>();
         }
 
         public Delegate[] GetSubscribers()
