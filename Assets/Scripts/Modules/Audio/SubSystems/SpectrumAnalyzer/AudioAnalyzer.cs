@@ -155,9 +155,7 @@ namespace Modules.Audio.SubSystems.SpectrumAnalyzer
         {
             CheckAnalyzedArrays();
             _lastBPM = 0;
-
             var data = new BeatDetector.InitializingData(samplingRate, numberOfSamples, beatCoefficient, sensitivity);
-            
             _beatDetector = new BeatDetector(data);
             _numberOfSamples = numberOfSamples;
             IsInitialized = true;

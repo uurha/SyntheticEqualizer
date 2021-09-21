@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using Base;
 using CorePlugin.Attributes.Headers;
 using CorePlugin.Attributes.Validation;
@@ -66,15 +65,12 @@ namespace Modules.AudioPlayer
         {
             if (!IsPlaying) return;
             OnPlaybackTime01ChangedEvent?.Invoke(Time01);
-
-            if (WaitUntilEnd())
-            {
-                OnAudioClipEnded?.Invoke();
-                Stop();
-            }
+            if (!WaitUntilEnd()) return;
+            OnAudioClipEnded?.Invoke();
+            Stop();
         }
 
-        private AudioPlayerData AskAudioPlayerData()
+        private AudioPlayerData RequestAudioPlayerData()
         {
             return new AudioPlayerData(this);
         }
@@ -136,18 +132,18 @@ namespace Modules.AudioPlayer
             audioSource.volume = initialVolume;
         }
 
-        public void Subscribe(Delegate[] subscribers)
+        public void Subscribe(params Delegate[] subscribers)
         {
-            OnAudioPlayerState += subscribers.Combine<CrossEventsType.OnAudioPlayerStateEvent>();
-            OnPlaybackTime01ChangedEvent += subscribers.Combine<CrossEventsType.OnPlaybackTime01ChangedEvent>();
-            OnAudioClipEnded += subscribers.Combine<CrossEventsType.OnAudioClipEndedEvent>();
+            EventExtensions.Subscribe(ref OnAudioPlayerState, subscribers);
+            EventExtensions.Subscribe(ref OnPlaybackTime01ChangedEvent, subscribers);
+            EventExtensions.Subscribe(ref OnAudioClipEnded, subscribers);
         }
 
-        public void Unsubscribe(Delegate[] unsubscribers)
+        public void Unsubscribe(params Delegate[] unsubscribers)
         {
-            OnAudioPlayerState -= unsubscribers.Combine<CrossEventsType.OnAudioPlayerStateEvent>();
-            OnPlaybackTime01ChangedEvent -= unsubscribers.Combine<CrossEventsType.OnPlaybackTime01ChangedEvent>();
-            OnAudioClipEnded -= unsubscribers.Combine<CrossEventsType.OnAudioClipEndedEvent>();
+            EventExtensions.Unsubscribe(ref OnAudioPlayerState, unsubscribers);
+            EventExtensions.Unsubscribe(ref OnPlaybackTime01ChangedEvent, unsubscribers);
+            EventExtensions.Unsubscribe(ref OnAudioClipEnded, unsubscribers);
         }
 
         public Delegate[] GetSubscribers()
@@ -155,7 +151,7 @@ namespace Modules.AudioPlayer
             return new Delegate[]
                    {
                        (CrossEventsType.UpdatePlayerState) SetPlayerState,
-                       (CrossEventsType.AskAudioPlayerData) AskAudioPlayerData
+                       (CrossEventsType.RequestAudioPlayerData) RequestAudioPlayerData
                    };
         }
     }

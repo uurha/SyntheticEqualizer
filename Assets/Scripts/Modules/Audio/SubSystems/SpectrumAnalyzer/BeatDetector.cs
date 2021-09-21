@@ -5,25 +5,6 @@ namespace Modules.Audio.SubSystems.SpectrumAnalyzer
 {
     public class BeatDetector
     {
-        public struct InitializingData
-        {
-            public int SamplingRate { get; }
-            public int NumberOfSamples { get; }
-            public int BeatCoefficient { get; }
-            public float Sensitivity { get; }
-            
-            public float BandWidth { get; }
-
-            public InitializingData(int samplingRate, int numberOfSamples, int beatCoefficient, float sensitivity)
-            {
-                SamplingRate = samplingRate;
-                NumberOfSamples = numberOfSamples;
-                BeatCoefficient = beatCoefficient;
-                Sensitivity = sensitivity;
-                BandWidth = 2f / numberOfSamples * (samplingRate / 2f);
-            }
-        }
-        
         // log-frequency averaging controls 
         private readonly int _blipDelayLen = 16;
 
@@ -31,6 +12,7 @@ namespace Modules.Audio.SubSystems.SpectrumAnalyzer
 
         // smoothing constant for running average
         private readonly float _decay = 0.997f;
+        private readonly float _framePeriod;
 
         // (in frames) largest lag to track
         private readonly int _maxlag = 100;
@@ -41,12 +23,11 @@ namespace Modules.Audio.SubSystems.SpectrumAnalyzer
         private int _beatsBand = 12;
 
         private BitRateData _bitRateData;
-        private InitializingData _data;
-        
+
         // counter to suppress double-beats
         private int[] _blipDelay;
+        private InitializingData _data;
         private float[] _doBeat;
-        private readonly float _framePeriod;
         private int _now;
         private float[] _onsets;
         private float[] _scoreFun;
@@ -57,18 +38,16 @@ namespace Modules.Audio.SubSystems.SpectrumAnalyzer
         {
             InitArrays();
             _data = new InitializingData(samplingRate, numberOfSamples, beatCoefficient, sensitivity);
-            
             _bitRateData = new BitRateData {LastT = GetCurrentTimeMillis()};
             _framePeriod = _data.NumberOfSamples / (float) _data.SamplingRate;
             _autoCorrelation = new AutoCorrelation(_maxlag, _decay, _framePeriod, _data.BandWidth);
             for (var i = 0; i < _beatsBand; ++i) _spec[i] = 100.0f;
         }
-        
+
         public BeatDetector(InitializingData data)
         {
             InitArrays();
             _data = data;
-            
             _bitRateData = new BitRateData {LastT = GetCurrentTimeMillis()};
             _framePeriod = _data.NumberOfSamples / (float) _data.SamplingRate;
             _autoCorrelation = new AutoCorrelation(_maxlag, _decay, _framePeriod, _data.BandWidth);
@@ -119,7 +98,6 @@ namespace Modules.Audio.SubSystems.SpectrumAnalyzer
         public bool CalculateBeat(float[] spectrum, out int bpm)
         {
             ComputeAverages(spectrum);
-
             float onset = 0;
 
             for (var i = 0; i < _beatsBand; i++)
@@ -132,9 +110,7 @@ namespace Modules.Audio.SubSystems.SpectrumAnalyzer
                 onset += dbInc;
             }
             _onsets[_now] = onset;
-            
             _autoCorrelation.NewVal(onset);
-
             var aMax = 0.0f;
             var tempopd = 0;
 
@@ -147,10 +123,8 @@ namespace Modules.Audio.SubSystems.SpectrumAnalyzer
                     aMax = acVal;
                     tempopd = i;
                 }
-
                 _actualValues[_maxlag - 1 - i] = acVal;
             }
-            
             var smax = float.MinValue;
             var smaxix = 0;
 
@@ -165,11 +139,10 @@ namespace Modules.Audio.SubSystems.SpectrumAnalyzer
                     smaxix = i;
                 }
             }
-            
             _scoreFun[_now] = smax;
             var smin = _scoreFun[0];
             smaxix = 0;
-            
+
             for (var i = 0; i < _colMax; ++i)
                 if (_scoreFun[i] < smin)
                     smin = _scoreFun[i];
@@ -184,22 +157,18 @@ namespace Modules.Audio.SubSystems.SpectrumAnalyzer
                 }
             _doBeat[_now] = 0;
             ++_sinceLast;
-
             var beat = false;
+
             if (smaxix == _now)
                 if (_sinceLast > tempopd / _data.BeatCoefficient)
                 {
                     beat = true;
                     _blipDelay[0] = 1;
-
                     _doBeat[_now] = 1;
-                    
                     _sinceLast = 0;
                 }
-            
             if (++_now == _colMax) _now = 0;
             bpm = Mathf.RoundToInt(60 / (tempopd * _framePeriod));
-
             return beat;
         }
 
@@ -218,7 +187,6 @@ namespace Modules.Audio.SubSystems.SpectrumAnalyzer
                 var lowBound = FreqToIndex(lowFreq);
                 var hiBound = FreqToIndex(hiFreq);
                 for (var j = lowBound; j <= hiBound; j++) avg += data[j];
-                
                 avg /= hiBound - lowBound + 1;
                 _averages[i] = avg;
             }
@@ -228,11 +196,30 @@ namespace Modules.Audio.SubSystems.SpectrumAnalyzer
         {
             if (freq < _data.BandWidth / 2) return 0;
 
-            if (freq > Mathf.RoundToInt(_data.SamplingRate / 2f) - _data.BandWidth / 2) return _data.NumberOfSamples / 2;
-
+            if (freq > Mathf.RoundToInt(_data.SamplingRate / 2f) - _data.BandWidth / 2)
+                return _data.NumberOfSamples / 2;
             var fraction = freq / (float) _data.SamplingRate;
             var i = (int) Math.Round(_data.NumberOfSamples * fraction);
             return i;
+        }
+
+        public struct InitializingData
+        {
+            public int SamplingRate { get; }
+            public int NumberOfSamples { get; }
+            public int BeatCoefficient { get; }
+            public float Sensitivity { get; }
+
+            public float BandWidth { get; }
+
+            public InitializingData(int samplingRate, int numberOfSamples, int beatCoefficient, float sensitivity)
+            {
+                SamplingRate = samplingRate;
+                NumberOfSamples = numberOfSamples;
+                BeatCoefficient = beatCoefficient;
+                Sensitivity = sensitivity;
+                BandWidth = 2f / numberOfSamples * (samplingRate / 2f);
+            }
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using Base;
 using CorePlugin.Attributes.Headers;
 using CorePlugin.Cross.Events.Interface;
@@ -90,14 +89,14 @@ namespace Modules.AudioPlayer.SubSystems.SpectrumListener
         {
         }
 
-        public void Subscribe(Delegate[] subscribers)
+        public void Subscribe(params Delegate[] subscribers)
         {
-            OnSpectrumDataUpdated += subscribers.Combine<CrossEventsType.OnSpectrumListenerDataUpdateEvent>();
+            EventExtensions.Subscribe(ref OnSpectrumDataUpdated, subscribers);
         }
 
-        public void Unsubscribe(Delegate[] unsubscribers)
+        public void Unsubscribe(params Delegate[] unsubscribers)
         {
-            OnSpectrumDataUpdated -= unsubscribers.Combine<CrossEventsType.OnSpectrumListenerDataUpdateEvent>();
+            EventExtensions.Unsubscribe(ref OnSpectrumDataUpdated, unsubscribers);
         }
     }
 }

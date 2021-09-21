@@ -17,6 +17,8 @@ namespace Modules.AudioPlayer.SubSystems.Playlist
     {
         private Deque<AudioClip> _audioClips;
 
+        private AudioClip _currentClip;
+
         private void Awake()
         {
             _audioClips = new Deque<AudioClip>();
@@ -26,28 +28,6 @@ namespace Modules.AudioPlayer.SubSystems.Playlist
         {
             _audioClips.AddLast(clip);
         }
-
-        private AudioClip AskPlaylistClip(PlaylistDirection direction)
-        {
-            AudioClip clip = null;
-
-            switch (direction)
-            {
-                case PlaylistDirection.Previous:
-                    clip = GetPreviousClip();
-                    break;
-                case PlaylistDirection.None:
-                    break;
-                case PlaylistDirection.Next:
-                    clip = GetNextClip();
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(direction), direction, null);
-            }
-            return clip;
-        }
-
-        private AudioClip _currentClip;
 
         private AudioClip GetNextClip()
         {
@@ -69,9 +49,29 @@ namespace Modules.AudioPlayer.SubSystems.Playlist
             return clip;
         }
 
+        private AudioClip RequestPlaylistClip(PlaylistDirection direction)
+        {
+            AudioClip clip = null;
+
+            switch (direction)
+            {
+                case PlaylistDirection.Previous:
+                    clip = GetPreviousClip();
+                    break;
+                case PlaylistDirection.None:
+                    break;
+                case PlaylistDirection.Next:
+                    clip = GetNextClip();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(direction), direction, null);
+            }
+            return clip;
+        }
+
         public Delegate[] GetSubscribers()
         {
-            return new Delegate[] {(CrossEventsType.AskPlaylistClip) AskPlaylistClip};
+            return new Delegate[] {(CrossEventsType.RequestPlaylistClip) RequestPlaylistClip};
         }
     }
 }

@@ -5,11 +5,11 @@ namespace Modules.AudioPlayer.SubSystems.PlayerStates
 {
     public struct SwitchPlayState : IPlayerState
     {
-        private CrossEventsType.AskPlaylistClip AskPlaylistClip;
+        private CrossEventsType.RequestPlaylistClip RequestPlaylistClip;
 
-        public SwitchPlayState(CrossEventsType.AskPlaylistClip askPlaylistClip)
+        public SwitchPlayState(CrossEventsType.RequestPlaylistClip requestPlaylistClip)
         {
-            AskPlaylistClip = askPlaylistClip;
+            RequestPlaylistClip = requestPlaylistClip;
         }
 
         public void Execute(IAudioPlayer audioPlayer)
@@ -19,7 +19,7 @@ namespace Modules.AudioPlayer.SubSystems.PlayerStates
             if (audioPlayer.IsPlaying)
                 playerState = new StopState();
             else
-                playerState = new PlayState(AskPlaylistClip);
+                playerState = new PlayState(RequestPlaylistClip);
             playerState.Execute(audioPlayer);
         }
     }

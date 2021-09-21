@@ -10,10 +10,6 @@ namespace Base
 {
     public static class CrossEventsType
     {
-        public delegate AudioPlayerData AskAudioPlayerData();
-
-        public delegate AudioClip AskPlaylistClip(PlaylistDirection direction);
-
         public delegate void OnAudioAnalyzedDataUpdateEvent(float[] data);
 
         public delegate void OnAudioClipEndedEvent();
@@ -31,6 +27,10 @@ namespace Base
         public delegate void OnPlaybackTime01ChangedEvent(float data);
 
         public delegate void OnSpectrumListenerDataUpdateEvent(SpectrumListenerData listenerData);
+
+        public delegate AudioPlayerData RequestAudioPlayerData();
+
+        public delegate AudioClip RequestPlaylistClip(PlaylistDirection direction);
 
         public delegate void UpdatePlayerState(IPlayerState playerState);
     }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using Base;
 using CorePlugin.Attributes.Headers;
 using CorePlugin.Cross.Events.Interface;
@@ -59,14 +58,14 @@ namespace Modules.AudioLoader.SubSystems.Loader
         {
         }
 
-        public void Subscribe(Delegate[] subscribers)
+        public void Subscribe(params Delegate[] subscribers)
         {
-            RequestAudioLoad += subscribers.Combine<CrossEventsType.OnAudioLoadRequested>();
+            EventExtensions.Subscribe(ref RequestAudioLoad, subscribers);
         }
 
-        public void Unsubscribe(Delegate[] unsubscribers)
+        public void Unsubscribe(params Delegate[] unsubscribers)
         {
-            RequestAudioLoad -= unsubscribers.Combine<CrossEventsType.OnAudioLoadRequested>();
+            EventExtensions.Unsubscribe(ref RequestAudioLoad, unsubscribers);
         }
     }
 }

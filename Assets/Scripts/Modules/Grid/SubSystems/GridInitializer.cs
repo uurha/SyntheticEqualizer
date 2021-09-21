@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using Base;
 using Base.BaseTypes;
 using Base.Deque;
@@ -105,14 +104,14 @@ namespace Modules.Grid.SubSystems
         {
         }
 
-        public void Subscribe(Delegate[] subscribers)
+        public void Subscribe(params Delegate[] subscribers)
         {
-            OnGridChanged += subscribers.Combine<CrossEventsType.OnGridUpdatedEvent>();
+            EventExtensions.Subscribe(ref OnGridChanged, subscribers);
         }
 
-        public void Unsubscribe(Delegate[] unsubscribers)
+        public void Unsubscribe(params Delegate[] unsubscribers)
         {
-            OnGridChanged -= unsubscribers.Combine<CrossEventsType.OnGridUpdatedEvent>();
+            EventExtensions.Unsubscribe(ref OnGridChanged, unsubscribers);
         }
     }
 }

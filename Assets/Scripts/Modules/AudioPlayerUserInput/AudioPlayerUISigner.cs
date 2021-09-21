@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using Base;
 using CorePlugin.Attributes.Headers;
 using CorePlugin.Attributes.Validation;
@@ -30,8 +29,8 @@ namespace Modules.AudioPlayerUserInput
         private ISlider<float> _volumeSlider;
 
         private event CrossEventsType.UpdatePlayerState UpdatePlayerState;
-        private event CrossEventsType.AskPlaylistClip AskPlaylistClip;
-        private event CrossEventsType.AskAudioPlayerData AskAudioPlayerData;
+        private event CrossEventsType.RequestPlaylistClip RequestPlaylistClip;
+        private event CrossEventsType.RequestAudioPlayerData RequestAudioPlayerData;
 
         private void Awake()
         {
@@ -45,7 +44,7 @@ namespace Modules.AudioPlayerUserInput
             _playButton.OnClick += SwitchPlay;
             _playbackSlider.OnValueChanged += SetPlaybackTime01;
             _volumeSlider.OnValueChanged += UpdateVolume;
-            var data = AskAudioPlayerData?.Invoke();
+            var data = RequestAudioPlayerData?.Invoke();
             if (data.HasValue) SetVolume(data.Value.Volume);
         }
 
@@ -71,7 +70,7 @@ namespace Modules.AudioPlayerUserInput
 
         private void SwitchPlay()
         {
-            UpdatePlayerState?.Invoke(new SwitchPlayState(AskPlaylistClip));
+            UpdatePlayerState?.Invoke(new SwitchPlayState(RequestPlaylistClip));
         }
 
         private void UpdateVolume(float value)
@@ -84,18 +83,18 @@ namespace Modules.AudioPlayerUserInput
         {
         }
 
-        public void Subscribe(Delegate[] subscribers)
+        public void Subscribe(params Delegate[] subscribers)
         {
-            AskPlaylistClip += subscribers.Combine<CrossEventsType.AskPlaylistClip>();
-            UpdatePlayerState += subscribers.Combine<CrossEventsType.UpdatePlayerState>();
-            AskAudioPlayerData += subscribers.Combine<CrossEventsType.AskAudioPlayerData>();
+            EventExtensions.Subscribe(ref RequestPlaylistClip, subscribers);
+            EventExtensions.Subscribe(ref UpdatePlayerState, subscribers);
+            EventExtensions.Subscribe(ref RequestAudioPlayerData, subscribers);
         }
 
-        public void Unsubscribe(Delegate[] unsubscribers)
+        public void Unsubscribe(params Delegate[] unsubscribers)
         {
-            AskPlaylistClip -= unsubscribers.Combine<CrossEventsType.AskPlaylistClip>();
-            UpdatePlayerState -= unsubscribers.Combine<CrossEventsType.UpdatePlayerState>();
-            AskAudioPlayerData -= unsubscribers.Combine<CrossEventsType.AskAudioPlayerData>();
+            EventExtensions.Unsubscribe(ref RequestPlaylistClip, unsubscribers);
+            EventExtensions.Unsubscribe(ref UpdatePlayerState, unsubscribers);
+            EventExtensions.Unsubscribe(ref RequestAudioPlayerData, unsubscribers);
         }
 
         public Delegate[] GetSubscribers()
