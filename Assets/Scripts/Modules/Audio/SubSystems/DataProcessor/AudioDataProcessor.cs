@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Base;
 using Base.BehaviourModel.Interfaces;
@@ -16,15 +17,15 @@ namespace Modules.Audio.SubSystems.DataProcessor
         [SerializeField] private float valueMultiplier;
         private ICellVisualBehaviour[] _cellVisualBehaviours;
 
-        private void OnAnalyzedDataUpdated(float[] levels)
+        private void OnAnalyzedDataUpdated(List<float[]> data)
         {
             if (_cellVisualBehaviours == null) return;
 
-            var orientations = levels.Select(y =>
-                                             {
-                                                 var position = new Vector3(0, y) * valueMultiplier;
-                                                 return new Orientation(position);
-                                             }).ToArray();
+            var orientations = data[0].Select(y =>
+                                              {
+                                                  var position = new Vector3(0, y) * valueMultiplier;
+                                                  return new Orientation(position);
+                                              }).ToArray();
             foreach (var behaviour in _cellVisualBehaviours) behaviour.RunBehaviour(orientations);
         }
 
@@ -50,10 +51,9 @@ namespace Modules.Audio.SubSystems.DataProcessor
         {
             return new Delegate[]
                    {
-                       (CrossEventsType.OnGridUpdatedEvent) OnGridDataUpdated,
-                       (CrossEventsType.OnAudioAnalyzedDataUpdateEvent) OnAnalyzedDataUpdated,
-                       (CrossEventsType.OnBeatDetectedEvent) OnBeatDetected,
-                       (CrossEventsType.OnBPMChangedEvent) OnBMPChanged
+                       (CrossEvents.OnGridUpdatedEvent) OnGridDataUpdated,
+                       (AudioPlayerEvents.OnAudioAnalyzedDataUpdateEvent) OnAnalyzedDataUpdated,
+                       (BeatDetectionEvents.OnBeatDetectedEvent) OnBeatDetected
                    };
         }
     }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Base;
 using CorePlugin.Attributes.Headers;
 using CorePlugin.Cross.Events.Interface;
@@ -18,46 +19,57 @@ namespace Modules.AudioPlayer.SubSystems.SpectrumListener
         [ReferencesHeader]
         [SerializeField] private AudioSource audioSource;
 
-        [SerializeField] private int channel;
         [SerializeField] private FFTWindow fftWindow = FFTWindow.BlackmanHarris;
 
         [SettingsHeader]
         [SerializeField] private int numberOfSamples = 1024;
 
         private JobHandle _handle;
-        private float[] _spectrum;
+        private List<float[]> _spectrum;
 
-        private event CrossEventsType.OnSpectrumListenerDataUpdateEvent OnSpectrumDataUpdated;
-
-        private void Awake()
-        {
-            CheckSettings();
-        }
+        private event CrossEvents.OnSpectrumListenerDataUpdateEvent OnSpectrumDataUpdated;
 
         private void Update()
         {
             if (!audioPlayer.IsPlaying) return;
             if (!_handle.IsCompleted) return;
-            CheckSettings();
-            audioSource.GetSpectrumData(_spectrum, channel, fftWindow);
-            var volume = audioSource.volume;
-            var multiplier = volume > 0 ? 1 / volume : 0f;
-            var job = new MultiplyJob(_spectrum, multiplier);
-            _handle = job.Schedule(_spectrum.Length, 1);
+            var channels = audioSource.clip.channels;
+            CheckSettings(channels);
+
+            var jobs = new MultiplyJob[channels];
+            for (int channel = 0; channel < channels; channel++)
+            {
+                audioSource.GetSpectrumData(_spectrum[channel], channel, fftWindow);
+                var volume = audioSource.volume;
+                var multiplier = volume > 0 ? 1 / volume : 0f;
+                jobs[channel] = new MultiplyJob(_spectrum[channel], multiplier);
+                var handle = jobs[channel].Schedule(_spectrum.Count, 1);
+                JobHandle.CombineDependencies(_handle, handle);
+                handle.Complete();
+            }
             _handle.Complete();
 
-            var spectrumListenerData =
-                new SpectrumListenerData(audioSource.clip.frequency, numberOfSamples, channel,
-                                         job.Output.ToArray());
-            job.Output.Dispose();
-            OnSpectrumDataUpdated?.Invoke(spectrumListenerData);
+            var spectrumListenerData = new List<float[]>();
+            for (int channel = 0; channel < channels; channel++)
+            {
+                spectrumListenerData.Add(jobs[channel].Output.ToArray());
+                jobs[channel].Output.Dispose();
+            }
+            OnSpectrumDataUpdated?.Invoke(
+                                          new SpectrumListenerData(audioSource.clip.frequency, numberOfSamples, channels,
+                                                                   spectrumListenerData));
         }
 
-        private void CheckSettings()
+        private void CheckSettings(int channels)
         {
             if (_spectrum == null ||
-                _spectrum.Length != numberOfSamples)
-                _spectrum = new float[numberOfSamples];
+                _spectrum.Count != channels)
+                _spectrum = new List<float[]>();
+
+            for (int channel = 0; channel < channels; channel++)
+            {
+                _spectrum.Add(new float[numberOfSamples]);
+            }
         }
 
         private struct MultiplyJob : IJobParallelFor

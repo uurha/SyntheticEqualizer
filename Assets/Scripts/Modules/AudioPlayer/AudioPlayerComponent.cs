@@ -7,6 +7,7 @@ using CorePlugin.Extensions;
 using Extensions;
 using Modules.AudioPlayer.Interfaces;
 using Modules.AudioPlayer.Model;
+using Modules.AudioPlayer.SubSystems.Playlist;
 using UnityEngine;
 
 namespace Modules.AudioPlayer
@@ -22,9 +23,11 @@ namespace Modules.AudioPlayer
 
         private AudioPlayerState _currentState;
 
-        private event CrossEventsType.OnAudioPlayerStateEvent OnAudioPlayerState;
-        private event CrossEventsType.OnAudioClipEndedEvent OnAudioClipEnded;
-        private event CrossEventsType.OnPlaybackTime01ChangedEvent OnPlaybackTime01ChangedEvent;
+        private event AudioPlayerEvents.OnAudioPlayerStateEvent OnAudioPlayerState;
+        private event AudioPlayerEvents.RequestPlaylistClip RequestPlaylistClip;
+        private event AudioPlayerEvents.OnPlaybackTime01ChangedEvent OnPlaybackTime01ChangedEvent;
+        
+        private event AudioPlayerEvents.OnAudioClipChanged OnAudioClipChanged;
 
         public AudioClip Clip => audioSource.clip;
 
@@ -66,8 +69,7 @@ namespace Modules.AudioPlayer
             if (!IsPlaying) return;
             OnPlaybackTime01ChangedEvent?.Invoke(Time01);
             if (!WaitUntilEnd()) return;
-            OnAudioClipEnded?.Invoke();
-            Stop();
+            Play(RequestPlaylistClip?.Invoke(PlaylistDirection.Next));
         }
 
         private AudioPlayerData RequestAudioPlayerData()
@@ -98,7 +100,14 @@ namespace Modules.AudioPlayer
 
         public void Play()
         {
+            audioSource.time = 0f;
             audioSource.Play();
+
+            if ((CurrentState & AudioPlayerState.Stop) != 0)
+            {
+                OnAudioClipChanged?.Invoke();
+            }
+            
             CurrentState = AudioPlayerState.Play;
         }
 
@@ -135,23 +144,25 @@ namespace Modules.AudioPlayer
         public void Subscribe(params Delegate[] subscribers)
         {
             EventExtensions.Subscribe(ref OnAudioPlayerState, subscribers);
+            EventExtensions.Subscribe(ref OnAudioClipChanged, subscribers);
             EventExtensions.Subscribe(ref OnPlaybackTime01ChangedEvent, subscribers);
-            EventExtensions.Subscribe(ref OnAudioClipEnded, subscribers);
+            EventExtensions.Subscribe(ref RequestPlaylistClip, subscribers);
         }
 
         public void Unsubscribe(params Delegate[] unsubscribers)
         {
             EventExtensions.Unsubscribe(ref OnAudioPlayerState, unsubscribers);
+            EventExtensions.Unsubscribe(ref OnAudioClipChanged, unsubscribers);
             EventExtensions.Unsubscribe(ref OnPlaybackTime01ChangedEvent, unsubscribers);
-            EventExtensions.Unsubscribe(ref OnAudioClipEnded, unsubscribers);
+            EventExtensions.Unsubscribe(ref RequestPlaylistClip, unsubscribers);
         }
 
         public Delegate[] GetSubscribers()
         {
             return new Delegate[]
                    {
-                       (CrossEventsType.UpdatePlayerState) SetPlayerState,
-                       (CrossEventsType.RequestAudioPlayerData) RequestAudioPlayerData
+                       (AudioPlayerEvents.UpdateAudioPlayerState) SetPlayerState,
+                       (AudioPlayerEvents.RequestAudioPlayerData) RequestAudioPlayerData
                    };
         }
     }

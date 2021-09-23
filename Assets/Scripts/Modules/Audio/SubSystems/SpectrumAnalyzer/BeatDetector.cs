@@ -1,225 +1,184 @@
 ﻿using System;
+using System.Collections.Generic;
+using Base.Deque;
+using Modules.AudioPlayer.Model;
 using UnityEngine;
 
 namespace Modules.Audio.SubSystems.SpectrumAnalyzer
 {
     public class BeatDetector
     {
-        // log-frequency averaging controls 
-        private readonly int _blipDelayLen = 16;
+        private const int BassLowerLimit = 60;
+        private const int BassUpperLimit = 180;
+        private const int LowLowerLimit = 500;
+        private const int LowUpperLimit = 2000;
 
-        private readonly int _colMax = 120;
+        private const int NumBands = 2;
 
-        // smoothing constant for running average
-        private readonly float _decay = 0.997f;
-        private readonly float _framePeriod;
+        private int _windowSize;
+        private float _samplingFrequency;
 
-        // (in frames) largest lag to track
-        private readonly int _maxlag = 100;
-        private float[] _actualValues;
-        private float _alpha;
-        private AutoCorrelation _autoCorrelation;
-        private float[] _averages;
-        private int _beatsBand = 12;
+        private Conveyor<List<float>> _fftHistoryBeatDetector;
 
-        private BitRateData _bitRateData;
+        private BeatAnalyzeData _data;
 
-        // counter to suppress double-beats
-        private int[] _blipDelay;
-        private InitializingData _data;
-        private float[] _doBeat;
-        private int _now;
-        private float[] _onsets;
-        private float[] _scoreFun;
-        private int _sinceLast;
-        private float[] _spec;
+        private readonly List<int> _beatDetectorBandLimits;
+        private readonly int _numChannels;
 
-        public BeatDetector(int samplingRate, int numberOfSamples, int beatCoefficient, float sensitivity)
+        private readonly int _numberOfSamples = 1024;
+
+        public class BeatAnalyzeData
         {
-            InitArrays();
-            _data = new InitializingData(samplingRate, numberOfSamples, beatCoefficient, sensitivity);
-            _bitRateData = new BitRateData {LastT = GetCurrentTimeMillis()};
-            _framePeriod = _data.NumberOfSamples / (float) _data.SamplingRate;
-            _autoCorrelation = new AutoCorrelation(_maxlag, _decay, _framePeriod, _data.BandWidth);
-            for (var i = 0; i < _beatsBand; ++i) _spec[i] = 100.0f;
+            /// <summary>
+            /// Reference to the array containing current samples and amplitudes
+            /// </summary>
+            public float[] freqSpectrum;
+            /// <summary>
+            /// Reference to the array containing average values for the sample amplitudes
+            /// </summary>
+            public float[] avgSpectrum;
+            /// <summary>
+            /// Bool to check if current value is higher than average for bass frequencies
+            /// </summary>
+            public bool isBass;
+            /// <summary>
+            /// Bool to check if current value is higher than average for low-mid frequencies
+            /// </summary>
+            public bool isLow;
         }
 
-        public BeatDetector(InitializingData data)
+        public BeatDetector(SpectrumListenerData listenerData)
         {
-            InitArrays();
-            _data = data;
-            _bitRateData = new BitRateData {LastT = GetCurrentTimeMillis()};
-            _framePeriod = _data.NumberOfSamples / (float) _data.SamplingRate;
-            _autoCorrelation = new AutoCorrelation(_maxlag, _decay, _framePeriod, _data.BandWidth);
-            for (var i = 0; i < _beatsBand; ++i) _spec[i] = 100.0f;
+            var bandsize = listenerData.Frequency / _numberOfSamples; // bandsize = (samplingFrequency / windowSize)
+            var fftHistoryMAXSize = listenerData.Frequency / _numberOfSamples;
+            _numberOfSamples = listenerData.NumberOfSamples;
+            _fftHistoryBeatDetector = new Conveyor<List<float>>(fftHistoryMAXSize);
+            _beatDetectorBandLimits = new List<int>();
+            _beatDetectorBandLimits.Clear();
+
+            //bass 60hz-180hz
+            _beatDetectorBandLimits.Add(BassLowerLimit / bandsize);
+            _beatDetectorBandLimits.Add(BassUpperLimit / bandsize);
+
+            //low midrange 500hz-2000hz
+            _beatDetectorBandLimits.Add(LowLowerLimit / bandsize);
+            _beatDetectorBandLimits.Add(LowUpperLimit / bandsize);
+            _beatDetectorBandLimits.TrimExcess();
+            _fftHistoryBeatDetector.Clear();
+            _numChannels = listenerData.Channels;
+
+            _data = new BeatAnalyzeData()
+                    {
+                        freqSpectrum = new float[4],
+                        avgSpectrum = new float[4],
+                        isBass = false,
+                        isLow = false
+                    };
         }
 
-        public float Constrain(float value, float inclusiveMinimum, float inclusiveMaximum)
+        public void CalculateBeat(SpectrumListenerData listenerData, out BeatAnalyzeData data)
         {
-            if (!(value >= inclusiveMinimum)) return inclusiveMinimum;
-            return value <= inclusiveMaximum ? value : inclusiveMaximum;
+            GetBeat(listenerData.SpectrumData, ref _data);
+            data = _data;
         }
 
-        private float Map(float s, float a1, float a2, float b1, float b2)
+        /// <summary>
+        /// A function to set the booleans for beats by comparing current audio sample with statistical values of previous one's
+        /// </summary>
+        /// <param name="spectrum"></param>
+        /// <param name="referenceData"></param>
+        private void GetBeat(IReadOnlyList<float[]> spectrum, ref BeatAnalyzeData referenceData)
         {
-            return b1 + (s - a1) * (b2 - b1) / (a2 - a1);
-        }
-
-        private long GetCurrentTimeMillis()
-        {
-            var milliseconds = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
-            return milliseconds;
-        }
-
-        public void TapTempo()
-        {
-            _bitRateData.NowT = GetCurrentTimeMillis();
-            _bitRateData.Diff = _bitRateData.NowT - _bitRateData.LastT;
-            _bitRateData.LastT = _bitRateData.NowT;
-            _bitRateData.Sum += _bitRateData.Diff;
-            _bitRateData.Entries++;
-            var average = (int) (_bitRateData.Sum / _bitRateData.Entries);
-            Debug.Log("average = " + average);
-        }
-
-        private void InitArrays()
-        {
-            _averages = new float[_beatsBand];
-            _spec = new float[_beatsBand];
-            _blipDelay = new int[_blipDelayLen];
-            _onsets = new float[_colMax];
-            _scoreFun = new float[_colMax];
-            _doBeat = new float[_colMax];
-            _actualValues = new float[_maxlag];
-            _averages = new float[_beatsBand];
-            _alpha = 100 * _data.Sensitivity;
-        }
-
-        public bool CalculateBeat(float[] spectrum, out int bpm)
-        {
-            ComputeAverages(spectrum);
-            float onset = 0;
-
-            for (var i = 0; i < _beatsBand; i++)
+            for (var numBand = 0; numBand < NumBands; ++numBand)
             {
-                var specVal =
-                    Math.Max(-100.0f, 20.0f * (float) Math.Log10(_averages[i]) + 160);
-                specVal *= 0.025f;
-                var dbInc = specVal - _spec[i];
-                _spec[i] = specVal;
-                onset += dbInc;
-            }
-            _onsets[_now] = onset;
-            _autoCorrelation.NewVal(onset);
-            var aMax = 0.0f;
-            var tempopd = 0;
-
-            for (var i = 0; i < _maxlag; ++i)
-            {
-                var acVal = (float) Math.Sqrt(_autoCorrelation.AutoCorrelator(i));
-
-                if (acVal > aMax)
+                for (var indexFFT = _beatDetectorBandLimits[numBand];
+                     indexFFT < _beatDetectorBandLimits[numBand + 1];
+                     ++indexFFT)
                 {
-                    aMax = acVal;
-                    tempopd = i;
+                    for (var channel = 0; channel < _numChannels; ++channel)
+                    {
+                        var tempSample = spectrum[channel];
+                        referenceData.freqSpectrum[numBand] += tempSample[indexFFT];
+                    }
                 }
-                _actualValues[_maxlag - 1 - i] = acVal;
+
+                referenceData.freqSpectrum[numBand] /=
+                    (_beatDetectorBandLimits[numBand + 1] - _beatDetectorBandLimits[numBand] * numBand);
             }
-            var smax = float.MinValue;
-            var smaxix = 0;
 
-            for (var i = tempopd / 2; i < Math.Min(_colMax, 2 * tempopd); ++i)
+            if (_fftHistoryBeatDetector.Count > 0)
             {
-                var score = onset + _scoreFun[(_now - i + _colMax) % _colMax] -
-                            _alpha * (float) Math.Pow(Math.Log(i / (float) tempopd), 2);
+                FillAvgSpectrum(NumBands, ref referenceData.avgSpectrum, ref _fftHistoryBeatDetector);
+                var varianceSpectrum = new float[NumBands];
+                FillVarianceSpectrum(NumBands, ref varianceSpectrum, ref referenceData.avgSpectrum, ref _fftHistoryBeatDetector);
+                referenceData.isBass = (referenceData.freqSpectrum[0] - 0.05) > BeatThreshold(varianceSpectrum[0]) * referenceData.avgSpectrum[0];
+                referenceData.isLow = (referenceData.freqSpectrum[1] - 0.005) > BeatThreshold(varianceSpectrum[1]) * referenceData.avgSpectrum[1];
+            }
+            var fftResult = new List<float>(NumBands);
 
-                if (score > smax)
+            for (var index = 0; index < NumBands; ++index)
+            {
+                fftResult.Add(referenceData.freqSpectrum[index]);
+            }
+            _fftHistoryBeatDetector.AddLast(fftResult);
+        }
+
+        /// <summary>
+        /// Function to add average values to the array
+        /// </summary>
+        /// <param name="numBands"></param>
+        /// <param name="avgSpectrum"></param>
+        /// <param name="fftHistory"></param>
+        private void FillAvgSpectrum(int numBands, ref float[] avgSpectrum, ref Conveyor<List<float>> fftHistory)
+        {
+            foreach (var iterator in fftHistory)
+            {
+                for (var index = 0; index < iterator.Count; ++index)
                 {
-                    smax = score;
-                    smaxix = i;
+                    avgSpectrum[index] += iterator[index];
                 }
             }
-            _scoreFun[_now] = smax;
-            var smin = _scoreFun[0];
-            smaxix = 0;
 
-            for (var i = 0; i < _colMax; ++i)
-                if (_scoreFun[i] < smin)
-                    smin = _scoreFun[i];
-            for (var i = 0; i < _colMax; ++i) _scoreFun[i] -= smin;
-            smax = _scoreFun[0];
-
-            for (var i = 0; i < _colMax; ++i)
-                if (_scoreFun[i] > smax)
-                {
-                    smax = _scoreFun[i];
-                    smaxix = i;
-                }
-            _doBeat[_now] = 0;
-            ++_sinceLast;
-            var beat = false;
-
-            if (smaxix == _now)
-                if (_sinceLast > tempopd / _data.BeatCoefficient)
-                {
-                    beat = true;
-                    _blipDelay[0] = 1;
-                    _doBeat[_now] = 1;
-                    _sinceLast = 0;
-                }
-            if (++_now == _colMax) _now = 0;
-            bpm = Mathf.RoundToInt(60 / (tempopd * _framePeriod));
-            return beat;
-        }
-
-        private void ComputeAverages(float[] data)
-        {
-            for (var i = 0; i < _beatsBand; i++)
+            for (var index = 0; index < numBands; ++index)
             {
-                float avg = 0;
-                int lowFreq;
-
-                if (i == 0)
-                    lowFreq = 0;
-                else
-                    lowFreq = (int) (Mathf.RoundToInt(_data.SamplingRate / 2f) / (float) Math.Pow(2, 12 - i));
-                var hiFreq = (int) (Mathf.RoundToInt(_data.SamplingRate / 2f) / (float) Math.Pow(2, 11 - i));
-                var lowBound = FreqToIndex(lowFreq);
-                var hiBound = FreqToIndex(hiFreq);
-                for (var j = lowBound; j <= hiBound; j++) avg += data[j];
-                avg /= hiBound - lowBound + 1;
-                _averages[i] = avg;
+                avgSpectrum[index] /= (fftHistory.Count);
             }
         }
 
-        private int FreqToIndex(int freq)
+        /// <summary>
+        /// Function to add variance values to the array
+        /// </summary>
+        /// <param name="numBands"></param>
+        /// <param name="varianceSpectrum"></param>
+        /// <param name="avgSpectrum"></param>
+        /// <param name="fftHistory"></param>
+        private void FillVarianceSpectrum(int numBands, ref float[] varianceSpectrum,
+                                          ref float[] avgSpectrum, ref Conveyor<List<float>> fftHistory)
         {
-            if (freq < _data.BandWidth / 2) return 0;
+            foreach (var iterator in fftHistory)
+            {
+                for (var index = 0; index < iterator.Count; ++index)
+                {
+                    //Debug.Log("fftresult val is - " + fftResult[index]);
+                    varianceSpectrum[index] +=
+                        (iterator[index] - avgSpectrum[index]) * (iterator[index] - avgSpectrum[index]);
+                }
+            }
 
-            if (freq > Mathf.RoundToInt(_data.SamplingRate / 2f) - _data.BandWidth / 2)
-                return _data.NumberOfSamples / 2;
-            var fraction = freq / (float) _data.SamplingRate;
-            var i = (int) Math.Round(_data.NumberOfSamples * fraction);
-            return i;
+            for (var index = 0; index < numBands; ++index)
+            {
+                varianceSpectrum[index] /= (fftHistory.Count);
+            }
         }
 
-        public struct InitializingData
+        /// <summary>
+        /// Function to get the threshold value for the sample
+        /// </summary>
+        /// <param name="variance">variance for the sample</param>
+        /// <returns>float threshold</returns>
+        private static float BeatThreshold(float variance)
         {
-            public int SamplingRate { get; }
-            public int NumberOfSamples { get; }
-            public int BeatCoefficient { get; }
-            public float Sensitivity { get; }
-
-            public float BandWidth { get; }
-
-            public InitializingData(int samplingRate, int numberOfSamples, int beatCoefficient, float sensitivity)
-            {
-                SamplingRate = samplingRate;
-                NumberOfSamples = numberOfSamples;
-                BeatCoefficient = beatCoefficient;
-                Sensitivity = sensitivity;
-                BandWidth = 2f / numberOfSamples * (samplingRate / 2f);
-            }
+            return -15f * variance + 1.55f;
         }
     }
 }

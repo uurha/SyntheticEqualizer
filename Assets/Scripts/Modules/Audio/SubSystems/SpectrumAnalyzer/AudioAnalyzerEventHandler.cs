@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Base;
 using CorePlugin.Attributes.Headers;
@@ -14,28 +15,20 @@ namespace Modules.Audio.SubSystems.SpectrumAnalyzer
         [ReferencesHeader]
         [SerializeField] private AudioAnalyzer analyzer;
 
-        private void OnPlayerStateChanged(AudioPlayerState state)
+        private void OnAudioClipChanged()
         {
-            switch (state)
-            {
-                case AudioPlayerState.Play:
-                    analyzer.SetStateAnalyzing(true);
-                    break;
-                case AudioPlayerState.Stop:
-                    analyzer.SetStateAnalyzing(false);
-                    break;
-            }
+            analyzer.Deconstruct();
         }
 
         private void SpectrumListenerDataReceived(SpectrumListenerData listenerData)
         {
             if (!analyzer.IsInitialized)
             {
-                analyzer.InitializeAudio(listenerData.Frequency, listenerData.NumberOfSamples);
-                analyzer.OnSpectrumReceived(listenerData.SpectrumData);
+                analyzer.InitializeAudio(listenerData);
+                analyzer.OnSpectrumReceived(listenerData);
                 return;
             }
-            analyzer.OnSpectrumReceived(listenerData.SpectrumData);
+            analyzer.OnSpectrumReceived(listenerData);
         }
 
         public void InvokeEvents()
@@ -45,34 +38,28 @@ namespace Modules.Audio.SubSystems.SpectrumAnalyzer
         public void Subscribe(params Delegate[] subscribers)
         {
             foreach (var onAudioAnalyzedDataUpdated in
-                subscribers.OfType<CrossEventsType.OnAudioAnalyzedDataUpdateEvent>())
-                analyzer.OnAudioAnalyzedDataUpdated += new Action<float[]>(onAudioAnalyzedDataUpdated);
+                subscribers.OfType<AudioPlayerEvents.OnAudioAnalyzedDataUpdateEvent>())
+                analyzer.OnAudioAnalyzedDataUpdated += new Action<List<float[]>>(onAudioAnalyzedDataUpdated);
 
-            foreach (var onBeatDetected in subscribers.OfType<CrossEventsType.OnBeatDetectedEvent>())
+            foreach (var onBeatDetected in subscribers.OfType<BeatDetectionEvents.OnBeatDetectedEvent>())
                 analyzer.OnBeatEvent += new Action(onBeatDetected);
-
-            foreach (var onBPMChanged in subscribers.OfType<CrossEventsType.OnBPMChangedEvent>())
-                analyzer.OnBPMChanged += new Action<int>(onBPMChanged);
         }
 
         public void Unsubscribe(params Delegate[] unsubscribers)
         {
-            foreach (var onSpectrumUpdated in unsubscribers.OfType<CrossEventsType.OnAudioAnalyzedDataUpdateEvent>())
-                analyzer.OnAudioAnalyzedDataUpdated -= new Action<float[]>(onSpectrumUpdated);
+            foreach (var onSpectrumUpdated in unsubscribers.OfType<AudioPlayerEvents.OnAudioAnalyzedDataUpdateEvent>())
+                analyzer.OnAudioAnalyzedDataUpdated -= new Action<List<float[]>>(onSpectrumUpdated);
 
-            foreach (var onBeatDetected in unsubscribers.OfType<CrossEventsType.OnBeatDetectedEvent>())
+            foreach (var onBeatDetected in unsubscribers.OfType<BeatDetectionEvents.OnBeatDetectedEvent>())
                 analyzer.OnBeatEvent -= new Action(onBeatDetected);
-
-            foreach (var onBPMChanged in unsubscribers.OfType<CrossEventsType.OnBPMChangedEvent>())
-                analyzer.OnBPMChanged -= new Action<int>(onBPMChanged);
         }
 
         public Delegate[] GetSubscribers()
         {
             return new Delegate[]
                    {
-                       (CrossEventsType.OnAudioPlayerStateEvent) OnPlayerStateChanged,
-                       (CrossEventsType.OnSpectrumListenerDataUpdateEvent) SpectrumListenerDataReceived
+                       (AudioPlayerEvents.OnAudioClipChanged) OnAudioClipChanged,
+                       (CrossEvents.OnSpectrumListenerDataUpdateEvent) SpectrumListenerDataReceived
                    };
         }
     }

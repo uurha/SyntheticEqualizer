@@ -6,9 +6,9 @@ namespace Modules.AudioPlayer.SubSystems.PlayerStates
 {
     public struct PlayState : IPlayerState
     {
-        private CrossEventsType.RequestPlaylistClip RequestPlaylistClip;
+        private AudioPlayerEvents.RequestPlaylistClip RequestPlaylistClip;
 
-        public PlayState(CrossEventsType.RequestPlaylistClip requestPlaylistClip)
+        public PlayState(AudioPlayerEvents.RequestPlaylistClip requestPlaylistClip)
         {
             RequestPlaylistClip = requestPlaylistClip;
         }

@@ -71,7 +71,7 @@ namespace Modules.AudioPlayer.SubSystems.Playlist
 
         public Delegate[] GetSubscribers()
         {
-            return new Delegate[] {(CrossEventsType.RequestPlaylistClip) RequestPlaylistClip};
+            return new Delegate[] {(AudioPlayerEvents.RequestPlaylistClip) RequestPlaylistClip};
         }
     }
 }

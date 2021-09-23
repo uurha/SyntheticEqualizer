@@ -16,8 +16,8 @@ namespace Modules.AudioPlayerUserInput
         [SettingsHeader]
         [SerializeField] private PlaylistKeyboardSettings settings;
 
-        private event CrossEventsType.RequestPlaylistClip RequestPlaylistClip;
-        private event CrossEventsType.UpdatePlayerState UpdatePlayerState;
+        private event AudioPlayerEvents.RequestPlaylistClip RequestPlaylistClip;
+        private event AudioPlayerEvents.UpdateAudioPlayerState UpdatePlayerState;
 
         private void Start()
         {

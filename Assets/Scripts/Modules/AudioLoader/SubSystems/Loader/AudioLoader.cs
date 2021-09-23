@@ -49,7 +49,7 @@ namespace Modules.AudioLoader.SubSystems.Loader
 
         public Delegate[] GetSubscribers()
         {
-            return new[] {(CrossEventsType.OnAudioLoadRequested) LoadRequested};
+            return new[] {(AudioPlayerEvents.OnAudioLoadRequested) LoadRequested};
         }
     }
 }

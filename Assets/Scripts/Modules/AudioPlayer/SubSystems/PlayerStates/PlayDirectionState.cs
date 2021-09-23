@@ -6,10 +6,10 @@ namespace Modules.AudioPlayer.SubSystems.PlayerStates
 {
     public struct PlayDirectionState : IPlayerState
     {
-        private CrossEventsType.RequestPlaylistClip RequestPlaylistClip;
+        private AudioPlayerEvents.RequestPlaylistClip RequestPlaylistClip;
         private PlaylistDirection _direction;
 
-        public PlayDirectionState(CrossEventsType.RequestPlaylistClip requestPlaylistClip, PlaylistDirection direction)
+        public PlayDirectionState(AudioPlayerEvents.RequestPlaylistClip requestPlaylistClip, PlaylistDirection direction)
         {
             RequestPlaylistClip = requestPlaylistClip;
             _direction = direction;

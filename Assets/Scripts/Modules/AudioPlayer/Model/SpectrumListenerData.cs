@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Modules.AudioPlayer.Model
 {
@@ -7,15 +8,15 @@ namespace Modules.AudioPlayer.Model
     {
         public int Frequency { get; }
         public int NumberOfSamples { get; }
-        public int Channel { get; }
-        public float[] SpectrumData { get; }
+        public int Channels { get; }
+        public List<float[]> SpectrumData { get; }
 
-        public SpectrumListenerData(int frequency, int numberOfSamples, int channel, float[] spectrumData)
+        public SpectrumListenerData(int frequency, int numberOfSamples, int channels, List<float[]> spectrumData)
         {
             Frequency = frequency;
             NumberOfSamples = numberOfSamples;
             SpectrumData = spectrumData;
-            Channel = channel;
+            Channels = channels;
         }
     }
 }

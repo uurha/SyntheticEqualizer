@@ -24,13 +24,12 @@ namespace Modules.AudioPlayerUserInput
         [SerializeField] private Component volumeSlider;
 
         private ISlider<float> _playbackSlider;
-
         private IButton _playButton;
         private ISlider<float> _volumeSlider;
 
-        private event CrossEventsType.UpdatePlayerState UpdatePlayerState;
-        private event CrossEventsType.RequestPlaylistClip RequestPlaylistClip;
-        private event CrossEventsType.RequestAudioPlayerData RequestAudioPlayerData;
+        private event AudioPlayerEvents.UpdateAudioPlayerState UpdatePlayerState;
+        private event AudioPlayerEvents.RequestPlaylistClip RequestPlaylistClip;
+        private event AudioPlayerEvents.RequestAudioPlayerData RequestAudioPlayerData;
 
         private void Awake()
         {
@@ -101,8 +100,8 @@ namespace Modules.AudioPlayerUserInput
         {
             return new Delegate[]
                    {
-                       (CrossEventsType.OnAudioPlayerStateEvent) PlayButtonTextUpdate,
-                       (CrossEventsType.OnPlaybackTime01ChangedEvent) _playbackSlider.SetValueWithoutNotify
+                       (AudioPlayerEvents.OnAudioPlayerStateEvent) PlayButtonTextUpdate,
+                       (AudioPlayerEvents.OnPlaybackTime01ChangedEvent) _playbackSlider.SetValueWithoutNotify
                    };
         }
     }

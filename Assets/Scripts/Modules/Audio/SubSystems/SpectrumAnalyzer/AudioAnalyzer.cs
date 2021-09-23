@@ -1,41 +1,26 @@
 ﻿using System;
+using System.Collections.Generic;
+using Modules.AudioPlayer.Model;
 using UnityEngine;
 
 namespace Modules.Audio.SubSystems.SpectrumAnalyzer
 {
-    public class BitRateData
-    {
-        public long LastT { get; set; }
-        public long NowT { get; set; }
-        public long Diff { get; set; }
-        public long Entries { get; set; }
-        public long Sum { get; set; }
-    }
-
     public class AudioAnalyzer : MonoBehaviour
     {
         [SerializeField] private BandType bandType;
         [SerializeField] private float fallSpeed = 0.08f;
         [SerializeField] private float sensibility = 8.0f;
-        [SerializeField] private float sensitivity = 0.1f;
-        [SerializeField] private int beatCoefficient = 4;
 
-        private bool _analysingState;
-
-        private float[] _levels;
-        private float[] _meanLevels;
-        private float[] _spectrum;
+        private List<float[]> _levels;
+        private List<float[]> _meanLevels;
+        private List<float[]> _spectrum;
+        private List<float[]> _peakLevels;
 
         private int _numberOfSamples;
-        private Action<float[]> _onAudioAnalyzedDataUpdated;
+        private Action<List<float[]>> _onAudioAnalyzedDataUpdated;
         private Action _onBeat;
-        private Action<int> _onBPMChanged;
-
-        private float[] _peakLevels;
 
         private BeatDetector _beatDetector;
-
-        private int _lastBPM;
 
         private static readonly float[][] middleFrequenciesForBands =
         {
@@ -78,19 +63,15 @@ namespace Modules.Audio.SubSystems.SpectrumAnalyzer
             1.122f  // 2^(1/6)
         };
 
+        private int _channels;
+
         public event Action OnBeatEvent
         {
             add => _onBeat += value;
             remove => _onBeat -= value;
         }
 
-        public event Action<int> OnBPMChanged
-        {
-            add => _onBPMChanged += value;
-            remove => _onBPMChanged -= value;
-        }
-
-        public event Action<float[]> OnAudioAnalyzedDataUpdated
+        public event Action<List<float[]>> OnAudioAnalyzedDataUpdated
         {
             add => _onAudioAnalyzedDataUpdated += value;
             remove => _onAudioAnalyzedDataUpdated -= value;
@@ -108,76 +89,82 @@ namespace Modules.Audio.SubSystems.SpectrumAnalyzer
 
         public bool IsInitialized { get; private set; }
 
-        private void CheckAnalyzedArrays()
+        private void CheckAnalyzedArrays(int channels, int numberOfSamples)
         {
-            if (_spectrum == null ||
-                _spectrum.Length != _numberOfSamples)
-                _spectrum = new float[_numberOfSamples];
+            ValidateArray(ref _spectrum, _channels, _numberOfSamples);
             var bandCount = middleFrequenciesForBands[(int) bandType].Length;
-
-            if (_levels != null &&
-                _levels.Length == bandCount)
-                return;
-            _levels = new float[bandCount];
-            _peakLevels = new float[bandCount];
-            _meanLevels = new float[bandCount];
+            ValidateArray(ref _levels, _channels, bandCount);
+            ValidateArray(ref _peakLevels, _channels, bandCount);
+            ValidateArray(ref _meanLevels, _channels, bandCount);
         }
 
-        private void ComputeSpectrum(float[] data)
+        private void ValidateArray<T>(ref List<T[]> array, int count, int length)
+        {
+            if (array == null ||
+                array.Count != length)
+            {
+                array = new List<T[]>();
+                for (int i = 0; i < count; i++)
+                {
+                    array.Add(new T[length]);
+                }
+            }
+        }
+
+        private void ComputeSpectrum(SpectrumListenerData data)
         {
             var middleFrequencies = middleFrequenciesForBands[(int) bandType];
             var bandwidth = bandWidthForBands[(int) bandType];
             var fallDown = fallSpeed * Time.deltaTime;
             var filter = Mathf.Exp(-sensibility * Time.deltaTime);
 
-            for (var bi = 0; bi < _levels.Length; bi++)
+            for (int channel = 0; channel < data.SpectrumData.Count; channel++)
             {
-                var imin = FrequencyToSpectrumIndex(middleFrequencies[bi] / bandwidth);
-                var imax = FrequencyToSpectrumIndex(middleFrequencies[bi] * bandwidth);
-                var bandMax = 0.0f;
-                for (var fi = imin; fi <= imax; fi++) bandMax = Mathf.Max(bandMax, data[fi]);
-                _levels[bi] = bandMax;
-                _peakLevels[bi] = Mathf.Max(_peakLevels[bi] - fallDown, bandMax);
-                _meanLevels[bi] = bandMax - (bandMax - _meanLevels[bi]) * filter;
+                for (var bi = 0; bi < _levels[channel].Length; bi++)
+                {
+                    var imin = FrequencyToSpectrumIndex(channel, middleFrequencies[bi] / bandwidth);
+                    var imax = FrequencyToSpectrumIndex(channel, middleFrequencies[bi] * bandwidth);
+                    var bandMax = 0.0f;
+                    for (var fi = imin; fi <= imax; fi++) bandMax = Mathf.Max(bandMax, data.SpectrumData[channel][fi]);
+                    _levels[channel][bi] = bandMax;
+                    _peakLevels[channel][bi] = Mathf.Max(_peakLevels[channel][bi] - fallDown, bandMax);
+                    _meanLevels[channel][bi] = bandMax - (bandMax - _meanLevels[channel][bi]) * filter;
+                }
             }
         }
 
-        private int FrequencyToSpectrumIndex(float f)
+        private int FrequencyToSpectrumIndex(int channel, float f)
         {
-            var i = Mathf.FloorToInt(f / AudioSettings.outputSampleRate * 2.0f * _spectrum.Length);
-            return Mathf.Clamp(i, 0, _spectrum.Length - 1);
+            var i = Mathf.FloorToInt(f / AudioSettings.outputSampleRate * 2.0f * _spectrum[channel].Length);
+            return Mathf.Clamp(i, 0, _spectrum[channel].Length - 1);
         }
 
-        /// <summary>
-        /// Use this for initialization
-        /// </summary>
-        public void InitializeAudio(int samplingRate, int numberOfSamples)
+        public void Deconstruct()
         {
-            CheckAnalyzedArrays();
-            _lastBPM = 0;
-            var data = new BeatDetector.InitializingData(samplingRate, numberOfSamples, beatCoefficient, sensitivity);
-            _beatDetector = new BeatDetector(data);
-            _numberOfSamples = numberOfSamples;
-            IsInitialized = true;
+            IsInitialized = false;
+            _spectrum = new List<float[]>();
+            _meanLevels = new List<float[]>();
+            _peakLevels = new List<float[]>();
+            _levels = new List<float[]>();
         }
 
-        public void OnSpectrumReceived(float[] spectrum)
+        public void OnSpectrumReceived(SpectrumListenerData listenerData)
         {
             if (!IsInitialized) return;
-            if (!_analysingState) return;
-            _spectrum = spectrum;
-            ComputeSpectrum(_spectrum);
+            ComputeSpectrum(listenerData);
             _onAudioAnalyzedDataUpdated?.Invoke(_meanLevels);
-            var beatDetected = _beatDetector.CalculateBeat(_spectrum, out var bpm);
-            if (beatDetected) _onBeat?.Invoke();
-            if (_lastBPM == bpm) return;
-            _lastBPM = bpm;
-            _onBPMChanged?.Invoke(_lastBPM);
+            _beatDetector.CalculateBeat(listenerData, out var beatData);
+            if (!beatData.isBass) return;
+            _onBeat?.Invoke();
         }
 
-        public void SetStateAnalyzing(bool state)
+        public void InitializeAudio(SpectrumListenerData listenerData)
         {
-            _analysingState = state;
+            _beatDetector = new BeatDetector(listenerData);
+            _numberOfSamples = listenerData.NumberOfSamples;
+            _channels = listenerData.Channels;
+            CheckAnalyzedArrays(_channels, _numberOfSamples);
+            IsInitialized = true;
         }
     }
 }

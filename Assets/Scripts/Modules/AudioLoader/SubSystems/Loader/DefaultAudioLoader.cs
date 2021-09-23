@@ -24,7 +24,7 @@ namespace Modules.AudioLoader.SubSystems.Loader
 
         private string defaultPath = Application.streamingAssetsPath;
 
-        private event CrossEventsType.OnAudioLoadRequested RequestAudioLoad;
+        private event AudioPlayerEvents.OnAudioLoadRequested RequestAudioLoad;
 
         private void Awake()
         {

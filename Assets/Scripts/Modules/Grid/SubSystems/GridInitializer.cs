@@ -31,7 +31,7 @@ namespace Modules.Grid.SubSystems
         private Vector3 _initialPosition = Vector3.zero;
         private EntityRoute _previousGridExit;
 
-        private event CrossEventsType.OnGridUpdatedEvent OnGridChanged;
+        private event CrossEvents.OnGridUpdatedEvent OnGridChanged;
 
         public bool IsInitialized { get; private set; }
 
