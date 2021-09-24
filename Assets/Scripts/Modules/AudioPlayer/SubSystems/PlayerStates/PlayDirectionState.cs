@@ -9,7 +9,8 @@ namespace Modules.AudioPlayer.SubSystems.PlayerStates
         private AudioPlayerEvents.RequestPlaylistClip RequestPlaylistClip;
         private PlaylistDirection _direction;
 
-        public PlayDirectionState(AudioPlayerEvents.RequestPlaylistClip requestPlaylistClip, PlaylistDirection direction)
+        public PlayDirectionState(AudioPlayerEvents.RequestPlaylistClip requestPlaylistClip,
+                                  PlaylistDirection direction)
         {
             RequestPlaylistClip = requestPlaylistClip;
             _direction = direction;

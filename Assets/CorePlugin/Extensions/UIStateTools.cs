@@ -28,7 +28,7 @@ namespace CorePlugin.Extensions
         /// </summary>
         /// <param name="group"></param>
         /// <param name="isVisible"></param>
-        public static void ChangeGroupState(CanvasGroup group, bool isVisible)
+        public static void ChangeGroupState(this CanvasGroup group, bool isVisible)
         {
             group.alpha = isVisible ? 1 : 0;
             group.interactable = isVisible;

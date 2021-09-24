@@ -21,9 +21,9 @@ namespace CorePlugin.Extensions
         /// <typeparam name="T"></typeparam>
         public static void Aggregate<T>(ref T dDelegate, Func<Delegate, Delegate, Delegate> aggregateMethod, params Delegate[] delegates) where T : Delegate
         {
-            dDelegate = delegates.OfType<T>().Aggregate(dDelegate,
-                                                        (current, delegateItem) =>
-                                                            (T) aggregateMethod.Invoke(current, delegateItem));
+            if (delegates == null) throw new ArgumentNullException($"{nameof(delegates)} should be null");
+            if (delegates.Length <= 0) throw new ArgumentOutOfRangeException($"{nameof(delegates)}.Length should not be zero");
+            dDelegate = delegates.OfType<T>().Aggregate(dDelegate, (current, delegate1) => (T) aggregateMethod.Invoke(current, delegate1));
         }
 
         /// <summary>

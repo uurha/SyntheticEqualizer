@@ -35,41 +35,40 @@ namespace Modules.AudioPlayer.SubSystems.SpectrumListener
             if (!_handle.IsCompleted) return;
             var channels = audioSource.clip.channels;
             CheckSettings(channels);
-
             var jobs = new MultiplyJob[channels];
-            for (int channel = 0; channel < channels; channel++)
+
+            for (var channel = 0; channel < channels; channel++)
             {
                 audioSource.GetSpectrumData(_spectrum[channel], channel, fftWindow);
                 var volume = audioSource.volume;
                 var multiplier = volume > 0 ? 1 / volume : 0f;
                 jobs[channel] = new MultiplyJob(_spectrum[channel], multiplier);
-                var handle = jobs[channel].Schedule(_spectrum.Count, 1);
+                var handle = jobs[channel].Schedule(_spectrum[channel].Length, 1);
                 JobHandle.CombineDependencies(_handle, handle);
                 handle.Complete();
             }
             _handle.Complete();
-
             var spectrumListenerData = new List<float[]>();
-            for (int channel = 0; channel < channels; channel++)
+
+            for (var channel = 0; channel < channels; channel++)
             {
                 spectrumListenerData.Add(jobs[channel].Output.ToArray());
                 jobs[channel].Output.Dispose();
             }
+
             OnSpectrumDataUpdated?.Invoke(
-                                          new SpectrumListenerData(audioSource.clip.frequency, numberOfSamples, channels,
+                                          new SpectrumListenerData(audioSource.clip.frequency, numberOfSamples,
+                                                                   channels,
                                                                    spectrumListenerData));
         }
 
         private void CheckSettings(int channels)
         {
-            if (_spectrum == null ||
-                _spectrum.Count != channels)
-                _spectrum = new List<float[]>();
-
-            for (int channel = 0; channel < channels; channel++)
-            {
-                _spectrum.Add(new float[numberOfSamples]);
-            }
+            if (_spectrum != null &&
+                _spectrum.Count == channels)
+                return;
+            _spectrum = new List<float[]>();
+            for (var channel = 0; channel < channels; channel++) _spectrum.Add(new float[numberOfSamples]);
         }
 
         private struct MultiplyJob : IJobParallelFor

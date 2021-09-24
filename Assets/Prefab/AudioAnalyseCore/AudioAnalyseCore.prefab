@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &2991588377069176469
+--- !u!1 &8431596863103022334
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,42 +8,43 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 4506601246679080226}
-  - component: {fileID: 8977676672525729756}
+  - component: {fileID: 8431596863103022332}
+  - component: {fileID: 427132566127133126}
   m_Layer: 0
-  m_Name: AudioPlayerCore
+  m_Name: AudioAnalyseCore
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4506601246679080226
+--- !u!4 &8431596863103022332
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2991588377069176469}
+  m_GameObject: {fileID: 8431596863103022334}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 28.914743, y: -9.287897, z: 83.53736}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8977676672525729756
+--- !u!114 &427132566127133126
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2991588377069176469}
+  m_GameObject: {fileID: 8431596863103022334}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c2c5365d6ef649f5a245a605f9175846, type: 3}
+  m_Script: {fileID: 11500000, guid: 8c9a4a8fe9f5449c9c61c74b73eeb593, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   elements:
-  - {fileID: 8980921040509830416, guid: bd417f5f1322f8d4784fe2e982ec0f85, type: 3}
-  - {fileID: 2709045108674773359, guid: 7eaf509af055e31458b4fa947f1de67c, type: 3}
-  - {fileID: 1298174062680253030, guid: a8a52432c95415a4e9f7401238850ad5, type: 3}
+  - {fileID: 242623621922258479, guid: 593363d0f6d0524408f318c08418fe04, type: 3}
+  - {fileID: 2254586435833828713, guid: 4b0fc5469369c6842a93e7f5126f24bc, type: 3}
+  - {fileID: 8532142684421802024, guid: 97c890b5fc5ba7a41b1decc80516e8b7, type: 3}
+  - {fileID: 303142381960875995, guid: 688afbfa5329b1e45af3942a6183a4bb, type: 3}

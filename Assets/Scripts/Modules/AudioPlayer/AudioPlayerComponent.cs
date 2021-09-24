@@ -26,7 +26,7 @@ namespace Modules.AudioPlayer
         private event AudioPlayerEvents.OnAudioPlayerStateEvent OnAudioPlayerState;
         private event AudioPlayerEvents.RequestPlaylistClip RequestPlaylistClip;
         private event AudioPlayerEvents.OnPlaybackTime01ChangedEvent OnPlaybackTime01ChangedEvent;
-        
+
         private event AudioPlayerEvents.OnAudioClipChanged OnAudioClipChanged;
 
         public AudioClip Clip => audioSource.clip;
@@ -100,14 +100,10 @@ namespace Modules.AudioPlayer
 
         public void Play()
         {
+            if (audioSource.clip == null) return;
             audioSource.time = 0f;
             audioSource.Play();
-
-            if ((CurrentState & AudioPlayerState.Stop) != 0)
-            {
-                OnAudioClipChanged?.Invoke();
-            }
-            
+            if ((CurrentState & AudioPlayerState.Stop) != 0) OnAudioClipChanged?.Invoke();
             CurrentState = AudioPlayerState.Play;
         }
 

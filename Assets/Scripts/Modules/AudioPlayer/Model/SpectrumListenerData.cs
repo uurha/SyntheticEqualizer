@@ -9,13 +9,13 @@ namespace Modules.AudioPlayer.Model
         public int Frequency { get; }
         public int NumberOfSamples { get; }
         public int Channels { get; }
-        public List<float[]> SpectrumData { get; }
+        public List<float[]> RawSpectrumData { get; }
 
-        public SpectrumListenerData(int frequency, int numberOfSamples, int channels, List<float[]> spectrumData)
+        public SpectrumListenerData(int frequency, int numberOfSamples, int channels, List<float[]> rawSpectrumData)
         {
             Frequency = frequency;
             NumberOfSamples = numberOfSamples;
-            SpectrumData = spectrumData;
+            RawSpectrumData = rawSpectrumData;
             Channels = channels;
         }
     }

@@ -1,0 +1,212 @@
+﻿using System;
+using System.Collections.Generic;
+using Base;
+using Base.Deque;
+using CorePlugin.Cross.Events.Interface;
+using CorePlugin.Extensions;
+using Modules.AudioAnalyse.Model;
+using Modules.AudioPlayer.Model;
+using UnityEngine;
+
+namespace Modules.AudioAnalyse.SubSystems.BeatDetector
+{
+    public class BeatDetector : MonoBehaviour, IEventHandler, IEventSubscriber
+    {
+        // private int _windowSize;
+        // private float _samplingFrequency;
+        
+        public enum BeatType
+        {
+            Bass = 0,
+            Low = 1
+        }
+
+        private Conveyor<List<float>> _fftHistoryBeatDetector;
+
+        private BeatAnalyzeData _data;
+
+        private List<int> _beatDetectorBandLimits;
+        private int _numChannels;
+
+        private int _numberOfSamples = 1024;
+
+        private bool _isInitialized;
+        private event BeatDetectionEvents.OnBeatDetectedEvent OnBeatEvent;
+        private const int BassLowerLimit = 60;
+        private const int BassUpperLimit = 180;
+        private const int LowLowerLimit = 500;
+        private const int LowUpperLimit = 2000;
+
+        private const int NumBands = 2;
+
+        /// <summary>
+        /// Function to get the threshold value for the sample
+        /// </summary>
+        /// <param name="variance">variance for the sample</param>
+        /// <returns>float threshold</returns>
+        private static float BeatThreshold(float variance)
+        {
+            return -15f * variance + 1.55f;
+        }
+
+        private void Deconstruct()
+        {
+            _isInitialized = false;
+        }
+
+        /// <summary>
+        /// Function to add average values to the array
+        /// </summary>
+        /// <param name="numBands"></param>
+        /// <param name="avgSpectrum"></param>
+        /// <param name="fftHistory"></param>
+        private void FillAvgSpectrum(int numBands, ref float[] avgSpectrum, ref Conveyor<List<float>> fftHistory)
+        {
+            foreach (var iterator in fftHistory)
+                for (var index = 0; index < iterator.Count; ++index)
+                    avgSpectrum[index] += iterator[index];
+            for (var index = 0; index < numBands; ++index) avgSpectrum[index] /= fftHistory.Count;
+        }
+
+        /// <summary>
+        /// Function to add variance values to the array
+        /// </summary>
+        /// <param name="numBands"></param>
+        /// <param name="varianceSpectrum"></param>
+        /// <param name="avgSpectrum"></param>
+        /// <param name="fftHistory"></param>
+        private void FillVarianceSpectrum(int numBands, ref float[] varianceSpectrum,
+                                          ref float[] avgSpectrum, ref Conveyor<List<float>> fftHistory)
+        {
+            foreach (var iterator in fftHistory)
+                for (var index = 0; index < iterator.Count; ++index)
+
+                    //Debug.Log("fftresult val is - " + fftResult[index]);
+                    varianceSpectrum[index] +=
+                        (iterator[index] - avgSpectrum[index]) * (iterator[index] - avgSpectrum[index]);
+            for (var index = 0; index < numBands; ++index) varianceSpectrum[index] /= fftHistory.Count;
+        }
+
+        /// <summary>
+        /// A function to set the booleans for beats by comparing current audio sample with statistical values of previous one's
+        /// </summary>
+        /// <param name="spectrum"></param>
+        /// <param name="referenceData"></param>
+        private void GetBeat(IReadOnlyList<float[]> spectrum, ref BeatAnalyzeData referenceData)
+        {
+            if (!_isInitialized) return;
+
+            for (var numBand = 0; numBand < NumBands; ++numBand)
+            {
+                for (var indexFFT = _beatDetectorBandLimits[numBand];
+                     indexFFT < _beatDetectorBandLimits[numBand + 1];
+                     ++indexFFT)
+                {
+                    for (var channel = 0; channel < _numChannels; ++channel)
+                    {
+                        var tempSample = spectrum[channel];
+                        referenceData.freqSpectrum[numBand] += tempSample[indexFFT];
+                    }
+                }
+
+                referenceData.freqSpectrum[numBand] /=
+                    _beatDetectorBandLimits[numBand + 1] - _beatDetectorBandLimits[numBand] * numBand;
+            }
+
+            if (_fftHistoryBeatDetector.Count > 0)
+            {
+                FillAvgSpectrum(NumBands, ref referenceData.avgSpectrum, ref _fftHistoryBeatDetector);
+                var varianceSpectrum = new float[NumBands];
+
+                FillVarianceSpectrum(NumBands, ref varianceSpectrum, ref referenceData.avgSpectrum,
+                                     ref _fftHistoryBeatDetector);
+                
+                const int bass = (int)BeatType.Bass;
+                referenceData.isBass = referenceData.freqSpectrum[bass] - 0.05 >
+                                       BeatThreshold(varianceSpectrum[bass]) * referenceData.avgSpectrum[bass];
+                
+                const int low = (int)BeatType.Low;
+                referenceData.isLow = referenceData.freqSpectrum[low] - 0.005 >
+                                      BeatThreshold(varianceSpectrum[low]) * referenceData.avgSpectrum[low];
+            }
+            var fftResult = new List<float>(NumBands);
+            for (var index = 0; index < NumBands; ++index) fftResult.Add(referenceData.freqSpectrum[index]);
+            _fftHistoryBeatDetector.AddLast(fftResult);
+        }
+
+        private void Initialize(SpectrumListenerData listenerData)
+        {
+            var bandSize = listenerData.Frequency / _numberOfSamples; // bandsize = (samplingFrequency / windowSize)
+            var fftHistoryMAXSize = listenerData.Frequency / _numberOfSamples;
+            _numberOfSamples = listenerData.NumberOfSamples;
+            _fftHistoryBeatDetector = new Conveyor<List<float>>(fftHistoryMAXSize);
+            _beatDetectorBandLimits = new List<int>();
+            _beatDetectorBandLimits.Clear();
+
+            //bass 60hz-180hz
+            _beatDetectorBandLimits.Add(BassLowerLimit / bandSize);
+            _beatDetectorBandLimits.Add(BassUpperLimit / bandSize);
+
+            //low midrange 500hz-2000hz
+            _beatDetectorBandLimits.Add(LowLowerLimit / bandSize);
+            _beatDetectorBandLimits.Add(LowUpperLimit / bandSize);
+            _beatDetectorBandLimits.TrimExcess();
+            _fftHistoryBeatDetector.Clear();
+            _numChannels = listenerData.Channels;
+
+            _data = new BeatAnalyzeData
+                    {
+                        freqSpectrum = new float[4],
+                        avgSpectrum = new float[4],
+                        isBass = false,
+                        isLow = false
+                    };
+            _isInitialized = true;
+        }
+
+        private void OnAudioClipChanged()
+        {
+            Deconstruct();
+        }
+
+        private void OnSpectrumReceived(SpectrumListenerData listenerData)
+        {
+            GetBeat(listenerData.RawSpectrumData, ref _data);
+            OnBeatEvent?.Invoke(_data);
+        }
+
+        private void SpectrumListenerDataReceived(SpectrumListenerData listenerData)
+        {
+            if (!_isInitialized)
+            {
+                Initialize(listenerData);
+                OnSpectrumReceived(listenerData);
+                return;
+            }
+            OnSpectrumReceived(listenerData);
+        }
+
+        public void InvokeEvents()
+        {
+        }
+
+        public void Subscribe(params Delegate[] subscribers)
+        {
+            EventExtensions.Subscribe(ref OnBeatEvent, subscribers);
+        }
+
+        public void Unsubscribe(params Delegate[] unsubscribers)
+        {
+            EventExtensions.Unsubscribe(ref OnBeatEvent, unsubscribers);
+        }
+
+        public Delegate[] GetSubscribers()
+        {
+            return new Delegate[]
+                   {
+                       (AudioPlayerEvents.OnAudioClipChanged) OnAudioClipChanged,
+                       (CrossEvents.OnSpectrumListenerDataUpdateEvent) SpectrumListenerDataReceived
+                   };
+        }
+    }
+}

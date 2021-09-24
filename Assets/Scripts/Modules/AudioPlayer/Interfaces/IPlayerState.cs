@@ -1,6 +1,7 @@
-﻿using Modules.AudioPlayer.Interfaces;
-
-public interface IPlayerState
+﻿namespace Modules.AudioPlayer.Interfaces
 {
-    public void Execute(IAudioPlayer audioPlayer);
+    public interface IPlayerState
+    {
+        public void Execute(IAudioPlayer audioPlayer);
+    }
 }
