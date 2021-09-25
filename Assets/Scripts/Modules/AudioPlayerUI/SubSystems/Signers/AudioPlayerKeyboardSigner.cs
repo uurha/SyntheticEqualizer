@@ -3,13 +3,13 @@ using Base;
 using CorePlugin.Attributes.Headers;
 using CorePlugin.Cross.Events.Interface;
 using CorePlugin.Extensions;
-using Modules.AudioPlayer.Model;
 using Modules.AudioPlayer.SubSystems.PlayerStates;
 using Modules.AudioPlayer.SubSystems.Playlist;
+using Modules.AudioPlayerUI.Model;
 using Modules.InputManagement;
 using UnityEngine;
 
-namespace Modules.AudioPlayerUI
+namespace Modules.AudioPlayerUI.SubSystems.Signers
 {
     public class AudioPlayerKeyboardSigner : MonoBehaviour, IEventHandler
     {

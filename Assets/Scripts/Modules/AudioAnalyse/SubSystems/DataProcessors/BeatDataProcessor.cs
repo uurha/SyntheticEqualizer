@@ -18,14 +18,6 @@ namespace Modules.AudioAnalyse.SubSystems.DataProcessors
             _beatCount = 0;
         }
 
-        private void OnBeatDetected(BeatAnalyzeData beatAnalyzeData)
-        {
-            if (beatAnalyzeData.IsBass || beatAnalyzeData.IsLow)
-            {
-                OnBeat();
-            }
-        }
-
         private void OnBeat()
         {
             if (_beatCount < maxBeatsBeforeCheck)
@@ -40,6 +32,13 @@ namespace Modules.AudioAnalyse.SubSystems.DataProcessors
             _beatCount = 0;
             _timeSinceLast = Time.time;
             Debug.Log(bpm);
+        }
+
+        private void OnBeatDetected(BeatAnalyzeData beatAnalyzeData)
+        {
+            if (beatAnalyzeData.IsBass ||
+                beatAnalyzeData.IsLow)
+                OnBeat();
         }
 
         public Delegate[] GetSubscribers()

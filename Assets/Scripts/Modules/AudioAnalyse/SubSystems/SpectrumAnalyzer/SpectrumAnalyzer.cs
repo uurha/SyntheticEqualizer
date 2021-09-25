@@ -4,7 +4,6 @@ using Base;
 using CorePlugin.Cross.Events.Interface;
 using CorePlugin.Extensions;
 using Modules.AudioAnalyse.Model;
-using Modules.AudioPlayer.Model;
 using UnityEngine;
 
 namespace Modules.AudioAnalyse.SubSystems.SpectrumAnalyzer
@@ -24,6 +23,8 @@ namespace Modules.AudioAnalyse.SubSystems.SpectrumAnalyzer
 
         private int _channels;
         private bool _isInitialized;
+
+        private event AudioAnalyzerEvents.SpectrumAnalyzerDataEvent OnAudioAnalyzedDataUpdated;
 
         private static readonly float[][] middleFrequenciesForBands =
         {
@@ -66,8 +67,6 @@ namespace Modules.AudioAnalyse.SubSystems.SpectrumAnalyzer
             1.122f  // 2^(1/6)
         };
 
-        private event AudioAnalyzerEvents.SpectrumAnalyzerDataEvent OnAudioAnalyzedDataUpdated;
-
         public enum BandType
         {
             FourBand = 0,
@@ -101,9 +100,7 @@ namespace Modules.AudioAnalyse.SubSystems.SpectrumAnalyzer
                     var imin = FrequencyToSpectrumIndex(channel, middleFrequencies[bi] / bandwidth);
                     var imax = FrequencyToSpectrumIndex(channel, middleFrequencies[bi] * bandwidth);
                     var bandMax = 0.0f;
-
-                    for (var fi = imin; fi <= imax; fi++)
-                        bandMax = Mathf.Max(bandMax, data.SpectrumData[channel][fi]);
+                    for (var fi = imin; fi <= imax; fi++) bandMax = Mathf.Max(bandMax, data.SpectrumData[channel][fi]);
                     _levels[channel][bi] = bandMax;
                     _peakLevels[channel][bi] = Mathf.Max(_peakLevels[channel][bi] - fallDown, bandMax);
                     _meanLevels[channel][bi] = bandMax - (bandMax - _meanLevels[channel][bi]) * filter;

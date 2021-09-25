@@ -9,7 +9,7 @@ using Modules.AudioPlayer.SubSystems.PlayerStates;
 using SubModules.UI;
 using UnityEngine;
 
-namespace Modules.AudioPlayerUI
+namespace Modules.AudioPlayerUI.SubSystems.Signers
 {
     public class AudioPlayerUISigner : MonoBehaviour, IEventSubscriber, IEventHandler
     {

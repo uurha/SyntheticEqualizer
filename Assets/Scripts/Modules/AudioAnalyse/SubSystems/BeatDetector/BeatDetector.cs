@@ -5,22 +5,12 @@ using Base.Deque;
 using CorePlugin.Cross.Events.Interface;
 using CorePlugin.Extensions;
 using Modules.AudioAnalyse.Model;
-using Modules.AudioPlayer.Model;
 using UnityEngine;
 
 namespace Modules.AudioAnalyse.SubSystems.BeatDetector
 {
     public class BeatDetector : MonoBehaviour, IEventHandler, IEventSubscriber
     {
-        // private int _windowSize;
-        // private float _samplingFrequency;
-        
-        public enum BeatType
-        {
-            Bass = 0,
-            Low = 1
-        }
-
         private Conveyor<List<float>> _fftHistoryBeatDetector;
 
         private BeatAnalyzeData _data;
@@ -38,6 +28,15 @@ namespace Modules.AudioAnalyse.SubSystems.BeatDetector
         private const int LowUpperLimit = 2000;
 
         private const int NumBands = 2;
+
+        // private int _windowSize;
+        // private float _samplingFrequency;
+
+        public enum BeatType
+        {
+            Bass = 0,
+            Low = 1
+        }
 
         /// <summary>
         /// Function to get the threshold value for the sample
@@ -120,12 +119,12 @@ namespace Modules.AudioAnalyse.SubSystems.BeatDetector
 
                 FillVarianceSpectrum(NumBands, ref varianceSpectrum, ref referenceData.AvgSpectrum,
                                      ref _fftHistoryBeatDetector);
-                
-                const int bass = (int)BeatType.Bass;
+                const int bass = (int) BeatType.Bass;
+
                 referenceData.IsBass = referenceData.FreqSpectrum[bass] - 0.05 >
                                        BeatThreshold(varianceSpectrum[bass]) * referenceData.AvgSpectrum[bass];
-                
-                const int low = (int)BeatType.Low;
+                const int low = (int) BeatType.Low;
+
                 referenceData.IsLow = referenceData.FreqSpectrum[low] - 0.005 >
                                       BeatThreshold(varianceSpectrum[low]) * referenceData.AvgSpectrum[low];
             }
@@ -140,6 +139,7 @@ namespace Modules.AudioAnalyse.SubSystems.BeatDetector
             var bandSize = listenerData.Frequency / _numberOfSamples; // bandsize = (samplingFrequency / windowSize)
             var fftHistoryMAXSize = listenerData.Frequency / _numberOfSamples;
             _fftHistoryBeatDetector = new Conveyor<List<float>>(fftHistoryMAXSize);
+
             _beatDetectorBandLimits = new List<int>
                                       {
                                           //bass 60hz-180hz

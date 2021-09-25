@@ -35,7 +35,7 @@ namespace Modules.Grid.SubSystems.GridProcessors
                                                   .Select(z => z.VisualBehaviour.Initialize())))
                                    .ToArray();
         }
-        
+
         public Delegate[] GetSubscribers()
         {
             return new Delegate[]

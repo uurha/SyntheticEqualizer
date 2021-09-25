@@ -7,14 +7,14 @@ using Modules.AudioAnalyse.SubSystems.BeatDetector;
 using Modules.AudioPlayer.Model;
 using UnityEngine;
 
-namespace Modules.AudioAnalyseUI
+namespace Modules.AudioAnalyseUI.SubSystems.BeatUI
 {
     [RequireComponent(typeof(CanvasGroup))]
     public class BeatUIHolder : MonoBehaviour, IEventSubscriber
     {
         [SerializeField] private BeatUI lowBeat;
         [SerializeField] private BeatUI bassBeat;
-    
+
         private CanvasGroup _canvasGroup;
 
         private void Awake()
@@ -26,11 +26,14 @@ namespace Modules.AudioAnalyseUI
 
         private void BeatDataReceived(BeatAnalyzeData beatAnalyzeData)
         {
-            const int bass = (int)BeatDetector.BeatType.Bass;
-            bassBeat.UpdateData(beatAnalyzeData.FreqSpectrum[bass], beatAnalyzeData.AvgSpectrum[bass], beatAnalyzeData.IsBass);
-        
-            const int low = (int)BeatDetector.BeatType.Low;
-            lowBeat.UpdateData(beatAnalyzeData.FreqSpectrum[low], beatAnalyzeData.AvgSpectrum[low], beatAnalyzeData.IsLow);
+            const int bass = (int) BeatDetector.BeatType.Bass;
+
+            bassBeat.UpdateData(beatAnalyzeData.FreqSpectrum[bass], beatAnalyzeData.AvgSpectrum[bass],
+                                beatAnalyzeData.IsBass);
+            const int low = (int) BeatDetector.BeatType.Low;
+
+            lowBeat.UpdateData(beatAnalyzeData.FreqSpectrum[low], beatAnalyzeData.AvgSpectrum[low],
+                               beatAnalyzeData.IsLow);
         }
 
         private void OnPlayerStateChanged(AudioPlayerState state)

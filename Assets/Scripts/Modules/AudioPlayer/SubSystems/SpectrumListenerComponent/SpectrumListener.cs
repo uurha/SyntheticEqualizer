@@ -5,17 +5,14 @@ using CorePlugin.Attributes.Headers;
 using CorePlugin.Cross.Events.Interface;
 using CorePlugin.Extensions;
 using Modules.AudioAnalyse.Model;
-using Modules.AudioPlayer.Model;
-using Unity.Collections;
-using Unity.Jobs;
 using UnityEngine;
 
-namespace Modules.AudioPlayer.SubSystems.SpectrumListener
+namespace Modules.AudioPlayer.SubSystems.SpectrumListenerComponent
 {
-    [RequireComponent(typeof(AudioSource), typeof(AudioPlayer))]
+    [RequireComponent(typeof(AudioSource), typeof(AudioPlayerComponent.AudioPlayer))]
     public class SpectrumListener : MonoBehaviour, IEventHandler
     {
-        [SerializeField] private AudioPlayer audioPlayer;
+        [SerializeField] private AudioPlayerComponent.AudioPlayer audioPlayer;
 
         [ReferencesHeader]
         [SerializeField] private AudioSource audioSource;
@@ -34,13 +31,14 @@ namespace Modules.AudioPlayer.SubSystems.SpectrumListener
             if (!audioPlayer.IsPlaying) return;
             var channels = audioSource.clip.channels;
             CheckSettings(channels);
-
             var spectrumListenerData = new List<float[]>();
+
             for (var channel = 0; channel < channels; channel++)
             {
                 audioSource.GetSpectrumData(_spectrum[channel], channel, fftWindow);
                 spectrumListenerData.Add(_spectrum[channel]);
             }
+
             OnSpectrumDataUpdated?.Invoke(
                                           new SpectrumListenerData(audioSource.clip.frequency, numberOfSamples,
                                                                    channels,
@@ -55,7 +53,7 @@ namespace Modules.AudioPlayer.SubSystems.SpectrumListener
             _spectrum = new List<float[]>();
             for (var channel = 0; channel < channels; channel++) _spectrum.Add(new float[numberOfSamples]);
         }
-        
+
         public void InvokeEvents()
         {
         }

@@ -10,7 +10,7 @@ using Modules.AudioPlayer.Model;
 using Modules.AudioPlayer.SubSystems.Playlist;
 using UnityEngine;
 
-namespace Modules.AudioPlayer
+namespace Modules.AudioPlayer.SubSystems.AudioPlayerComponent
 {
     [RequireComponent(typeof(AudioSource))] [OneAndOnly]
     public class AudioPlayer : MonoBehaviour, IAudioPlayer, IEventHandler, IEventSubscriber

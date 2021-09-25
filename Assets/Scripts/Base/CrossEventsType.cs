@@ -44,8 +44,8 @@ namespace Base
 
     public static class DataProcessorsEvents
     {
-        public delegate void SpectrumProcessorDataEvent(SpectrumProcessorData listenerData);
-
         public delegate void SpectrumListenerDataEvent(SpectrumListenerData listenerData);
+
+        public delegate void SpectrumProcessorDataEvent(SpectrumProcessorData listenerData);
     }
 }

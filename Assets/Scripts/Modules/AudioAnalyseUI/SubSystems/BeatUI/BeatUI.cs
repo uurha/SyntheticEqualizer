@@ -3,30 +3,23 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Modules.AudioAnalyseUI
+namespace Modules.AudioAnalyseUI.SubSystems.BeatUI
 {
     public class BeatUI : MonoBehaviour
     {
         [ReferencesHeader]
         [SerializeField] private TMP_Text currentSpectrum;
+
         [SerializeField] private TMP_Text averageSpectrum;
         [SerializeField] private Image visualRepresentation;
 
         [SettingsHeader]
         [SerializeField] private Color defaultColor = Color.white;
+
         [SerializeField] private Color beatColor = Color.red;
         [SerializeField] private float colorDecayTime = 1f;
 
         private float _colorTime;
-
-        public void UpdateData(float current, float average, bool beat)
-        {
-            currentSpectrum.text = FormatText(current);
-            averageSpectrum.text = FormatText(average);
-
-            visualRepresentation.fillAmount = Mathf.Lerp(0f, 1f, current);
-            AnalyzeBeat(beat);
-        }
 
         private void AnalyzeBeat(bool beat)
         {
@@ -62,6 +55,14 @@ namespace Modules.AudioAnalyseUI
             visualRepresentation.fillAmount = 0f;
             visualRepresentation.color = defaultColor;
             _colorTime = 0;
+        }
+
+        public void UpdateData(float current, float average, bool beat)
+        {
+            currentSpectrum.text = FormatText(current);
+            averageSpectrum.text = FormatText(average);
+            visualRepresentation.fillAmount = Mathf.Lerp(0f, 1f, current);
+            AnalyzeBeat(beat);
         }
     }
 }
