@@ -27,10 +27,10 @@ namespace Modules.AudioAnalyseUI
         private void BeatDataReceived(BeatAnalyzeData beatAnalyzeData)
         {
             const int bass = (int)BeatDetector.BeatType.Bass;
-            bassBeat.UpdateData(beatAnalyzeData.freqSpectrum[bass], beatAnalyzeData.avgSpectrum[bass]);
+            bassBeat.UpdateData(beatAnalyzeData.freqSpectrum[bass], beatAnalyzeData.avgSpectrum[bass], beatAnalyzeData.isBass);
         
             const int low = (int)BeatDetector.BeatType.Low;
-            lowBeat.UpdateData(beatAnalyzeData.freqSpectrum[low], beatAnalyzeData.avgSpectrum[low]);
+            lowBeat.UpdateData(beatAnalyzeData.freqSpectrum[low], beatAnalyzeData.avgSpectrum[low], beatAnalyzeData.isLow);
         }
 
         private void OnPlayerStateChanged(AudioPlayerState state)

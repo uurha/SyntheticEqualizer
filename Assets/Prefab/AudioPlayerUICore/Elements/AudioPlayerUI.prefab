@@ -25,7 +25,6 @@ GameObject:
   - component: {fileID: 7805604884026603021}
   - component: {fileID: 7805604884026603010}
   - component: {fileID: 7805604884026603011}
-  - component: {fileID: 1007139944981144671}
   - component: {fileID: 8688826852416270794}
   m_Layer: 0
   m_Name: AudioPlayerUI
@@ -89,10 +88,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
+  m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3
@@ -117,18 +116,6 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &1007139944981144671
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7805604884026603009}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4541c3cde5bde3943b02a062806a4950, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &8688826852416270794
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -141,8 +128,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e7a8ef4a167093f4eb8d501f8d0d646a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playButton: {fileID: 7237822532618864737}
   playbackSlider: {fileID: 3182661103056078897}
+  playButton: {fileID: 7237822532618864737}
   volumeSlider: {fileID: 1042950445451886559}
 --- !u!1001 &5115515321536546390
 PrefabInstance:
@@ -201,7 +188,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1708961716138527187, guid: a0c739b6fa571da4eb7f2cef34bb3c9c, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 150
+      value: 375
       objectReference: {fileID: 0}
     - target: {fileID: 1708961716138527187, guid: a0c739b6fa571da4eb7f2cef34bb3c9c, type: 3}
       propertyPath: m_LocalPosition.x
@@ -237,7 +224,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1708961716138527187, guid: a0c739b6fa571da4eb7f2cef34bb3c9c, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: 40
       objectReference: {fileID: 0}
     - target: {fileID: 1708961716138527187, guid: a0c739b6fa571da4eb7f2cef34bb3c9c, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -391,11 +378,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2045753410120623386, guid: 34717a6e427b86342aaeceb15e38e8f0, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 160
+      value: 238.08
       objectReference: {fileID: 0}
     - target: {fileID: 2045753410120623386, guid: 34717a6e427b86342aaeceb15e38e8f0, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 30
+      value: 44.64
       objectReference: {fileID: 0}
     - target: {fileID: 2045753410120623386, guid: 34717a6e427b86342aaeceb15e38e8f0, type: 3}
       propertyPath: m_LocalPosition.x
@@ -427,11 +414,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2045753410120623386, guid: 34717a6e427b86342aaeceb15e38e8f0, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -90
+      value: -154.04004
       objectReference: {fileID: 0}
     - target: {fileID: 2045753410120623386, guid: 34717a6e427b86342aaeceb15e38e8f0, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 25
+      value: 47.5
       objectReference: {fileID: 0}
     - target: {fileID: 2045753410120623386, guid: 34717a6e427b86342aaeceb15e38e8f0, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -452,6 +439,18 @@ PrefabInstance:
     - target: {fileID: 7631049467402591141, guid: 34717a6e427b86342aaeceb15e38e8f0, type: 3}
       propertyPath: m_text
       value: Play
+      objectReference: {fileID: 0}
+    - target: {fileID: 7631049467402591141, guid: 34717a6e427b86342aaeceb15e38e8f0, type: 3}
+      propertyPath: m_fontSize
+      value: 38
+      objectReference: {fileID: 0}
+    - target: {fileID: 7631049467402591141, guid: 34717a6e427b86342aaeceb15e38e8f0, type: 3}
+      propertyPath: m_fontSizeBase
+      value: 38
+      objectReference: {fileID: 0}
+    - target: {fileID: 7631049467402591141, guid: 34717a6e427b86342aaeceb15e38e8f0, type: 3}
+      propertyPath: m_enableAutoSizing
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 34717a6e427b86342aaeceb15e38e8f0, type: 3}
@@ -512,7 +511,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1708961716138527187, guid: a0c739b6fa571da4eb7f2cef34bb3c9c, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 550
+      value: 1375
       objectReference: {fileID: 0}
     - target: {fileID: 1708961716138527187, guid: a0c739b6fa571da4eb7f2cef34bb3c9c, type: 3}
       propertyPath: m_SizeDelta.y
@@ -552,7 +551,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1708961716138527187, guid: a0c739b6fa571da4eb7f2cef34bb3c9c, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 25
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 1708961716138527187, guid: a0c739b6fa571da4eb7f2cef34bb3c9c, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x

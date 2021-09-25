@@ -1,12 +1,11 @@
+using CorePlugin.Core;
 using CorePlugin.Core.Interface;
 using UnityEngine;
 
 namespace Modules.AudioPlayerUI
 {
-    public class AudioPlayerUICore : MonoBehaviour, ICore
+    public class AudioPlayerUICore : BaseCore
     {
-        public void InitializeElements()
-        {
-        }
+        
     }
 }

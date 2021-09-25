@@ -28,7 +28,7 @@ namespace Modules.AudioAnalyse.SubSystems.BeatDetector
         private List<int> _beatDetectorBandLimits;
         private int _numChannels;
 
-        private int _numberOfSamples = 1024;
+        private int _numberOfSamples;
 
         private bool _isInitialized;
         private event BeatDetectionEvents.OnBeatDetectedEvent OnBeatEvent;
@@ -136,28 +136,27 @@ namespace Modules.AudioAnalyse.SubSystems.BeatDetector
 
         private void Initialize(SpectrumListenerData listenerData)
         {
+            _numberOfSamples = listenerData.NumberOfSamples;
             var bandSize = listenerData.Frequency / _numberOfSamples; // bandsize = (samplingFrequency / windowSize)
             var fftHistoryMAXSize = listenerData.Frequency / _numberOfSamples;
-            _numberOfSamples = listenerData.NumberOfSamples;
             _fftHistoryBeatDetector = new Conveyor<List<float>>(fftHistoryMAXSize);
-            _beatDetectorBandLimits = new List<int>();
-            _beatDetectorBandLimits.Clear();
+            _beatDetectorBandLimits = new List<int>
+                                      {
+                                          //bass 60hz-180hz
+                                          BassLowerLimit / bandSize,
+                                          BassUpperLimit / bandSize,
 
-            //bass 60hz-180hz
-            _beatDetectorBandLimits.Add(BassLowerLimit / bandSize);
-            _beatDetectorBandLimits.Add(BassUpperLimit / bandSize);
-
-            //low midrange 500hz-2000hz
-            _beatDetectorBandLimits.Add(LowLowerLimit / bandSize);
-            _beatDetectorBandLimits.Add(LowUpperLimit / bandSize);
+                                          //low midrange 500hz-2000hz
+                                          LowLowerLimit / bandSize,
+                                          LowUpperLimit / bandSize
+                                      };
             _beatDetectorBandLimits.TrimExcess();
-            _fftHistoryBeatDetector.Clear();
             _numChannels = listenerData.Channels;
 
             _data = new BeatAnalyzeData
                     {
-                        freqSpectrum = new float[4],
-                        avgSpectrum = new float[4],
+                        freqSpectrum = new float[2],
+                        avgSpectrum = new float[2],
                         isBass = false,
                         isLow = false
                     };

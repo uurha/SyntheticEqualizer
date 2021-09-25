@@ -13,13 +13,41 @@ namespace Modules.AudioAnalyseUI
         [SerializeField] private Image visualRepresentation;
 
         [SettingsHeader]
-        [SerializeField] private float initialValue = 0f;
+        [SerializeField] private Color defaultColor = Color.white;
+        [SerializeField] private Color beatColor = Color.red;
+        [SerializeField] private float colorDecayTime = 1f;
 
-        public void UpdateData(float current, float average)
+        private float _colorTime;
+
+        public void UpdateData(float current, float average, bool beat)
         {
             currentSpectrum.text = FormatText(current);
             averageSpectrum.text = FormatText(average);
+
             visualRepresentation.fillAmount = Mathf.Lerp(0f, 1f, current);
+            AnalyzeBeat(beat);
+        }
+
+        private void AnalyzeBeat(bool beat)
+        {
+            if (beat)
+            {
+                visualRepresentation.color = beatColor;
+                _colorTime = 0;
+            }
+            else
+            {
+                if (_colorTime < colorDecayTime)
+                {
+                    _colorTime += Time.deltaTime;
+                    var t = Mathf.InverseLerp(0f, colorDecayTime, _colorTime);
+                    visualRepresentation.color = Color.Lerp(visualRepresentation.color, defaultColor, t);
+                }
+                else
+                {
+                    visualRepresentation.color = defaultColor;
+                }
+            }
         }
 
         private static string FormatText(float value)
@@ -29,9 +57,11 @@ namespace Modules.AudioAnalyseUI
 
         public void ResetData()
         {
-            currentSpectrum.text = FormatText(initialValue);
-            currentSpectrum.text = FormatText(initialValue);
-            visualRepresentation.fillAmount = Mathf.Lerp(0f, 1f, initialValue);
+            currentSpectrum.text = FormatText(0f);
+            currentSpectrum.text = FormatText(0f);
+            visualRepresentation.fillAmount = 0f;
+            visualRepresentation.color = defaultColor;
+            _colorTime = 0;
         }
     }
 }
