@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using Base;
 using CorePlugin.Attributes.Headers;
 using CorePlugin.Cross.Events.Interface;
+using CorePlugin.Extensions;
 using Extensions;
 using Modules.AudioLoader.Model;
 using Modules.AudioPlayer.SubSystems.Playlist;
@@ -25,7 +24,7 @@ namespace Modules.AudioLoader.SubSystems.Loader
 
         private string defaultPath = Application.streamingAssetsPath;
 
-        private event CrossEventsType.OnAudioLoadRequested RequestAudioLoad;
+        private event AudioPlayerEvents.AudioLoadRequested RequestAudioLoad;
 
         private void Awake()
         {
@@ -44,10 +43,6 @@ namespace Modules.AudioLoader.SubSystems.Loader
             }
         }
 
-        public void InvokeEvents()
-        {
-        }
-
         private void Loading(AudioDataProgress dataProgress)
         {
             if (dataProgress.State != AudioDataProgress.StateProgress.Done) return;
@@ -59,16 +54,18 @@ namespace Modules.AudioLoader.SubSystems.Loader
             playlistComponent ??= GetComponent<PlaylistComponent>();
         }
 
-        public void Subscribe(IEnumerable<Delegate> subscribers)
+        public void InvokeEvents()
         {
-            foreach (var audioLoadRequested in subscribers.OfType<CrossEventsType.OnAudioLoadRequested>())
-                RequestAudioLoad += audioLoadRequested;
         }
 
-        public void Unsubscribe(IEnumerable<Delegate> unsubscribers)
+        public void Subscribe(params Delegate[] subscribers)
         {
-            foreach (var audioLoadRequested in unsubscribers.OfType<CrossEventsType.OnAudioLoadRequested>())
-                RequestAudioLoad -= audioLoadRequested;
+            EventExtensions.Subscribe(ref RequestAudioLoad, subscribers);
+        }
+
+        public void Unsubscribe(params Delegate[] unsubscribers)
+        {
+            EventExtensions.Unsubscribe(ref RequestAudioLoad, unsubscribers);
         }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using System;
 using Base.Deque;
+using Modules.AudioAnalyse.Model;
 using Modules.AudioLoader.Model;
+using Modules.AudioPlayer.Interfaces;
 using Modules.AudioPlayer.Model;
 using Modules.AudioPlayer.SubSystems.Playlist;
 using Modules.Grid.Model;
@@ -8,24 +10,42 @@ using UnityEngine;
 
 namespace Base
 {
-    public static class CrossEventsType
+    public static class AudioPlayerEvents
     {
-        public delegate AudioClip AskPlaylistClip(PlaylistDirection direction);
+        public delegate void AudioClipChangedEvent();
 
-        public delegate void OnAudioAnalyzedDataUpdateEvent(float[] data);
+        public delegate void AudioLoadRequested(AudioLoaderSettings loaderSettings, Action<AudioDataProgress> action);
 
-        public delegate void OnAudioClipEndedEvent();
+        public delegate void AudioPlayerStateEvent(AudioPlayerState state);
 
-        public delegate void OnAudioLoadRequested(AudioLoaderSettings loaderSettings, Action<AudioDataProgress> action);
+        public delegate void PlaybackTime01ChangedEvent(float data);
 
-        public delegate void OnAudioPlayerStateEvent(AudioPlayerState state);
+        public delegate AudioPlayerData RequestAudioPlayerData();
 
-        public delegate void OnBeatDetectedEvent();
+        public delegate AudioClip RequestPlaylistClip(PlaylistDirection direction);
 
-        public delegate void OnBPMChangedEvent(int bpm);
+        public delegate void UpdateAudioPlayerState(IPlayerState playerState);
+    }
 
-        public delegate void OnGridUpdatedEvent(Conveyor<GridConfiguration> gridConfigurations);
+    public static class AudioAnalyzerEvents
+    {
+        public delegate void SpectrumAnalyzerDataEvent(SpectrumAnalyzerData data);
+    }
 
-        public delegate void OnSpectrumListenerDataUpdateEvent(SpectrumListenerData listenerData);
+    public static class BeatDetectionEvents
+    {
+        public delegate void BeatDetectorEvent(BeatAnalyzeData beatAnalyzeData);
+    }
+
+    public static class GridEvents
+    {
+        public delegate void GridUpdatedEvent(Conveyor<GridConfiguration> gridConfigurations);
+    }
+
+    public static class DataProcessorsEvents
+    {
+        public delegate void SpectrumProcessorDataEvent(SpectrumProcessorData listenerData);
+
+        public delegate void SpectrumListenerDataEvent(SpectrumListenerData listenerData);
     }
 }

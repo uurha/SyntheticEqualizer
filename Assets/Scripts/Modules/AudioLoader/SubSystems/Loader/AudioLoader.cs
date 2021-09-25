@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using Base;
 using CorePlugin.Cross.Events.Interface;
 using Modules.AudioLoader.Model;
@@ -43,14 +42,14 @@ namespace Modules.AudioLoader.SubSystems.Loader
             request.Dispose();
         }
 
-        public IEnumerable<Delegate> GetSubscribers()
-        {
-            return new[] {(CrossEventsType.OnAudioLoadRequested) LoadRequested};
-        }
-
         private void LoadRequested(AudioLoaderSettings loaderSettings, Action<AudioDataProgress> action)
         {
             StartCoroutine(FetchAudioClip(loaderSettings, action));
+        }
+
+        public Delegate[] GetSubscribers()
+        {
+            return new[] {(AudioPlayerEvents.AudioLoadRequested) LoadRequested};
         }
     }
 }

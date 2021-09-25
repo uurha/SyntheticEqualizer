@@ -1,11 +1,9 @@
-﻿using System;
-using CorePlugin.ReferenceDistribution.Interface;
-using Modules.AudioPlayer.Model;
+﻿using Modules.AudioPlayer.Model;
 using UnityEngine;
 
 namespace Modules.AudioPlayer.Interfaces
 {
-    public interface IAudioPlayer : IDistributingReference
+    public interface IAudioPlayer
     {
         public AudioClip Clip { get; }
 
@@ -17,9 +15,6 @@ namespace Modules.AudioPlayer.Interfaces
         public bool IsPlaying { get; }
         public bool IsPaused { get; }
         public bool IsMuted { get; }
-
-        public event Action<float> OnPlaybackTimeChangedEvent;
-        public event Action<float> OnPlaybackTime01ChangedEvent;
 
         public void Pause();
 

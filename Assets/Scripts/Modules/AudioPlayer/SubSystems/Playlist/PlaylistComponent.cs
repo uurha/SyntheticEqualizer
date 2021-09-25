@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Base;
 using Base.Deque;
 using CorePlugin.Cross.Events.Interface;
@@ -18,6 +17,8 @@ namespace Modules.AudioPlayer.SubSystems.Playlist
     {
         private Deque<AudioClip> _audioClips;
 
+        private AudioClip _currentClip;
+
         private void Awake()
         {
             _audioClips = new Deque<AudioClip>();
@@ -28,7 +29,27 @@ namespace Modules.AudioPlayer.SubSystems.Playlist
             _audioClips.AddLast(clip);
         }
 
-        private AudioClip AskPlaylistClip(PlaylistDirection direction)
+        private AudioClip GetNextClip()
+        {
+            if (_audioClips.IsEmpty) return null;
+            if (_currentClip != null) _audioClips.AddLast(_currentClip);
+            var clip = _audioClips.First;
+            _audioClips.RemoveFirst();
+            _currentClip = clip;
+            return clip;
+        }
+
+        private AudioClip GetPreviousClip()
+        {
+            if (_audioClips.IsEmpty) return null;
+            if (_currentClip != null) _audioClips.AddFirst(_currentClip);
+            var clip = _audioClips.Last;
+            _audioClips.RemoveLast();
+            _currentClip = clip;
+            return clip;
+        }
+
+        private AudioClip RequestPlaylistClip(PlaylistDirection direction)
         {
             AudioClip clip = null;
 
@@ -48,27 +69,9 @@ namespace Modules.AudioPlayer.SubSystems.Playlist
             return clip;
         }
 
-        private AudioClip GetNextClip()
+        public Delegate[] GetSubscribers()
         {
-            if (_audioClips.IsEmpty) return null;
-            var clip = _audioClips.First;
-            _audioClips.RemoveFirst();
-            _audioClips.AddLast(clip);
-            return clip;
-        }
-
-        private AudioClip GetPreviousClip()
-        {
-            if (_audioClips.IsEmpty) return null;
-            var clip = _audioClips.Last;
-            _audioClips.RemoveLast();
-            _audioClips.AddFirst(clip);
-            return clip;
-        }
-
-        public IEnumerable<Delegate> GetSubscribers()
-        {
-            return new[] {(CrossEventsType.AskPlaylistClip) AskPlaylistClip};
+            return new Delegate[] {(AudioPlayerEvents.RequestPlaylistClip) RequestPlaylistClip};
         }
     }
 }

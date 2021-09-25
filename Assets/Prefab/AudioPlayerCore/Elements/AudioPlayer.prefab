@@ -143,7 +143,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   audioPlayer: {fileID: 6367349880563336776}
   audioSource: {fileID: 8293997399359033991}
-  channel: 0
   fftWindow: 5
   numberOfSamples: 1024
 --- !u!114 &6367349880563336776

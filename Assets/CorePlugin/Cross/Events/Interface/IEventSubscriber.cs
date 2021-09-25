@@ -36,6 +36,6 @@ namespace CorePlugin.Cross.Events.Interface
         /// Returns IEnumerable with all methods which need to be subscribed.
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<Delegate> GetSubscribers();
+        public Delegate[] GetSubscribers();
     }
 }

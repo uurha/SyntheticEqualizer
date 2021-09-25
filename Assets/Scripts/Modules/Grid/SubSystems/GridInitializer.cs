@@ -1,11 +1,10 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using Base;
 using Base.BaseTypes;
 using Base.Deque;
 using CorePlugin.Attributes.Headers;
 using CorePlugin.Cross.Events.Interface;
+using CorePlugin.Extensions;
 using Extensions;
 using Modules.Grid.Model;
 using Modules.Grid.SubSystems.Generator;
@@ -32,7 +31,7 @@ namespace Modules.Grid.SubSystems
         private Vector3 _initialPosition = Vector3.zero;
         private EntityRoute _previousGridExit;
 
-        private event CrossEventsType.OnGridUpdatedEvent onGridChanged;
+        private event GridEvents.GridUpdatedEvent OnGridChanged;
 
         public bool IsInitialized { get; private set; }
 
@@ -72,10 +71,6 @@ namespace Modules.Grid.SubSystems
             _gridGenerator.GenerateGrid(OnGridGenerated);
         }
 
-        public void InvokeEvents()
-        {
-        }
-
         private void OnGridGenerated(GridGeneratorOutput gridGeneratorOutput)
         {
             var bufferList = new ICellEntity[columnCount, rowCount];
@@ -102,19 +97,21 @@ namespace Modules.Grid.SubSystems
             var entity = gridConfiguration.ColumnsConfiguration[0].GetCells()[0];
             _initialPosition = entity.GetOrientation().Position;
             IsInitialized = true;
-            onGridChanged?.Invoke(InstancedGrids);
+            OnGridChanged?.Invoke(InstancedGrids);
         }
 
-        public void Subscribe(IEnumerable<Delegate> subscribers)
+        public void InvokeEvents()
         {
-            foreach (var gridChanged in subscribers.OfType<CrossEventsType.OnGridUpdatedEvent>())
-                onGridChanged += gridChanged;
         }
 
-        public void Unsubscribe(IEnumerable<Delegate> unsubscribers)
+        public void Subscribe(params Delegate[] subscribers)
         {
-            foreach (var gridChanged in unsubscribers.OfType<CrossEventsType.OnGridUpdatedEvent>())
-                onGridChanged -= gridChanged;
+            EventExtensions.Subscribe(ref OnGridChanged, subscribers);
+        }
+
+        public void Unsubscribe(params Delegate[] unsubscribers)
+        {
+            EventExtensions.Unsubscribe(ref OnGridChanged, unsubscribers);
         }
     }
 }
