@@ -20,7 +20,7 @@ namespace Modules.AudioAnalyse.SubSystems.DataProcessors
 
         private void OnBeatDetected(BeatAnalyzeData beatAnalyzeData)
         {
-            if (beatAnalyzeData.isBass || beatAnalyzeData.isLow)
+            if (beatAnalyzeData.IsBass || beatAnalyzeData.IsLow)
             {
                 OnBeat();
             }
@@ -46,8 +46,8 @@ namespace Modules.AudioAnalyse.SubSystems.DataProcessors
         {
             return new Delegate[]
                    {
-                       (BeatDetectionEvents.OnBeatDetectedEvent) OnBeatDetected,
-                       (AudioPlayerEvents.OnAudioClipChanged) OnAudioClipChanged
+                       (BeatDetectionEvents.BeatDetectorEvent) OnBeatDetected,
+                       (AudioPlayerEvents.AudioClipChangedEvent) OnAudioClipChanged
                    };
         }
     }

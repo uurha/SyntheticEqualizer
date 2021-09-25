@@ -13,7 +13,7 @@ using UnityEngine;
 namespace Modules.AudioPlayer
 {
     [RequireComponent(typeof(AudioSource))] [OneAndOnly]
-    public class AudioPlayerComponent : MonoBehaviour, IAudioPlayer, IEventHandler, IEventSubscriber
+    public class AudioPlayer : MonoBehaviour, IAudioPlayer, IEventHandler, IEventSubscriber
     {
         [ReferencesHeader]
         [SerializeField] private AudioSource audioSource;
@@ -23,11 +23,11 @@ namespace Modules.AudioPlayer
 
         private AudioPlayerState _currentState;
 
-        private event AudioPlayerEvents.OnAudioPlayerStateEvent OnAudioPlayerState;
+        private event AudioPlayerEvents.AudioPlayerStateEvent OnAudioPlayerState;
         private event AudioPlayerEvents.RequestPlaylistClip RequestPlaylistClip;
-        private event AudioPlayerEvents.OnPlaybackTime01ChangedEvent OnPlaybackTime01ChangedEvent;
+        private event AudioPlayerEvents.PlaybackTime01ChangedEvent OnPlaybackTime01ChangedEvent;
 
-        private event AudioPlayerEvents.OnAudioClipChanged OnAudioClipChanged;
+        private event AudioPlayerEvents.AudioClipChangedEvent OnAudioClipChanged;
 
         public AudioClip Clip => audioSource.clip;
 

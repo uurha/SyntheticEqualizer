@@ -27,10 +27,10 @@ namespace Modules.AudioAnalyseUI
         private void BeatDataReceived(BeatAnalyzeData beatAnalyzeData)
         {
             const int bass = (int)BeatDetector.BeatType.Bass;
-            bassBeat.UpdateData(beatAnalyzeData.freqSpectrum[bass], beatAnalyzeData.avgSpectrum[bass], beatAnalyzeData.isBass);
+            bassBeat.UpdateData(beatAnalyzeData.FreqSpectrum[bass], beatAnalyzeData.AvgSpectrum[bass], beatAnalyzeData.IsBass);
         
             const int low = (int)BeatDetector.BeatType.Low;
-            lowBeat.UpdateData(beatAnalyzeData.freqSpectrum[low], beatAnalyzeData.avgSpectrum[low], beatAnalyzeData.isLow);
+            lowBeat.UpdateData(beatAnalyzeData.FreqSpectrum[low], beatAnalyzeData.AvgSpectrum[low], beatAnalyzeData.IsLow);
         }
 
         private void OnPlayerStateChanged(AudioPlayerState state)
@@ -57,8 +57,8 @@ namespace Modules.AudioAnalyseUI
         {
             return new Delegate[]
                    {
-                       (BeatDetectionEvents.OnBeatDetectedEvent) BeatDataReceived,
-                       (AudioPlayerEvents.OnAudioPlayerStateEvent) OnPlayerStateChanged
+                       (BeatDetectionEvents.BeatDetectorEvent) BeatDataReceived,
+                       (AudioPlayerEvents.AudioPlayerStateEvent) OnPlayerStateChanged
                    };
         }
     }

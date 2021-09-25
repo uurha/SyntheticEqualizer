@@ -12,15 +12,13 @@ namespace Base
 {
     public static class AudioPlayerEvents
     {
-        public delegate void OnAudioClipChanged();
+        public delegate void AudioClipChangedEvent();
 
-        public delegate void OnAudioLoadRequested(AudioLoaderSettings loaderSettings, Action<AudioDataProgress> action);
+        public delegate void AudioLoadRequested(AudioLoaderSettings loaderSettings, Action<AudioDataProgress> action);
 
-        public delegate void OnAudioPlayerStateEvent(AudioPlayerState state);
+        public delegate void AudioPlayerStateEvent(AudioPlayerState state);
 
-        public delegate void OnPlaybackTime01ChangedEvent(float data);
-
-        public delegate void OnSpectrumAnalyzedDataUpdateEvent(SpectrumAnalyzerData data);
+        public delegate void PlaybackTime01ChangedEvent(float data);
 
         public delegate AudioPlayerData RequestAudioPlayerData();
 
@@ -29,15 +27,25 @@ namespace Base
         public delegate void UpdateAudioPlayerState(IPlayerState playerState);
     }
 
-    public static class BeatDetectionEvents
+    public static class AudioAnalyzerEvents
     {
-        public delegate void OnBeatDetectedEvent(BeatAnalyzeData beatAnalyzeData);
+        public delegate void SpectrumAnalyzerDataEvent(SpectrumAnalyzerData data);
     }
 
-    public static class CrossEvents
+    public static class BeatDetectionEvents
     {
-        public delegate void OnGridUpdatedEvent(Conveyor<GridConfiguration> gridConfigurations);
+        public delegate void BeatDetectorEvent(BeatAnalyzeData beatAnalyzeData);
+    }
 
-        public delegate void OnSpectrumListenerDataUpdateEvent(SpectrumListenerData listenerData);
+    public static class GridEvents
+    {
+        public delegate void GridUpdatedEvent(Conveyor<GridConfiguration> gridConfigurations);
+    }
+
+    public static class DataProcessorsEvents
+    {
+        public delegate void SpectrumProcessorDataEvent(SpectrumProcessorData listenerData);
+
+        public delegate void SpectrumListenerDataEvent(SpectrumListenerData listenerData);
     }
 }

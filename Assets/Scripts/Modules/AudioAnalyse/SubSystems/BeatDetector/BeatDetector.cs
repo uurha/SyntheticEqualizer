@@ -31,7 +31,7 @@ namespace Modules.AudioAnalyse.SubSystems.BeatDetector
         private int _numberOfSamples;
 
         private bool _isInitialized;
-        private event BeatDetectionEvents.OnBeatDetectedEvent OnBeatEvent;
+        private event BeatDetectionEvents.BeatDetectorEvent OnBeatEvent;
         private const int BassLowerLimit = 60;
         private const int BassUpperLimit = 180;
         private const int LowLowerLimit = 500;
@@ -105,36 +105,36 @@ namespace Modules.AudioAnalyse.SubSystems.BeatDetector
                     for (var channel = 0; channel < _numChannels; ++channel)
                     {
                         var tempSample = spectrum[channel];
-                        referenceData.freqSpectrum[numBand] += tempSample[indexFFT];
+                        referenceData.FreqSpectrum[numBand] += tempSample[indexFFT];
                     }
                 }
 
-                referenceData.freqSpectrum[numBand] /=
+                referenceData.FreqSpectrum[numBand] /=
                     _beatDetectorBandLimits[numBand + 1] - _beatDetectorBandLimits[numBand] * numBand;
             }
 
             if (_fftHistoryBeatDetector.Count > 0)
             {
-                FillAvgSpectrum(NumBands, ref referenceData.avgSpectrum, ref _fftHistoryBeatDetector);
+                FillAvgSpectrum(NumBands, ref referenceData.AvgSpectrum, ref _fftHistoryBeatDetector);
                 var varianceSpectrum = new float[NumBands];
 
-                FillVarianceSpectrum(NumBands, ref varianceSpectrum, ref referenceData.avgSpectrum,
+                FillVarianceSpectrum(NumBands, ref varianceSpectrum, ref referenceData.AvgSpectrum,
                                      ref _fftHistoryBeatDetector);
                 
                 const int bass = (int)BeatType.Bass;
-                referenceData.isBass = referenceData.freqSpectrum[bass] - 0.05 >
-                                       BeatThreshold(varianceSpectrum[bass]) * referenceData.avgSpectrum[bass];
+                referenceData.IsBass = referenceData.FreqSpectrum[bass] - 0.05 >
+                                       BeatThreshold(varianceSpectrum[bass]) * referenceData.AvgSpectrum[bass];
                 
                 const int low = (int)BeatType.Low;
-                referenceData.isLow = referenceData.freqSpectrum[low] - 0.005 >
-                                      BeatThreshold(varianceSpectrum[low]) * referenceData.avgSpectrum[low];
+                referenceData.IsLow = referenceData.FreqSpectrum[low] - 0.005 >
+                                      BeatThreshold(varianceSpectrum[low]) * referenceData.AvgSpectrum[low];
             }
             var fftResult = new List<float>(NumBands);
-            for (var index = 0; index < NumBands; ++index) fftResult.Add(referenceData.freqSpectrum[index]);
+            for (var index = 0; index < NumBands; ++index) fftResult.Add(referenceData.FreqSpectrum[index]);
             _fftHistoryBeatDetector.AddLast(fftResult);
         }
 
-        private void Initialize(SpectrumListenerData listenerData)
+        private void Initialize(SpectrumProcessorData listenerData)
         {
             _numberOfSamples = listenerData.NumberOfSamples;
             var bandSize = listenerData.Frequency / _numberOfSamples; // bandsize = (samplingFrequency / windowSize)
@@ -155,10 +155,10 @@ namespace Modules.AudioAnalyse.SubSystems.BeatDetector
 
             _data = new BeatAnalyzeData
                     {
-                        freqSpectrum = new float[2],
-                        avgSpectrum = new float[2],
-                        isBass = false,
-                        isLow = false
+                        FreqSpectrum = new float[2],
+                        AvgSpectrum = new float[2],
+                        IsBass = false,
+                        IsLow = false
                     };
             _isInitialized = true;
         }
@@ -168,13 +168,13 @@ namespace Modules.AudioAnalyse.SubSystems.BeatDetector
             Deconstruct();
         }
 
-        private void OnSpectrumReceived(SpectrumListenerData listenerData)
+        private void OnSpectrumReceived(SpectrumProcessorData listenerData)
         {
-            GetBeat(listenerData.RawSpectrumData, ref _data);
+            GetBeat(listenerData.SpectrumData, ref _data);
             OnBeatEvent?.Invoke(_data);
         }
 
-        private void SpectrumListenerDataReceived(SpectrumListenerData listenerData)
+        private void SpectrumListenerDataReceived(SpectrumProcessorData listenerData)
         {
             if (!_isInitialized)
             {
@@ -203,8 +203,8 @@ namespace Modules.AudioAnalyse.SubSystems.BeatDetector
         {
             return new Delegate[]
                    {
-                       (AudioPlayerEvents.OnAudioClipChanged) OnAudioClipChanged,
-                       (CrossEvents.OnSpectrumListenerDataUpdateEvent) SpectrumListenerDataReceived
+                       (AudioPlayerEvents.AudioClipChangedEvent) OnAudioClipChanged,
+                       (DataProcessorsEvents.SpectrumProcessorDataEvent) SpectrumListenerDataReceived
                    };
         }
     }

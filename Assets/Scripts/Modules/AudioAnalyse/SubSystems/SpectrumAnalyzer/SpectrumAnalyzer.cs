@@ -66,7 +66,7 @@ namespace Modules.AudioAnalyse.SubSystems.SpectrumAnalyzer
             1.122f  // 2^(1/6)
         };
 
-        private event AudioPlayerEvents.OnSpectrumAnalyzedDataUpdateEvent OnAudioAnalyzedDataUpdated;
+        private event AudioAnalyzerEvents.SpectrumAnalyzerDataEvent OnAudioAnalyzedDataUpdated;
 
         public enum BandType
         {
@@ -80,21 +80,21 @@ namespace Modules.AudioAnalyse.SubSystems.SpectrumAnalyzer
 
         private void CheckAnalyzedArrays(int channels, int numberOfSamples)
         {
-            ValidateArray(ref _spectrum, _channels, _numberOfSamples);
+            ValidateListArray(ref _spectrum, _channels, _numberOfSamples);
             var bandCount = middleFrequenciesForBands[(int) bandType].Length;
-            ValidateArray(ref _levels, _channels, bandCount);
-            ValidateArray(ref _peakLevels, _channels, bandCount);
-            ValidateArray(ref _meanLevels, _channels, bandCount);
+            ValidateListArray(ref _levels, _channels, bandCount);
+            ValidateListArray(ref _peakLevels, _channels, bandCount);
+            ValidateListArray(ref _meanLevels, _channels, bandCount);
         }
 
-        private void ComputeSpectrum(SpectrumListenerData data)
+        private void ComputeSpectrum(SpectrumProcessorData data)
         {
             var middleFrequencies = middleFrequenciesForBands[(int) bandType];
             var bandwidth = bandWidthForBands[(int) bandType];
             var fallDown = fallSpeed * Time.deltaTime;
             var filter = Mathf.Exp(-sensibility * Time.deltaTime);
 
-            for (var channel = 0; channel < data.RawSpectrumData.Count; channel++)
+            for (var channel = 0; channel < data.SpectrumData.Count; channel++)
             {
                 for (var bi = 0; bi < _levels[channel].Length; bi++)
                 {
@@ -103,7 +103,7 @@ namespace Modules.AudioAnalyse.SubSystems.SpectrumAnalyzer
                     var bandMax = 0.0f;
 
                     for (var fi = imin; fi <= imax; fi++)
-                        bandMax = Mathf.Max(bandMax, data.RawSpectrumData[channel][fi]);
+                        bandMax = Mathf.Max(bandMax, data.SpectrumData[channel][fi]);
                     _levels[channel][bi] = bandMax;
                     _peakLevels[channel][bi] = Mathf.Max(_peakLevels[channel][bi] - fallDown, bandMax);
                     _meanLevels[channel][bi] = bandMax - (bandMax - _meanLevels[channel][bi]) * filter;
@@ -126,12 +126,12 @@ namespace Modules.AudioAnalyse.SubSystems.SpectrumAnalyzer
             return Mathf.Clamp(i, 0, _spectrum[channel].Length - 1);
         }
 
-        private SpectrumAnalyzerData GenerateAnalyzerData(SpectrumListenerData listenerData)
+        private SpectrumAnalyzerData GenerateAnalyzerData(SpectrumProcessorData listenerData)
         {
             return new SpectrumAnalyzerData(listenerData, _meanLevels, _peakLevels, _levels);
         }
 
-        private void Initialize(SpectrumListenerData listenerData)
+        private void Initialize(SpectrumProcessorData listenerData)
         {
             _numberOfSamples = listenerData.NumberOfSamples;
             _channels = listenerData.Channels;
@@ -144,14 +144,14 @@ namespace Modules.AudioAnalyse.SubSystems.SpectrumAnalyzer
             Deconstruct();
         }
 
-        private void OnSpectrumReceived(SpectrumListenerData listenerData)
+        private void OnSpectrumReceived(SpectrumProcessorData listenerData)
         {
             if (!_isInitialized) return;
             ComputeSpectrum(listenerData);
             OnAudioAnalyzedDataUpdated?.Invoke(GenerateAnalyzerData(listenerData));
         }
 
-        private void SpectrumListenerDataReceived(SpectrumListenerData listenerData)
+        private void SpectrumListenerDataReceived(SpectrumProcessorData listenerData)
         {
             if (!_isInitialized)
             {
@@ -162,14 +162,13 @@ namespace Modules.AudioAnalyse.SubSystems.SpectrumAnalyzer
             OnSpectrumReceived(listenerData);
         }
 
-        private void ValidateArray<T>(ref List<T[]> array, int count, int length)
+        private void ValidateListArray<T>(ref List<T[]> array, int count, int length)
         {
-            if (array == null ||
-                array.Count != length)
-            {
-                array = new List<T[]>();
-                for (var i = 0; i < count; i++) array.Add(new T[length]);
-            }
+            if (array != null &&
+                array.Count == length)
+                return;
+            array = new List<T[]>();
+            for (var i = 0; i < count; i++) array.Add(new T[length]);
         }
 
         public void InvokeEvents()
@@ -190,8 +189,8 @@ namespace Modules.AudioAnalyse.SubSystems.SpectrumAnalyzer
         {
             return new Delegate[]
                    {
-                       (AudioPlayerEvents.OnAudioClipChanged) OnAudioClipChanged,
-                       (CrossEvents.OnSpectrumListenerDataUpdateEvent) SpectrumListenerDataReceived
+                       (AudioPlayerEvents.AudioClipChangedEvent) OnAudioClipChanged,
+                       (DataProcessorsEvents.SpectrumProcessorDataEvent) SpectrumListenerDataReceived
                    };
         }
     }

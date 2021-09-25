@@ -1,12 +1,10 @@
-﻿using CorePlugin.Core.Interface;
+﻿using CorePlugin.Core;
+using CorePlugin.Core.Interface;
 using UnityEngine;
 
 namespace Modules.Grid
 {
-    public class GridCore : MonoBehaviour, ICore
+    public class GridCore : BaseCore
     {
-        public void InitializeElements()
-        {
-        }
     }
 }

@@ -100,8 +100,8 @@ namespace Modules.AudioPlayerUI
         {
             return new Delegate[]
                    {
-                       (AudioPlayerEvents.OnAudioPlayerStateEvent) PlayButtonTextUpdate,
-                       (AudioPlayerEvents.OnPlaybackTime01ChangedEvent) _playbackSlider.SetValueWithoutNotify
+                       (AudioPlayerEvents.AudioPlayerStateEvent) PlayButtonTextUpdate,
+                       (AudioPlayerEvents.PlaybackTime01ChangedEvent) _playbackSlider.SetValueWithoutNotify
                    };
         }
     }

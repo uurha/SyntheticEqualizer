@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Modules.AudioPlayer.Model
+namespace Modules.AudioAnalyse.Model
 {
     [Serializable]
     public struct SpectrumListenerData
