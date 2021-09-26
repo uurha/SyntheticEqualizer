@@ -3,8 +3,11 @@ using System.Linq;
 using Base;
 using Base.BehaviourModel.Interfaces;
 using Base.Deque;
+using CorePlugin.Attributes.Headers;
 using CorePlugin.Cross.Events.Interface;
+using Extensions;
 using Modules.AudioAnalyse.Model;
+using Modules.GlobalAudioSettings.Systems;
 using Modules.Grid.Model;
 using SubModules.Cell.Model;
 using UnityEngine;
@@ -13,19 +16,37 @@ namespace Modules.Grid.SubSystems.GridProcessors
 {
     public class GridProcessor : MonoBehaviour, IEventSubscriber
     {
-        [SerializeField] private float valueMultiplier = 2f;
-        private ICellVisualBehaviour[] _cellVisualBehaviours;
+        [SettingsHeader]
+        [SerializeField] private AnimationCurve curve;
 
-        private void OnAnalyzedDataUpdated(SpectrumAnalyzerData data)
+        private ICellVisualBehaviour[] _cellVisualBehaviours;
+        private SpectrumAnalyzerSettings _analyzerSettings;
+
+        #if UNITY_EDITOR
+        [ContextMenu(nameof(InitializeCurve))]
+        private void InitializeCurve()
+        {
+            curve.Clear();
+            for (var i = 0f; i <= 1f; i += 0.1f) curve.AddKey(i, 1);
+        }
+        #endif
+
+        private void OnAnalyzedDataUpdated(SpectrumAnalyzerOutput data)
         {
             if (_cellVisualBehaviours == null) return;
+            if (!_analyzerSettings.IsValid) return;
+            var arrayLenght = data.MeanSpectrumData[0].Length;
+            var curveArray = curve.CurveToArray(arrayLenght);
+            var orientations = new Orientation[arrayLenght];
 
-            var orientations = data.MeanSpectrumData[0].Select(y =>
-                                                               {
-                                                                   var position = new Vector3(0, y * valueMultiplier);
-                                                                   return new Orientation(position);
-                                                               }).ToArray();
+            for (var index = 0; index < arrayLenght; index++)
+                orientations[index] = Selector(data.MeanSpectrumData[0][index] * curveArray[index]);
             foreach (var behaviour in _cellVisualBehaviours) behaviour.RunBehaviour(orientations);
+        }
+
+        private void OnAudioAnalyzerSettingsChanged(SpectrumAnalyzerSettings analyzerSettings)
+        {
+            _analyzerSettings = analyzerSettings;
         }
 
         private void OnGridDataUpdated(Conveyor<GridConfiguration> newGridConfigurations)
@@ -36,12 +57,19 @@ namespace Modules.Grid.SubSystems.GridProcessors
                                    .ToArray();
         }
 
+        private Orientation Selector(float y)
+        {
+            var position = new Vector3(0, y);
+            return new Orientation(position);
+        }
+
         public Delegate[] GetSubscribers()
         {
             return new Delegate[]
                    {
                        (GridEvents.GridUpdatedEvent) OnGridDataUpdated,
-                       (AudioAnalyzerEvents.SpectrumAnalyzerDataEvent) OnAnalyzedDataUpdated
+                       (AudioAnalyzerEvents.SpectrumAnalyzerDataEvent) OnAnalyzedDataUpdated,
+                       (GlobalAudioSettingsEvents.OnSpectrumAnalyzerSettingsEvent) OnAudioAnalyzerSettingsChanged
                    };
         }
     }

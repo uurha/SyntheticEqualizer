@@ -2,9 +2,10 @@
 using Base.Deque;
 using Modules.AudioAnalyse.Model;
 using Modules.AudioLoader.Model;
-using Modules.AudioPlayer.Interfaces;
-using Modules.AudioPlayer.Model;
-using Modules.AudioPlayer.SubSystems.Playlist;
+using Modules.AudioPlayerModule.Interfaces;
+using Modules.AudioPlayerModule.Model;
+using Modules.AudioPlayerModule.Systems.Playlist;
+using Modules.GlobalAudioSettings.Systems;
 using Modules.Grid.Model;
 using UnityEngine;
 
@@ -29,12 +30,19 @@ namespace Base
 
     public static class AudioAnalyzerEvents
     {
-        public delegate void SpectrumAnalyzerDataEvent(SpectrumAnalyzerData data);
+        public delegate void SpectrumAnalyzerDataEvent(SpectrumAnalyzerOutput data);
     }
 
     public static class BeatDetectionEvents
     {
-        public delegate void BeatDetectorEvent(BeatAnalyzeData beatAnalyzeData);
+        public delegate void BeatDetectorEvent(BeatDetectorOutput beatAnalyzeData);
+    }
+
+    public static class GlobalAudioSettingsEvents
+    {
+        public delegate void OnSpectrumAnalyzerSettingsEvent(SpectrumAnalyzerSettings analyzerSettings);
+
+        public delegate void OnSpectrumListenerSettingsEvent(SpectrumListenerSettings analyzerSettings);
     }
 
     public static class GridEvents
@@ -44,8 +52,8 @@ namespace Base
 
     public static class DataProcessorsEvents
     {
-        public delegate void SpectrumListenerDataEvent(SpectrumListenerData listenerData);
+        public delegate void SpectrumListenerDataEvent(SpectrumListenerOutput listenerData);
 
-        public delegate void SpectrumProcessorDataEvent(SpectrumProcessorData listenerData);
+        public delegate void SpectrumProcessorDataEvent(SpectrumProcessorOutput listenerData);
     }
 }

@@ -27,5 +27,11 @@ namespace CorePlugin.Attributes.Headers
         public SettingsHeaderAttribute() : base("Settings")
         {
         }
+
+        public SettingsHeaderAttribute(string additionalText, bool preHeader = true) : base(preHeader
+            ? $"{additionalText} Settings"
+            : $"Settings {additionalText}")
+        {
+        }
     }
 }
