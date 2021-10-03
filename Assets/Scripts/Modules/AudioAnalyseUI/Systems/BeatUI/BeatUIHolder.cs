@@ -16,6 +16,8 @@ namespace Modules.AudioAnalyseUI.Systems.BeatUI
         [SerializeField] private BeatUI bassBeat;
 
         private CanvasGroup _canvasGroup;
+        private const int Bass = (int) BeatAnalyzer.BeatType.Bass;
+        private const int Low = (int) BeatAnalyzer.BeatType.Low;
 
         private void Awake()
         {
@@ -26,13 +28,10 @@ namespace Modules.AudioAnalyseUI.Systems.BeatUI
 
         private void BeatDataReceived(BeatDetectorOutput beatAnalyzeData)
         {
-            const int bass = (int) BeatDetector.BeatType.Bass;
-
-            bassBeat.UpdateData(beatAnalyzeData.FreqSpectrum[bass], beatAnalyzeData.AvgSpectrum[bass],
+            bassBeat.UpdateData(beatAnalyzeData.FreqSpectrum[Bass], beatAnalyzeData.AvgSpectrum[Bass],
                                 beatAnalyzeData.IsBass);
-            const int low = (int) BeatDetector.BeatType.Low;
 
-            lowBeat.UpdateData(beatAnalyzeData.FreqSpectrum[low], beatAnalyzeData.AvgSpectrum[low],
+            lowBeat.UpdateData(beatAnalyzeData.FreqSpectrum[Low], beatAnalyzeData.AvgSpectrum[Low],
                                beatAnalyzeData.IsLow);
         }
 

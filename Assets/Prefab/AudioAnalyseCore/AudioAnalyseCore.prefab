@@ -46,5 +46,4 @@ MonoBehaviour:
   elements:
   - {fileID: 242623621922258479, guid: 593363d0f6d0524408f318c08418fe04, type: 3}
   - {fileID: 2254586435833828713, guid: 4b0fc5469369c6842a93e7f5126f24bc, type: 3}
-  - {fileID: 8532142684421802024, guid: 97c890b5fc5ba7a41b1decc80516e8b7, type: 3}
   - {fileID: 303142381960875995, guid: 688afbfa5329b1e45af3942a6183a4bb, type: 3}

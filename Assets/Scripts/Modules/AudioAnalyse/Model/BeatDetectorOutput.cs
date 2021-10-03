@@ -1,25 +1,23 @@
-﻿namespace Modules.AudioAnalyse.Model
+﻿using System;
+using Modules.AudioAnalyse.Systems.BeatDetector;
+
+namespace Modules.AudioAnalyse.Model
 {
-    public class BeatDetectorOutput
+    public struct BeatDetectorOutput
     {
-        /// <summary>
-        /// Reference to the array containing average values for the sample amplitudes
-        /// </summary>
-        public float[] AvgSpectrum;
-
-        /// <summary>
-        /// Reference to the array containing current samples and amplitudes
-        /// </summary>
-        public float[] FreqSpectrum;
-
-        /// <summary>
-        /// Bool to check if current value is higher than average for bass frequencies
-        /// </summary>
-        public bool IsBass;
-
-        /// <summary>
-        /// Bool to check if current value is higher than average for low-mid frequencies
-        /// </summary>
-        public bool IsLow;
+        public float[] AvgSpectrum { get; }
+        public float[] FreqSpectrum { get; }
+        public bool IsBass { get; }
+        public bool IsLow { get; }
+        public BPMCalculatorOutput BPMCalculatorOutput { get; }
+        
+        public BeatDetectorOutput(float[] avgSpectrum, float[] freqSpectrum, bool isBass, bool isLow, BPMCalculatorOutput bpm)
+        {
+            AvgSpectrum = avgSpectrum;
+            FreqSpectrum = freqSpectrum;
+            IsBass = isBass;
+            IsLow = isLow;
+            BPMCalculatorOutput = bpm;
+        }
     }
 }

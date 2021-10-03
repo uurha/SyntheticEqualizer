@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 namespace Modules.AudioAnalyse.Model
 {
-    [Serializable]
     public struct SpectrumListenerOutput
     {
         public int Frequency { get; }

@@ -9,11 +9,13 @@ using UnityEngine;
 
 namespace Modules.AudioAnalyse.Systems.BeatDetector
 {
-    public class BeatDetector : MonoBehaviour, IEventHandler, IEventSubscriber
+    public class BeatAnalyzer : MonoBehaviour, IEventHandler, IEventSubscriber
     {
+        [SerializeField] private float analyzeTime = 1f;
+        private BPMCalculator _bpmCalculator;
         private Conveyor<List<float>> _fftHistoryBeatDetector;
 
-        private BeatDetectorOutput _data;
+        private BeatDetectorData _data;
 
         private List<int> _beatDetectorBandLimits;
         private int _numChannels;
@@ -31,6 +33,29 @@ namespace Modules.AudioAnalyse.Systems.BeatDetector
 
         // private int _windowSize;
         // private float _samplingFrequency;
+        
+        private class BeatDetectorData
+        {
+            /// <summary>
+            /// Reference to the array containing average values for the sample amplitudes
+            /// </summary>
+            public float[] AvgSpectrum;
+
+            /// <summary>
+            /// Reference to the array containing current samples and amplitudes
+            /// </summary>
+            public float[] FreqSpectrum;
+
+            /// <summary>
+            /// Bool to check if current value is higher than average for bass frequencies
+            /// </summary>
+            public bool IsBass;
+
+            /// <summary>
+            /// Bool to check if current value is higher than average for low-mid frequencies
+            /// </summary>
+            public bool IsLow;
+        }
 
         public enum BeatType
         {
@@ -91,7 +116,7 @@ namespace Modules.AudioAnalyse.Systems.BeatDetector
         /// </summary>
         /// <param name="spectrum"></param>
         /// <param name="referenceData"></param>
-        private void GetBeat(IReadOnlyList<float[]> spectrum, ref BeatDetectorOutput referenceData)
+        private void GetBeat(IReadOnlyList<float[]> spectrum, ref BeatDetectorData referenceData)
         {
             if (!_isInitialized) return;
 
@@ -153,13 +178,14 @@ namespace Modules.AudioAnalyse.Systems.BeatDetector
             _beatDetectorBandLimits.TrimExcess();
             _numChannels = listenerData.Channels;
 
-            _data = new BeatDetectorOutput
+            _data = new BeatDetectorData
                     {
                         FreqSpectrum = new float[2],
                         AvgSpectrum = new float[2],
                         IsBass = false,
                         IsLow = false
                     };
+            _bpmCalculator = new BPMCalculator(analyzeTime);
             _isInitialized = true;
         }
 
@@ -171,7 +197,25 @@ namespace Modules.AudioAnalyse.Systems.BeatDetector
         private void OnSpectrumReceived(SpectrumProcessorOutput listenerData)
         {
             GetBeat(listenerData.SpectrumData, ref _data);
-            OnBeatEvent?.Invoke(_data);
+            OnBeatEvent?.Invoke(GenerateDetectorOutput(_data));
+        }
+
+        private BeatDetectorOutput GenerateDetectorOutput(BeatDetectorData data)
+        {
+            _bpmCalculator.Update(Time.deltaTime, data.IsBass, out var bpmOutput);
+            var bpmChanged = bpmOutput.BPMChanged;
+
+            if (data.IsBass)
+            {
+                Debug.Log("Bass beat");
+            }
+            
+            if (bpmChanged)
+            {
+                Debug.Log($"BPM: {bpmOutput.BPM} Average BPM: {bpmOutput.AverageBPM}");
+            }
+            
+            return new BeatDetectorOutput(data.AvgSpectrum, data.FreqSpectrum, data.IsBass, data.IsLow, bpmOutput);
         }
 
         private void SpectrumListenerDataReceived(SpectrumProcessorOutput listenerData)
