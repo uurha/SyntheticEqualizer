@@ -1,7 +1,4 @@
-﻿using System;
-using Modules.AudioAnalyse.Systems.BeatDetector;
-
-namespace Modules.AudioAnalyse.Model
+﻿namespace Modules.AudioAnalyse.Model
 {
     public struct BeatDetectorOutput
     {
@@ -10,8 +7,9 @@ namespace Modules.AudioAnalyse.Model
         public bool IsBass { get; }
         public bool IsLow { get; }
         public BPMCalculatorOutput BPMCalculatorOutput { get; }
-        
-        public BeatDetectorOutput(float[] avgSpectrum, float[] freqSpectrum, bool isBass, bool isLow, BPMCalculatorOutput bpm)
+
+        public BeatDetectorOutput(float[] avgSpectrum, float[] freqSpectrum, bool isBass, bool isLow,
+                                  BPMCalculatorOutput bpm)
         {
             AvgSpectrum = avgSpectrum;
             FreqSpectrum = freqSpectrum;

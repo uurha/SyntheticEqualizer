@@ -47,7 +47,7 @@ namespace Base
 
     public static class GridEvents
     {
-        public delegate void GridUpdatedEvent(Conveyor<GridConfiguration> gridConfigurations);
+        public delegate void GridConfigurationChangedEvent(Conveyor<GridConfiguration> gridConfigurations);
     }
 
     public static class DataProcessorsEvents

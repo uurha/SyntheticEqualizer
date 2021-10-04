@@ -31,7 +31,7 @@ namespace Modules.Grid.SubSystems.GridProcessors
         }
         #endif
 
-        private void OnAnalyzedDataUpdated(SpectrumAnalyzerOutput data)
+        private void OnAnalyzedDataReceived(SpectrumAnalyzerOutput data)
         {
             if (_cellVisualBehaviours == null) return;
             if (!_analyzerSettings.IsValid) return;
@@ -49,7 +49,7 @@ namespace Modules.Grid.SubSystems.GridProcessors
             _analyzerSettings = analyzerSettings;
         }
 
-        private void OnGridDataUpdated(Conveyor<GridConfiguration> newGridConfigurations)
+        private void OnGridConfigurationChanged(Conveyor<GridConfiguration> newGridConfigurations)
         {
             _cellVisualBehaviours = newGridConfigurations
                                    .SelectMany(x => x.RowConfiguration.SelectMany(y => y.GetCells()
@@ -67,8 +67,8 @@ namespace Modules.Grid.SubSystems.GridProcessors
         {
             return new Delegate[]
                    {
-                       (GridEvents.GridUpdatedEvent) OnGridDataUpdated,
-                       (AudioAnalyzerEvents.SpectrumAnalyzerDataEvent) OnAnalyzedDataUpdated,
+                       (GridEvents.GridConfigurationChangedEvent) OnGridConfigurationChanged,
+                       (AudioAnalyzerEvents.SpectrumAnalyzerDataEvent) OnAnalyzedDataReceived,
                        (GlobalAudioSettingsEvents.OnSpectrumAnalyzerSettingsEvent) OnAudioAnalyzerSettingsChanged
                    };
         }

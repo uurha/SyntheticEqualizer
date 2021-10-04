@@ -1,14 +1,14 @@
 ﻿#region license
 
-// Copyright 2021 Arcueid Elizabeth D'athemon
-// Licensed under the Apache License, Version 2.0 (the "License"); 
-// you may not use this file except in compliance with the License. 
-// You may obtain a copy of the License at 
-//     http://www.apache.org/licenses/LICENSE-2.0 
-// Unless required by applicable law or agreed to in writing, software 
-// distributed under the License is distributed on an "AS IS" BASIS, 
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-// See the License for the specific language governing permissions and 
+// Copyright 2021 - 2021 Arcueid Elizabeth D'athemon
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//     http://www.apache.org/licenses/LICENSE-2.0
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
 // limitations under the License.
 
 #endregion
@@ -37,40 +37,32 @@ namespace CorePlugin.Editor
         {
             CreatePrefab<SceneDataHandler>();
         }
-        
+
         [MenuItem("Core/Create Scene Settings", false, 10)]
         private static void CreateNewSceneLoaderSettings()
         {
             var settings = Resources.Load<SceneLoaderSettings>(nameof(SceneLoaderSettings));
-            
             if (settings != null) return;
             var pattern = Path.Combine(nameof(CorePlugin), nameof(Resources));
             var dataPath = Application.dataPath;
             var paths = Directory.GetDirectories(dataPath, pattern, SearchOption.TopDirectoryOnly);
-                
             var pathToResources = Path.Combine(dataPath, nameof(CorePlugin), nameof(Resources));
-                
-            if (paths.Length < 1)
-            {
-                Directory.CreateDirectory(pathToResources);
-            }
-
+            if (paths.Length < 1) Directory.CreateDirectory(pathToResources);
             var newSettings = ScriptableObject.CreateInstance<SceneLoaderSettings>();
             var relativePath = Path.Combine(GetRelativePath(dataPath, pathToResources), $"{nameof(SceneLoaderSettings)}.asset");
             AssetDatabase.CreateAsset(newSettings, relativePath);
         }
-        
+
         public static string GetRelativePath(string relativeTo, string path)
         {
             var uri = new Uri(relativeTo);
-            var rel = Uri.UnescapeDataString(uri.MakeRelativeUri(new Uri(path)).ToString()).Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
-            if (rel.Contains(Path.DirectorySeparatorChar.ToString()) == false)
-            {
-                rel = $".{ Path.DirectorySeparatorChar }{ rel }";
-            }
+
+            var rel = Uri.UnescapeDataString(uri.MakeRelativeUri(new Uri(path)).ToString())
+                         .Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+            if (rel.Contains(Path.DirectorySeparatorChar.ToString()) == false) rel = $".{Path.DirectorySeparatorChar}{rel}";
             return rel;
         }
-        
+
         [MenuItem("Core/Highlight Scene Settings", false, 9)]
         private static void Highlight()
         {

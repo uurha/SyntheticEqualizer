@@ -24,7 +24,7 @@ namespace Modules.AudioAnalyse.Systems.SpectrumAnalyse
 
         private SpectrumAnalyzerSettings _currentSettings;
 
-        private event AudioAnalyzerEvents.SpectrumAnalyzerDataEvent OnAudioAnalyzedDataUpdated;
+        private event AudioAnalyzerEvents.SpectrumAnalyzerDataEvent OnAudioAnalyzedDataEvent;
 
         private void CheckAnalyzedArrays(int channels, int numberOfSamples)
         {
@@ -93,7 +93,7 @@ namespace Modules.AudioAnalyse.Systems.SpectrumAnalyse
         {
             if (!_isInitialized) return;
             ComputeSpectrum(listenerData);
-            OnAudioAnalyzedDataUpdated?.Invoke(GenerateAnalyzerData(listenerData));
+            OnAudioAnalyzedDataEvent?.Invoke(GenerateAnalyzerData(listenerData));
         }
 
         private void SpectrumListenerDataReceived(SpectrumProcessorOutput listenerData)
@@ -124,12 +124,12 @@ namespace Modules.AudioAnalyse.Systems.SpectrumAnalyse
 
         public void Subscribe(params Delegate[] subscribers)
         {
-            EventExtensions.Subscribe(ref OnAudioAnalyzedDataUpdated, subscribers);
+            EventExtensions.Subscribe(ref OnAudioAnalyzedDataEvent, subscribers);
         }
 
         public void Unsubscribe(params Delegate[] unsubscribers)
         {
-            EventExtensions.Unsubscribe(ref OnAudioAnalyzedDataUpdated, unsubscribers);
+            EventExtensions.Unsubscribe(ref OnAudioAnalyzedDataEvent, unsubscribers);
         }
 
         public Delegate[] GetSubscribers()

@@ -1,21 +1,20 @@
 ﻿#region license
 
-// Copyright 2021 Arcueid Elizabeth D'athemon
-// Licensed under the Apache License, Version 2.0 (the "License"); 
-// you may not use this file except in compliance with the License. 
+// Copyright 2021 - 2021 Arcueid Elizabeth D'athemon
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-//     http://www.apache.org/licenses/LICENSE-2.0 
-// Unless required by applicable law or agreed to in writing, software 
-// distributed under the License is distributed on an "AS IS" BASIS, 
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-// See the License for the specific language governing permissions and 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
 // limitations under the License.
 
 #endregion
 
 using System.Collections.Generic;
 using System.Linq;
-using CorePlugin.Core;
 using UnityEditor;
 using UnityEngine;
 
@@ -27,9 +26,9 @@ namespace CorePlugin.Editor
     /// </summary>
     public class SymbolDefiner
     {
-        private readonly Dictionary<string, bool> _symbols = new Dictionary<string, bool> {{EnableReleaseLogs, false}, {EnableReleaseConsole, false}};
         private const string EnableReleaseLogs = "ENABLE_RELEASE_LOGS";
         private const string EnableReleaseConsole = "ENABLE_RELEASE_CONSOLE";
+        private readonly Dictionary<string, bool> _symbols = new Dictionary<string, bool> {{EnableReleaseLogs, false}, {EnableReleaseConsole, false}};
 
         /// <summary>
         /// Shows buttons in Inspector.
@@ -89,11 +88,7 @@ namespace CorePlugin.Editor
         {
             var list = AllDefines();
             var buffer = new Dictionary<string, bool>(_symbols);
-
-            foreach (var item in buffer.Keys)
-            {
-                _symbols[item] = !list.Contains(item);
-            }
+            foreach (var item in buffer.Keys) _symbols[item] = !list.Contains(item);
         }
     }
 }

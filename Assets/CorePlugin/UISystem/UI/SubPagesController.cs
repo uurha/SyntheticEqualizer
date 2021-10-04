@@ -1,14 +1,14 @@
 ﻿#region license
 
-// Copyright 2021 Arcueid Elizabeth D'athemon
-// Licensed under the Apache License, Version 2.0 (the "License"); 
-// you may not use this file except in compliance with the License. 
-// You may obtain a copy of the License at 
-//     http://www.apache.org/licenses/LICENSE-2.0 
-// Unless required by applicable law or agreed to in writing, software 
-// distributed under the License is distributed on an "AS IS" BASIS, 
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-// See the License for the specific language governing permissions and 
+// Copyright 2021 - 2021 Arcueid Elizabeth D'athemon
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//     http://www.apache.org/licenses/LICENSE-2.0
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
 // limitations under the License.
 
 #endregion
@@ -33,28 +33,6 @@ namespace CorePlugin.UISystem.UI
 
         private List<UIPage> _pages = new List<UIPage>();
 
-        public void Initialize()
-        {
-            if (!showFirstOnAwake) return;
-            HideAllTables();
-            if (_pages.Count <= 0) return;
-            if (_pages[0] == null) return;
-            UIStateTools.ChangeGroupState(_pages[0].Group, true);
-            SetText(_pages[0]);
-        }
-
-        /// <summary>
-        /// Showing canvas group sent thought parameter and disabling all others.
-        /// </summary>
-        /// <param name="page"></param>
-        public void OpenPage(UIPage page)
-        {
-            HideAllTables();
-            if (IsContains(page)) return;
-            UIStateTools.ChangeGroupState(page.Group, true);
-            SetText(page);
-        }
-
         /// <summary>
         /// Adding new UIPage to this subpages controller
         /// </summary>
@@ -75,21 +53,6 @@ namespace CorePlugin.UISystem.UI
         {
             _pages.Add(page);
             openPage = () => { OpenPage(page); };
-        }
-
-        /// <summary>
-        /// Setting text to subpage header
-        /// </summary>
-        /// <param name="namedGroup"></param>
-        private void SetText(UIPage namedGroup)
-        {
-            if (header != null) header.text = namedGroup.PageName;
-        }
-
-        private bool IsContains(UIPage page)
-        {
-            var namedGroup = _pages.Contains(page);
-            return namedGroup;
         }
 
         /// <summary>
@@ -119,7 +82,44 @@ namespace CorePlugin.UISystem.UI
         /// </summary>
         public void HideAllTables()
         {
-            foreach (var page in _pages) UIStateTools.ChangeGroupState(page.Group, false);
+            foreach (var page in _pages) page.Group.ChangeGroupState(false);
+        }
+
+        public void Initialize()
+        {
+            if (!showFirstOnAwake) return;
+            HideAllTables();
+            if (_pages.Count <= 0) return;
+            if (_pages[0] == null) return;
+            _pages[0].Group.ChangeGroupState(true);
+            SetText(_pages[0]);
+        }
+
+        private bool IsContains(UIPage page)
+        {
+            var namedGroup = _pages.Contains(page);
+            return namedGroup;
+        }
+
+        /// <summary>
+        /// Showing canvas group sent thought parameter and disabling all others.
+        /// </summary>
+        /// <param name="page"></param>
+        public void OpenPage(UIPage page)
+        {
+            HideAllTables();
+            if (IsContains(page)) return;
+            page.Group.ChangeGroupState(true);
+            SetText(page);
+        }
+
+        /// <summary>
+        /// Setting text to subpage header
+        /// </summary>
+        /// <param name="namedGroup"></param>
+        private void SetText(UIPage namedGroup)
+        {
+            if (header != null) header.text = namedGroup.PageName;
         }
     }
 }

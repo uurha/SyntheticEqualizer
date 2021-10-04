@@ -31,32 +31,6 @@ namespace Modules.AudioAnalyse.Systems.BeatDetector
 
         private const int NumBands = 2;
 
-        // private int _windowSize;
-        // private float _samplingFrequency;
-        
-        private class BeatDetectorData
-        {
-            /// <summary>
-            /// Reference to the array containing average values for the sample amplitudes
-            /// </summary>
-            public float[] AvgSpectrum;
-
-            /// <summary>
-            /// Reference to the array containing current samples and amplitudes
-            /// </summary>
-            public float[] FreqSpectrum;
-
-            /// <summary>
-            /// Bool to check if current value is higher than average for bass frequencies
-            /// </summary>
-            public bool IsBass;
-
-            /// <summary>
-            /// Bool to check if current value is higher than average for low-mid frequencies
-            /// </summary>
-            public bool IsLow;
-        }
-
         public enum BeatType
         {
             Bass = 0,
@@ -109,6 +83,15 @@ namespace Modules.AudioAnalyse.Systems.BeatDetector
                     varianceSpectrum[index] +=
                         (iterator[index] - avgSpectrum[index]) * (iterator[index] - avgSpectrum[index]);
             for (var index = 0; index < numBands; ++index) varianceSpectrum[index] /= fftHistory.Count;
+        }
+
+        private BeatDetectorOutput GenerateDetectorOutput(BeatDetectorData data)
+        {
+            _bpmCalculator.Update(Time.deltaTime, data.IsBass, out var bpmOutput);
+            var bpmChanged = bpmOutput.BPMChanged;
+            if (data.IsBass) Debug.Log("Bass beat");
+            if (bpmChanged) Debug.Log($"BPM: {bpmOutput.BPM} Average BPM: {bpmOutput.AverageBPM}");
+            return new BeatDetectorOutput(data.AvgSpectrum, data.FreqSpectrum, data.IsBass, data.IsLow, bpmOutput);
         }
 
         /// <summary>
@@ -200,24 +183,6 @@ namespace Modules.AudioAnalyse.Systems.BeatDetector
             OnBeatEvent?.Invoke(GenerateDetectorOutput(_data));
         }
 
-        private BeatDetectorOutput GenerateDetectorOutput(BeatDetectorData data)
-        {
-            _bpmCalculator.Update(Time.deltaTime, data.IsBass, out var bpmOutput);
-            var bpmChanged = bpmOutput.BPMChanged;
-
-            if (data.IsBass)
-            {
-                Debug.Log("Bass beat");
-            }
-            
-            if (bpmChanged)
-            {
-                Debug.Log($"BPM: {bpmOutput.BPM} Average BPM: {bpmOutput.AverageBPM}");
-            }
-            
-            return new BeatDetectorOutput(data.AvgSpectrum, data.FreqSpectrum, data.IsBass, data.IsLow, bpmOutput);
-        }
-
         private void SpectrumListenerDataReceived(SpectrumProcessorOutput listenerData)
         {
             if (!_isInitialized)
@@ -227,6 +192,32 @@ namespace Modules.AudioAnalyse.Systems.BeatDetector
                 return;
             }
             OnSpectrumReceived(listenerData);
+        }
+
+        // private int _windowSize;
+        // private float _samplingFrequency;
+
+        private class BeatDetectorData
+        {
+            /// <summary>
+            /// Reference to the array containing average values for the sample amplitudes
+            /// </summary>
+            public float[] AvgSpectrum;
+
+            /// <summary>
+            /// Reference to the array containing current samples and amplitudes
+            /// </summary>
+            public float[] FreqSpectrum;
+
+            /// <summary>
+            /// Bool to check if current value is higher than average for bass frequencies
+            /// </summary>
+            public bool IsBass;
+
+            /// <summary>
+            /// Bool to check if current value is higher than average for low-mid frequencies
+            /// </summary>
+            public bool IsLow;
         }
 
         public void InvokeEvents()

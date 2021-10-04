@@ -13,35 +13,22 @@
 
 #endregion
 
-using System;
-using CorePlugin.Serializable.Interface;
-using UnityEngine;
+using System.Collections.Generic;
+using UnityEditor;
 
-namespace CorePlugin.Serializable
+namespace CorePlugin.Editor.Extensions
 {
-    /// <summary>
-    /// Base class for classes that need to be saved in Json file.
-    /// </summary>
-    [Serializable]
-    public class Unique : IUnique
+    internal class EditorSceneComparer : IEqualityComparer<EditorBuildSettingsScene>
     {
-        private string _guid;
-
-        public string Guid => _guid;
-
-        public Unique()
+        public bool Equals(EditorBuildSettingsScene s1, EditorBuildSettingsScene s2)
         {
-            _guid = System.Guid.NewGuid().ToString();
+            return s2 == null && s1 == null || s1 != null && s2 != null && s1.path == s2.path;
         }
 
-        public override string ToString()
+        public int GetHashCode(EditorBuildSettingsScene scene)
         {
-            return JsonUtility.ToJson(this, true);
-        }
-
-        public bool Equals(IUnique item)
-        {
-            return Guid.Equals(item.Guid);
+            var hCode = scene.path;
+            return hCode.GetHashCode();
         }
     }
 }

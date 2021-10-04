@@ -22,7 +22,7 @@ namespace Modules.AudioPlayerModule.Systems.SpectrumListenerComponent
         private List<float[]> _spectrum;
         private SpectrumListenerSettings _currentListenerSettings;
 
-        private event DataProcessorsEvents.SpectrumListenerDataEvent OnSpectrumDataUpdated;
+        private event DataProcessorsEvents.SpectrumListenerDataEvent OnSpectrumDataEvent;
 
         private void Update()
         {
@@ -44,7 +44,7 @@ namespace Modules.AudioPlayerModule.Systems.SpectrumListenerComponent
                                                           _currentListenerSettings.NumberOfSamples,
                                                           channels,
                                                           spectrumListenerData);
-            OnSpectrumDataUpdated?.Invoke(listenerData);
+            OnSpectrumDataEvent?.Invoke(listenerData);
         }
 
         private void CheckSettings(int channels)
@@ -69,12 +69,12 @@ namespace Modules.AudioPlayerModule.Systems.SpectrumListenerComponent
 
         public void Subscribe(params Delegate[] subscribers)
         {
-            EventExtensions.Subscribe(ref OnSpectrumDataUpdated, subscribers);
+            EventExtensions.Subscribe(ref OnSpectrumDataEvent, subscribers);
         }
 
         public void Unsubscribe(params Delegate[] unsubscribers)
         {
-            EventExtensions.Unsubscribe(ref OnSpectrumDataUpdated, unsubscribers);
+            EventExtensions.Unsubscribe(ref OnSpectrumDataEvent, unsubscribers);
         }
 
         public Delegate[] GetSubscribers()

@@ -1,4 +1,18 @@
-﻿using System;
+﻿#region license
+
+// Copyright 2021 - 2021 Arcueid Elizabeth D'athemon
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//     http://www.apache.org/licenses/LICENSE-2.0
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+#endregion
+
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -19,34 +33,23 @@ namespace CorePlugin.ReferenceDistribution
     [OneAndOnly]
     public class ReferenceDistributor : MonoBehaviour
     {
-        private static ReferenceDistributor _instance;
         private IEnumerable<IDistributingReference> _distributingReferences;
         private bool _isInitialized;
+        private static ReferenceDistributor _instance;
         private static readonly string[] warningCallers = {"Awake", "OnEnable"};
 
-        private void OnDisable()
-        {
-            _instance = null;
-        }
-
         /// <summary>
-        /// Initializing distribution references
+        /// Finding reference if passed parameter is null.
+        /// Use this if you need reference not in Start() and/or reference should be received in some event
         /// </summary>
-        public void Initialize()
-        {
-            _isInitialized = UnityExtensions.TryToFindObjectsOfType(out _distributingReferences);
-            _instance = this;
-        }
-
-        /// <summary>
-        /// Getting reference by type from list
-        /// </summary>
+        /// <param name="reference"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static T GetReference<T>([CallerMemberName] string callerName = "") where T : MonoBehaviour, IDistributingReference
+        public static bool AskReference<T>(ref T reference, [CallerMemberName] string callerName = "") where T : MonoBehaviour, IDistributingReference
         {
             ValidateCaller(callerName);
-            return _instance._isInitialized ? _instance._distributingReferences.OfType<T>().First() : null;
+            reference ??= GetReference<T>();
+            return ReferenceEquals(reference, null);
         }
 
         /// <summary>
@@ -72,6 +75,17 @@ namespace CorePlugin.ReferenceDistribution
         }
 
         /// <summary>
+        /// Getting reference by type from list
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static T GetReference<T>([CallerMemberName] string callerName = "") where T : MonoBehaviour, IDistributingReference
+        {
+            ValidateCaller(callerName);
+            return _instance._isInitialized ? _instance._distributingReferences.OfType<T>().First() : null;
+        }
+
+        /// <summary>
         /// Getting references by type from list
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -83,19 +97,19 @@ namespace CorePlugin.ReferenceDistribution
         }
 
         /// <summary>
-        /// Finding reference if passed parameter is null.
-        /// Use this if you need reference not in Start() and/or reference should be received in some event
+        /// Initializing distribution references
         /// </summary>
-        /// <param name="reference"></param>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        public static bool AskReference<T>(ref T reference, [CallerMemberName] string callerName = "") where T : MonoBehaviour, IDistributingReference
+        public void Initialize()
         {
-            ValidateCaller(callerName);
-            reference ??= GetReference<T>();
-            return ReferenceEquals(reference, null);
+            _isInitialized = UnityExtensions.TryToFindObjectsOfType(out _distributingReferences);
+            _instance = this;
         }
-        
+
+        private void OnDisable()
+        {
+            _instance = null;
+        }
+
         private static void ValidateCaller(string callerName)
         {
             if (warningCallers.Contains(callerName))
