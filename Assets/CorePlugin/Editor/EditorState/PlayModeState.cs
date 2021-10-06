@@ -39,7 +39,7 @@ namespace CorePlugin.Attributes.Editor
         private static void LogPlayModeState(PlayModeStateChange state)
         {
             if (state != PlayModeStateChange.ExitingEditMode) return;
-            var pairs = AttributeValidator.ErrorObjectPairs(); //TODO: validate sub prefabs on opened scene
+            var pairs = AttributeExtensions.ErrorObjectPairs(); //TODO: validate sub prefabs on opened scene
 
             if (!SceneLoaderSettingsValidator.Validate(out var settings))
             {

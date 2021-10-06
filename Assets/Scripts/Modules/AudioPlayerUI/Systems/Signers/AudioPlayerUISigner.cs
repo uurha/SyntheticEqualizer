@@ -1,5 +1,6 @@
 using System;
 using Base;
+using CorePlugin.Attributes;
 using CorePlugin.Attributes.Headers;
 using CorePlugin.Attributes.Validation;
 using CorePlugin.Cross.Events.Interface;
@@ -14,13 +15,13 @@ namespace Modules.AudioPlayerUI.Systems.Signers
     public class AudioPlayerUISigner : MonoBehaviour, IEventSubscriber, IEventHandler
     {
         [ReferencesHeader]
-        [RequireInterface(typeof(ISlider<float>))]
+        [HasComponent(typeof(ISlider<float>))]
         [SerializeField] private Component playbackSlider;
 
-        [RequireInterface(typeof(IButton))]
+        [HasComponent(typeof(IButton))]
         [SerializeField] private Component playButton;
 
-        [RequireInterface(typeof(ISlider<float>))]
+        [HasComponent(typeof(ISlider<float>))]
         [SerializeField] private Component volumeSlider;
 
         private ISlider<float> _playbackSlider;

@@ -70,12 +70,12 @@ namespace CorePlugin.Attributes.Editor
 
             return objs.Where(x => x.obj != null)
                        .Aggregate(errors, (current, value) =>
-                                              current.Concat(AttributeValidator.ErrorObjectPairs(value.obj)
-                                                                               .Select(x =>
-                                                                                       {
-                                                                                           x.Key += $"\n<b>Prefab path:</b> <i>\"{value.path}\"</i>";
-                                                                                           return x;
-                                                                                       })));
+                                              current.Concat(AttributeExtensions.ErrorObjectPairs(value.obj)
+                                                                                .Select(x =>
+                                                                                        {
+                                                                                            x.Key += $"\n<b>Prefab path:</b> <i>\"{value.path}\"</i>";
+                                                                                            return x;
+                                                                                        })));
         }
 
         private static IEnumerable<ErrorObjectPair> CheckSceneObjects()
@@ -91,17 +91,18 @@ namespace CorePlugin.Attributes.Editor
 
                     errors = scene.GetRootGameObjects()
                                   .Aggregate(errors, (current, gameObject) =>
-                                                         current.Concat(AttributeValidator.ErrorObjectPairs(gameObject)
-                                                                                          .Select(x =>
-                                                                                                  {
-                                                                                                      x.Key +=
-                                                                                                          $"\n<b>Scene path</b>: <i>\"{s.path}\"</i>";
-                                                                                                      return x;
-                                                                                                  })));
+                                                         current.Concat(AttributeExtensions.ErrorObjectPairs(gameObject)
+                                                                                           .Select(x =>
+                                                                                                   {
+                                                                                                       x.Key +=
+                                                                                                           $"\n<b>Scene path</b>: <i>\"{s.path}\"</i>";
+                                                                                                       return x;
+                                                                                                   })));
                 }
             else
                 errors = SceneManager.GetActiveScene().GetRootGameObjects()
-                                     .Aggregate(errors, (current, rootGameObject) => current.Concat(AttributeValidator.ErrorObjectPairs(rootGameObject)));
+                                     .Aggregate(errors,
+                                                (current, rootGameObject) => current.Concat(AttributeExtensions.ErrorObjectPairs(rootGameObject)));
             EditorSceneManager.OpenScene(openScene);
             return errors;
         }

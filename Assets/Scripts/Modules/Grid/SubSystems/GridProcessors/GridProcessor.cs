@@ -1,10 +1,14 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using Base;
 using Base.BehaviourModel.Interfaces;
 using Base.Deque;
+using CorePlugin.Attributes;
+using CorePlugin.Attributes.EditorAddons;
 using CorePlugin.Attributes.Headers;
 using CorePlugin.Cross.Events.Interface;
+using CorePlugin.Extensions;
 using Extensions;
 using Modules.AudioAnalyse.Model;
 using Modules.GlobalAudioSettings.Systems;
@@ -22,14 +26,13 @@ namespace Modules.Grid.SubSystems.GridProcessors
         private ICellVisualBehaviour[] _cellVisualBehaviours;
         private SpectrumAnalyzerSettings _analyzerSettings;
 
-        #if UNITY_EDITOR
-        [ContextMenu(nameof(InitializeCurve))]
+        [Conditional(EditorDefinition.UnityEditor)]
+        [EditorButton]
         private void InitializeCurve()
         {
             curve.Clear();
             for (var i = 0f; i <= 1f; i += 0.1f) curve.AddKey(i, 1);
         }
-        #endif
 
         private void OnAnalyzedDataReceived(SpectrumAnalyzerOutput data)
         {

@@ -14,7 +14,9 @@
 #endregion
 
 using System;
-using UnityEngine;
+using System.Diagnostics;
+using CorePlugin.Extensions;
+using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
 
 namespace CorePlugin.Logger
@@ -33,67 +35,58 @@ namespace CorePlugin.Logger
     //TODO: Strip logger from RELEASE builds
     public static class DebugLogger
     {
+        [Conditional(EditorDefinition.Debug)] [Conditional(EditorDefinition.EnableReleaseLogs)]
         public static void Log(string message)
         {
-            #if DEBUG || ENABLE_RELEASE_LOGS
             Debug.Log(message);
-            #endif
         }
 
+        [Conditional(EditorDefinition.Debug)] [Conditional(EditorDefinition.EnableReleaseLogs)]
         public static void Log(string message, Object context)
         {
-            #if DEBUG || ENABLE_RELEASE_LOGS
             Debug.Log(message, context);
-            #endif
         }
 
+        [Conditional(EditorDefinition.Debug)] [Conditional(EditorDefinition.EnableReleaseLogs)]
         public static void LogError(string message)
         {
-            #if DEBUG || ENABLE_RELEASE_LOGS
             Debug.LogError(message);
-            #endif
         }
 
+        [Conditional(EditorDefinition.Debug)] [Conditional(EditorDefinition.EnableReleaseLogs)]
         public static void LogWarning(string message)
         {
-            #if DEBUG || ENABLE_RELEASE_LOGS
             Debug.LogWarning(message);
-            #endif
         }
 
+        [Conditional(EditorDefinition.Debug)] [Conditional(EditorDefinition.EnableReleaseLogs)]
         public static void LogWarning(string message, Object context)
         {
-            #if DEBUG || ENABLE_RELEASE_LOGS
             Debug.LogWarning(message, context);
-            #endif
         }
 
+        [Conditional(EditorDefinition.Debug)] [Conditional(EditorDefinition.EnableReleaseLogs)]
         public static void LogError(string message, Object context)
         {
-            #if DEBUG || ENABLE_RELEASE_LOGS
             Debug.LogError(message, context);
-            #endif
         }
 
+        [Conditional(EditorDefinition.Debug)] [Conditional(EditorDefinition.EnableReleaseLogs)]
         public static void LogError(Exception exception, Object context)
         {
-            #if DEBUG || ENABLE_RELEASE_LOGS
             Debug.LogError(exception, context);
-            #endif
         }
 
+        [Conditional(EditorDefinition.Debug)] [Conditional(EditorDefinition.EnableReleaseLogs)]
         public static void LogException(Exception exception)
         {
-            #if DEBUG || ENABLE_RELEASE_LOGS
             Debug.LogException(exception);
-            #endif
         }
 
+        [Conditional(EditorDefinition.Debug)] [Conditional(EditorDefinition.EnableReleaseLogs)]
         public static void LogException(Exception exception, Object context)
         {
-            #if DEBUG || ENABLE_RELEASE_LOGS
             Debug.LogException(exception, context);
-            #endif
         }
     }
 }

@@ -13,15 +13,15 @@
 
 #endregion
 
-using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
+using CorePlugin.Attributes.EditorAddons;
 using CorePlugin.Attributes.Validation.Base;
 using CorePlugin.Editor.Extensions;
 using CorePlugin.Extensions;
 using UnityEditor;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace CorePlugin.Attributes.Editor
 {
@@ -36,20 +36,48 @@ namespace CorePlugin.Attributes.Editor
     [CustomEditor(typeof(Object), true)]
     public class ValidationAttributeEditor : UnityEditor.Editor
     {
-        private IEnumerable<Attribute> _classAttributes = new ClassValidationAttribute[0];
-        private IEnumerable<FieldInfo> _fields = new FieldInfo[0];
+        private IEnumerable<ClassValidationAttribute> _classAttributes = Enumerable.Empty<ClassValidationAttribute>();
+
+        private IEnumerable<KeyValuePair<MethodInfo, IEnumerable<EditorButtonAttribute>>> _methodButtonsAttributes =
+            Enumerable.Empty<KeyValuePair<MethodInfo, IEnumerable<EditorButtonAttribute>>>();
+
+        private IEnumerable<KeyValuePair<FieldInfo, IEnumerable<FieldValidationAttribute>>> _fields =
+            Enumerable.Empty<KeyValuePair<FieldInfo, IEnumerable<FieldValidationAttribute>>>();
 
         private bool _shouldShowErrors = true;
+        private Object _bufferTarget;
 
         protected virtual void OnEnable()
         {
-            _fields = AttributeValidator.GetAllFields(target.GetType());
-            _classAttributes = AttributeValidator.GetAllAttributes(target.GetType());
+            _bufferTarget = target;
+            var type = _bufferTarget.GetType();
+            _fields = type.GetFieldsAttributes<FieldValidationAttribute>();
+            _classAttributes = type.GetClassAttributes<ClassValidationAttribute>();
+            _methodButtonsAttributes = type.GetMethodsAttributes<EditorButtonAttribute>();
+        }
+
+        private void DrawButtons(IEnumerable<KeyValuePair<MethodInfo, IEnumerable<EditorButtonAttribute>>> buttons)
+        {
+            foreach (var valuePair in buttons)
+            {
+                var editorButtonAttribute = valuePair.Value;
+                EditorGUILayout.BeginHorizontal();
+
+                foreach (var attribute in editorButtonAttribute)
+                    if (GUILayout.Button(attribute.GetButtonName(valuePair.Key.GetPrettyMemberName()), new GUIStyle(GUI.skin.button)
+                                             {
+                                                 stretchWidth = true,
+                                                 richText = true,
+                                                 stretchHeight = true,
+                                                 wordWrap = true
+                                             }))
+                        valuePair.Key.Invoke(_bufferTarget, attribute.InvokeParams);
+                EditorGUILayout.EndHorizontal();
+            }
         }
 
         private SerializedProperty GetSerializedProperty(FieldInfo field)
         {
-            // Do not display properties marked with HideInInspector attribute
             var hideAtts = field.GetCustomAttributes(typeof(HideInInspector), true);
             return hideAtts.Length > 0 ? null : serializedObject.FindProperty(field.Name);
         }
@@ -58,36 +86,31 @@ namespace CorePlugin.Attributes.Editor
         {
             base.OnInspectorGUI();
             serializedObject.Update();
+            DrawButtons(_methodButtonsAttributes);
             foreach (var field in _fields) ValidateField(field);
-            foreach (var attribute in _classAttributes) ValidateClass(attribute);
+            foreach (var attribute in _classAttributes) ValidateClassAttribute(attribute);
             _shouldShowErrors = serializedObject.ApplyModifiedProperties();
-        }
-
-        private void ValidateClass(Attribute attribute)
-        {
-            ValidateClassAttribute(attribute as ClassValidationAttribute);
         }
 
         private void ValidateClassAttribute(ClassValidationAttribute attribute)
         {
-            if (attribute.Validate(target)) return;
+            if (attribute.Validate(_bufferTarget)) return;
             UnityEditorExtension.HelpBox(attribute.ErrorMessage, MessageType.Error);
-            if (attribute.ShowError && _shouldShowErrors) AttributeValidator.ShowError(attribute.ErrorMessage, target);
+            if (attribute.ShowError && _shouldShowErrors) AttributeExtensions.ShowError(attribute.ErrorMessage, target);
         }
 
-        private void ValidateField(FieldInfo field)
+        private void ValidateField(KeyValuePair<FieldInfo, IEnumerable<FieldValidationAttribute>> fieldsPairs)
         {
-            var prop = GetSerializedProperty(field);
+            var prop = GetSerializedProperty(fieldsPairs.Key);
             if (prop == null) return;
-            var atts = field.GetCustomAttributes(typeof(FieldValidationAttribute), true);
-            foreach (var att in atts) ValidateFieldAttribute(att as FieldValidationAttribute, field);
+            foreach (var att in fieldsPairs.Value) ValidateFieldAttribute(att, fieldsPairs.Key);
         }
 
         private void ValidateFieldAttribute(FieldValidationAttribute attribute, FieldInfo field)
         {
-            if (attribute.Validate(field, target)) return;
+            if (attribute.Validate(field, _bufferTarget)) return;
             UnityEditorExtension.HelpBox(attribute.ErrorMessage, MessageType.Error);
-            if (attribute.ShowError && _shouldShowErrors) AttributeValidator.ShowError(attribute.ErrorMessage, target);
+            if (attribute.ShowError && _shouldShowErrors) AttributeExtensions.ShowError(attribute.ErrorMessage, target);
         }
     }
 }

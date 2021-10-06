@@ -17,13 +17,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using CorePlugin.Attributes.Editor;
 using CorePlugin.Attributes.Validation.Base;
 using CorePlugin.Logger;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace CorePlugin.Editor.Extensions
+namespace CorePlugin.Attributes.Editor
 {
     internal static class AttributeValidator
     {

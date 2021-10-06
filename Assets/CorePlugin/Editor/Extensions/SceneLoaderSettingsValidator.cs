@@ -14,7 +14,6 @@
 #endregion
 
 using System.Linq;
-using CorePlugin.Editor.Extensions;
 using CorePlugin.SceneManagement;
 using UnityEditor;
 using UnityEditor.Callbacks;

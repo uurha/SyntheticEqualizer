@@ -1,4 +1,4 @@
-#region license
+﻿#region license
 
 // Copyright 2021 - 2021 Arcueid Elizabeth D'athemon
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,28 +14,14 @@
 #endregion
 
 using System;
+using System.Diagnostics;
+using CorePlugin.Extensions;
 
 namespace CorePlugin.Attributes.Validation.Base
 {
-    /// <summary>
-    /// Base attribute for validation
-    /// </summary>
-    public abstract class ValidationAttribute : Attribute
+    [AttributeUsage(AttributeTargets.Method)]
+    [Conditional(EditorDefinition.UnityEditor)]
+    public abstract class EditorMethodAttribute : Attribute
     {
-        private protected string _error;
-
-        protected ValidationAttribute(bool showError)
-        {
-            ShowError = showError;
-        }
-
-        public string ErrorMessage => _error;
-
-        public bool ShowError { get; }
-
-        private protected abstract bool ValidState(object obj);
-
-        private protected abstract string ErrorText();
     }
-
 }

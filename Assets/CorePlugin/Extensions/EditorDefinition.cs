@@ -13,22 +13,13 @@
 
 #endregion
 
-using System.Collections.Generic;
-using UnityEditor;
-
-namespace CorePlugin.Editor
+namespace CorePlugin.Extensions
 {
-    internal class EditorSceneComparer : IEqualityComparer<EditorBuildSettingsScene>
+    public struct EditorDefinition
     {
-        public bool Equals(EditorBuildSettingsScene s1, EditorBuildSettingsScene s2)
-        {
-            return s2 == null && s1 == null || s1 != null && s2 != null && s1.path == s2.path;
-        }
-
-        public int GetHashCode(EditorBuildSettingsScene scene)
-        {
-            var hCode = scene.path;
-            return hCode.GetHashCode();
-        }
+        public const string UnityEditor = "UNITY_EDITOR";
+        public const string Debug = "DEBUG";
+        public const string EnableReleaseLogs = "ENABLE_RELEASE_LOGS";
+        public const string EnableReleaseConsole = "ENABLE_RELEASE_CONSOLE";
     }
 }

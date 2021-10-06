@@ -2,6 +2,8 @@ using System;
 using Base;
 using Base.BaseTypes;
 using Base.Deque;
+using CorePlugin.Attributes;
+using CorePlugin.Attributes.EditorAddons;
 using CorePlugin.Attributes.Headers;
 using CorePlugin.Cross.Events.Interface;
 using CorePlugin.Extensions;
@@ -42,12 +44,14 @@ namespace Modules.Grid.SubSystems
         {
             Initialize();
         }
-
+        
+        [EditorButton("Generate Next Grid")]
         public void GenerateNextGrid()
         {
             _gridGenerator.GenerateNextGrid(OnGridGenerated);
         }
 
+        [EditorButton("Initialize")]
         public void Initialize()
         {
             if (!Application.isPlaying) return;

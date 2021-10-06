@@ -15,6 +15,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using CorePlugin.Extensions;
 using UnityEditor;
 using UnityEngine;
 
@@ -26,9 +27,11 @@ namespace CorePlugin.Editor
     /// </summary>
     public class SymbolDefiner
     {
-        private const string EnableReleaseLogs = "ENABLE_RELEASE_LOGS";
-        private const string EnableReleaseConsole = "ENABLE_RELEASE_CONSOLE";
-        private readonly Dictionary<string, bool> _symbols = new Dictionary<string, bool> {{EnableReleaseLogs, false}, {EnableReleaseConsole, false}};
+        private readonly Dictionary<string, bool> _symbols = new Dictionary<string, bool>
+                                                             {
+                                                                 {EditorDefinition.EnableReleaseLogs, false},
+                                                                 {EditorDefinition.EnableReleaseConsole, false}
+                                                             };
 
         /// <summary>
         /// Shows buttons in Inspector.
