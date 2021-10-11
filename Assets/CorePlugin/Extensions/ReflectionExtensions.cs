@@ -20,7 +20,6 @@ using System.Reflection;
 using CorePlugin.Attributes.EditorAddons;
 using UnityEngine;
 using Object = UnityEngine.Object;
-using TaskExtensions = CorePlugin.Extensions.TaskExtensions;
 
 namespace CorePlugin.Extensions
 {
@@ -55,7 +54,6 @@ namespace CorePlugin.Extensions
             foreach (var pair in type.GetMethodsAttributes<EditorButtonAttribute>())
             {
                 foreach (var attribute in pair.Value)
-                {
                     if (methodButtonsAttributes.ContainsKey(attribute.CaptureGroup))
                     {
                         var list = methodButtonsAttributes[attribute.CaptureGroup];
@@ -65,24 +63,21 @@ namespace CorePlugin.Extensions
                     else
                     {
                         methodButtonsAttributes.Add(attribute.CaptureGroup,
-                                                    new List<KeyValuePair<MethodInfo, EditorButtonAttribute>>()
+                                                    new List<KeyValuePair<MethodInfo, EditorButtonAttribute>>
                                                     {
                                                         new KeyValuePair<MethodInfo,
                                                             EditorButtonAttribute>(pair.Key, attribute)
                                                     });
                     }
-                }
             }
             return methodButtonsAttributes.OrderBy(x => x.Key).ToDictionary(x => x.Key, y => y.Value);
         }
-        
+
         public static IEnumerable<object> GetEnumerableOfType<T>(this T type)
         {
             if (!typeof(T).IsInterface &&
                 !typeof(T).IsClass)
-            {
                 throw new ArgumentException($"{type} should be class or interface");
-            }
 
             var objects = Assembly.GetAssembly(typeof(T)).GetTypes()
                                   .Where(myType => myType.IsClass && !myType.IsAbstract && !myType.IsInterface &&
@@ -102,7 +97,7 @@ namespace CorePlugin.Extensions
                                                 Action<IEnumerable<Object>> action) where T : Attribute
         {
             action?.Invoke(await TaskExtensions.CreateTask(() => enumerable.Where(b => b.GetType()
-                                                              .GetClassAttributes<T>().Any())));
+                                                                                        .GetClassAttributes<T>().Any())));
         }
 
         public static IEnumerable<KeyValuePair<MethodInfo, IEnumerable<T>>> GetMethodsAttributes<T>(this Type t)
