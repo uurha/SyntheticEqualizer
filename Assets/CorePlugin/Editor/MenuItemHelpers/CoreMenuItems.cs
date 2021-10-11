@@ -17,12 +17,13 @@ using System;
 using System.IO;
 using CorePlugin.Core;
 using CorePlugin.Cross.SceneData;
+using CorePlugin.Editor.Windows;
 using CorePlugin.SceneManagement;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace CorePlugin.Editor
+namespace CorePlugin.Editor.MenuItemHelpers
 {
     public static class CoreMenuItems
     {
@@ -30,6 +31,13 @@ namespace CorePlugin.Editor
         private static void CreateCoreManager()
         {
             CreatePrefab<CoreManager>();
+        }
+
+        [MenuItem("Core/Show Selector Window")]
+        private static void ShowSelectorWindow()
+        {
+            if (!CoreManager.ReadyForWindow) return;
+            CoreSelectorWindow.Init();
         }
 
         [MenuItem("Core/Cross Scene Data Handler")]

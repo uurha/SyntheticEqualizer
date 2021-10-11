@@ -16,8 +16,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using CorePlugin.Attributes.Base;
 using CorePlugin.Attributes.EditorAddons;
-using CorePlugin.Attributes.Validation.Base;
 using CorePlugin.Editor.Extensions;
 using CorePlugin.Extensions;
 using UnityEditor;
@@ -38,14 +38,15 @@ namespace CorePlugin.Attributes.Editor
     {
         private IEnumerable<ClassValidationAttribute> _classAttributes = Enumerable.Empty<ClassValidationAttribute>();
 
-        private IEnumerable<KeyValuePair<MethodInfo, IEnumerable<EditorButtonAttribute>>> _methodButtonsAttributes =
-            Enumerable.Empty<KeyValuePair<MethodInfo, IEnumerable<EditorButtonAttribute>>>();
+        private Dictionary<int, IEnumerable<KeyValuePair<MethodInfo, EditorButtonAttribute>>> _methodButtonsAttributes =
+            new
+                Dictionary<int, IEnumerable<KeyValuePair<MethodInfo, EditorButtonAttribute>>>();
 
         private IEnumerable<KeyValuePair<FieldInfo, IEnumerable<FieldValidationAttribute>>> _fields =
             Enumerable.Empty<KeyValuePair<FieldInfo, IEnumerable<FieldValidationAttribute>>>();
 
         private bool _shouldShowErrors = true;
-        private Object _bufferTarget;
+        protected Object _bufferTarget;
 
         protected virtual void OnEnable()
         {
@@ -53,27 +54,53 @@ namespace CorePlugin.Attributes.Editor
             var type = _bufferTarget.GetType();
             _fields = type.GetFieldsAttributes<FieldValidationAttribute>();
             _classAttributes = type.GetClassAttributes<ClassValidationAttribute>();
-            _methodButtonsAttributes = type.GetMethodsAttributes<EditorButtonAttribute>();
+            _methodButtonsAttributes = type.GetSortedMethodAttributes();
         }
 
-        private void DrawButtons(IEnumerable<KeyValuePair<MethodInfo, IEnumerable<EditorButtonAttribute>>> buttons)
+        private void DrawButton(KeyValuePair<MethodInfo, EditorButtonAttribute> button,
+                                GUIStyle guiStyle)
         {
-            foreach (var valuePair in buttons)
-            {
-                var editorButtonAttribute = valuePair.Value;
-                EditorGUILayout.BeginHorizontal();
+            var attribute = button.Value;
+            var methodInfo = button.Key;
 
-                foreach (var attribute in editorButtonAttribute)
-                    if (GUILayout.Button(attribute.GetButtonName(valuePair.Key.GetPrettyMemberName()), new GUIStyle(GUI.skin.button)
-                                             {
-                                                 stretchWidth = true,
-                                                 richText = true,
-                                                 stretchHeight = true,
-                                                 wordWrap = true
-                                             }))
-                        valuePair.Key.Invoke(_bufferTarget, attribute.InvokeParams);
-                EditorGUILayout.EndHorizontal();
-            }
+            if (GUILayout.Button(attribute.GetDisplayName(methodInfo.PrettyMemberName()), guiStyle))
+                methodInfo.Invoke(_bufferTarget, attribute.InvokeParams);
+        }
+
+        private void DrawButtons(Dictionary<int, IEnumerable<KeyValuePair<MethodInfo, EditorButtonAttribute>>> buttons)
+        {
+            var guiStyle = new GUIStyle(GUI.skin.button)
+                           {
+                               stretchWidth = true,
+                               richText = true,
+                               wordWrap = true
+                           };
+
+            foreach (var button in buttons)
+                if (button.Key == -1)
+                {
+                    var grouped = button.Value.GroupBy(key => key.Key, pair => pair.Value,
+                                                       (info, attributes) =>
+                                                           new KeyValuePair<MethodInfo,
+                                                               IEnumerable<EditorButtonAttribute>>(info, attributes));
+                    EditorGUILayout.BeginVertical();
+
+                    foreach (var group in grouped)
+                    {
+                        EditorGUILayout.BeginHorizontal();
+
+                        foreach (var attribute in @group.Value)
+                            DrawButton(new KeyValuePair<MethodInfo, EditorButtonAttribute>(@group.Key, attribute), guiStyle);
+                        EditorGUILayout.EndHorizontal();
+                    }
+                    EditorGUILayout.EndVertical();
+                }
+                else
+                {
+                    EditorGUILayout.BeginHorizontal();
+                    foreach (var pair in button.Value) DrawButton(pair, guiStyle);
+                    EditorGUILayout.EndHorizontal();
+                }
         }
 
         private SerializedProperty GetSerializedProperty(FieldInfo field)

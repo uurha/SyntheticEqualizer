@@ -4,7 +4,6 @@ using System.Linq;
 using Base;
 using Base.BehaviourModel.Interfaces;
 using Base.Deque;
-using CorePlugin.Attributes;
 using CorePlugin.Attributes.EditorAddons;
 using CorePlugin.Attributes.Headers;
 using CorePlugin.Cross.Events.Interface;
@@ -16,8 +15,9 @@ using Modules.Grid.Model;
 using SubModules.Cell.Model;
 using UnityEngine;
 
-namespace Modules.Grid.SubSystems.GridProcessors
+namespace Modules.Grid.SubSystems.Processors
 {
+    [CoreManagerElement]
     public class GridProcessor : MonoBehaviour, IEventSubscriber
     {
         [SettingsHeader]

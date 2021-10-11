@@ -15,7 +15,7 @@
 
 using System;
 using System.Linq;
-using CorePlugin.Attributes.Validation.Base;
+using CorePlugin.Attributes.Base;
 using UnityEngine;
 using Object = UnityEngine.Object;
 

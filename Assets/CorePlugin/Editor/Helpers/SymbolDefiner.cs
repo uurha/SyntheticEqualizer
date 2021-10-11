@@ -19,7 +19,7 @@ using CorePlugin.Extensions;
 using UnityEditor;
 using UnityEngine;
 
-namespace CorePlugin.Editor
+namespace CorePlugin.Editor.Helpers
 {
     /// <summary>
     /// Class for "Scripting Define Symbols" defining from CoreManager Inspector.

@@ -14,38 +14,49 @@
 #endregion
 
 using System;
-using CorePlugin.Attributes.Validation.Base;
+using System.Diagnostics;
+using CorePlugin.Extensions;
 
 namespace CorePlugin.Attributes.EditorAddons
 {
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
-    public class EditorButtonAttribute : EditorMethodAttribute
+    [Conditional(EditorDefinition.UnityEditor)]
+    public class EditorButtonAttribute : DisplayNameAttribute
     {
-        private readonly string _displayName;
-        private readonly object[] _invokeParams;
 
-        public EditorButtonAttribute(string displayName, params object[] invokeParams)
+        public EditorButtonAttribute(string displayName, params object[] invokeParams) : this(displayName, -1, -1, invokeParams)
         {
-            _displayName = displayName;
-            _invokeParams = invokeParams;
         }
 
-        public EditorButtonAttribute(params object[] invokeParams)
+        public EditorButtonAttribute(string displayName, int captureGroup, int priority, params object[] invokeParams) : base(displayName)
         {
-            _displayName = string.Empty;
-            _invokeParams = invokeParams;
+            InvokeParams = invokeParams;
+            Priority = priority;
+            CaptureGroup = captureGroup;
         }
 
-        public object[] InvokeParams => _invokeParams;
-
-        private bool IsValidName()
+        public EditorButtonAttribute(params object[] invokeParams) : this(string.Empty, -1, -1, invokeParams)
         {
-            return !string.IsNullOrWhiteSpace(_displayName) && !string.IsNullOrWhiteSpace(_displayName);
         }
 
-        public string GetButtonName(string methodName)
+        public EditorButtonAttribute(int captureGroup, params object[] invokeParams) : this(string.Empty, captureGroup, -1, invokeParams)
         {
-            return IsValidName() ? _displayName : methodName;
         }
+
+        public EditorButtonAttribute(string displayName, int captureGroup, params object[] invokeParams) : this(displayName, captureGroup, -1,
+            invokeParams)
+        {
+        }
+
+        public EditorButtonAttribute(int captureGroup, int priority, params object[] invokeParams) : this(string.Empty, captureGroup, priority,
+            invokeParams)
+        {
+        }
+
+        public object[] InvokeParams { get; }
+
+        public int Priority { get; }
+
+        public int CaptureGroup { get; }
     }
 }

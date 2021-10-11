@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Modules.Grid.SubSystems
 {
-    [RequireComponent(typeof(GridInitializer))]
+    [RequireComponent(typeof(GridInitializer.GridInitializer))]
     public class GridCullingMask : MonoBehaviour
     {
         [SerializeField] private Vector3 cullingEnd;
@@ -13,7 +13,7 @@ namespace Modules.Grid.SubSystems
         [SerializeField] private Vector3 cullingStart;
 
         [ReferencesHeader]
-        [SerializeField] private GridInitializer gridInitializer;
+        [SerializeField] private GridInitializer.GridInitializer gridInitializer;
 
         private void Update()
         {

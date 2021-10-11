@@ -1,5 +1,6 @@
 ﻿using System;
 using Base;
+using CorePlugin.Attributes.EditorAddons;
 using CorePlugin.Attributes.Headers;
 using CorePlugin.Attributes.Validation;
 using CorePlugin.Cross.Events.Interface;
@@ -12,7 +13,7 @@ using UnityEngine;
 
 namespace Modules.AudioPlayerModule.Systems.AudioPlayerComponent
 {
-    [RequireComponent(typeof(AudioSource))] [OneAndOnly]
+    [RequireComponent(typeof(AudioSource))] [OneAndOnly] [CoreManagerElement]
     public class AudioPlayer : MonoBehaviour, IAudioPlayer, IEventHandler, IEventSubscriber
     {
         [ReferencesHeader]
@@ -26,7 +27,6 @@ namespace Modules.AudioPlayerModule.Systems.AudioPlayerComponent
         private event AudioPlayerEvents.AudioPlayerStateEvent OnAudioPlayerState;
         private event AudioPlayerEvents.RequestPlaylistClip RequestPlaylistClip;
         private event AudioPlayerEvents.PlaybackTime01ChangedEvent OnPlaybackTime01ChangedEvent;
-
         private event AudioPlayerEvents.AudioClipChangedEvent OnAudioClipChanged;
 
         public AudioClip Clip => audioSource.clip;

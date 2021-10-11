@@ -1,6 +1,8 @@
 ﻿using System;
 using Base;
+using CorePlugin.Attributes.EditorAddons;
 using CorePlugin.Attributes.Headers;
+using CorePlugin.Core.Interface;
 using CorePlugin.Cross.Events.Interface;
 using CorePlugin.Extensions;
 using Extensions;
@@ -40,6 +42,7 @@ namespace Modules.GlobalAudioSettings.Systems
         }
     }
 
+    [CoreManagerElement]
     public class AudioSettingsDistributor : MonoBehaviour, IEventHandler
     {
         [SettingsHeader(nameof(SpectrumListener))]

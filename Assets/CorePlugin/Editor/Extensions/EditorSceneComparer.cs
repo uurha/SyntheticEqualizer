@@ -16,7 +16,7 @@
 using System.Collections.Generic;
 using UnityEditor;
 
-namespace CorePlugin.Editor
+namespace CorePlugin.Editor.Extensions
 {
     internal class EditorSceneComparer : IEqualityComparer<EditorBuildSettingsScene>
     {

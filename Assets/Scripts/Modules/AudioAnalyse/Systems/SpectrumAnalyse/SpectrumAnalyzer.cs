@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Base;
+using CorePlugin.Attributes.EditorAddons;
 using CorePlugin.Cross.Events.Interface;
 using CorePlugin.Extensions;
 using Extensions;

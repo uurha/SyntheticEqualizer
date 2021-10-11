@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using Base;
+using CorePlugin.Attributes.EditorAddons;
 using CorePlugin.Cross.Events.Interface;
 using Modules.AudioLoader.Model;
 using UnityEngine;
@@ -49,7 +50,7 @@ namespace Modules.AudioLoader.Systems.Loader
 
         public Delegate[] GetSubscribers()
         {
-            return new[] {(AudioPlayerEvents.AudioLoadRequested) LoadRequested};
+            return new Delegate[] {(AudioPlayerEvents.AudioLoadRequested) LoadRequested};
         }
     }
 }

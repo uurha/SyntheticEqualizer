@@ -1,6 +1,7 @@
 ﻿using System;
 using Base;
 using Base.Deque;
+using CorePlugin.Attributes.EditorAddons;
 using CorePlugin.Cross.Events.Interface;
 using UnityEngine;
 
@@ -12,7 +13,7 @@ namespace Modules.AudioPlayerModule.Systems.Playlist
         None,
         Next
     }
-
+    
     public class PlaylistComponent : MonoBehaviour, IEventSubscriber
     {
         private Deque<AudioClip> _audioClips;

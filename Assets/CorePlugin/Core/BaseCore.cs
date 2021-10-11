@@ -33,12 +33,7 @@ namespace CorePlugin.Core
 
         public virtual void InitializeElements()
         {
-            foreach (var o in elements.Select(m => Instantiate(m, transform)))
-            {
-                #if DEBUG
-                DebugLogger.Log($"Create element: {o.name}");
-                #endif
-            }
+            foreach (var o in elements.Select(m => Instantiate(m, transform))) DebugLogger.Log($"Create element: {o.name}");
         }
     }
 }

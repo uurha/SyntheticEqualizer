@@ -13,10 +13,14 @@
 
 #endregion
 
+using System.Linq;
+using System.Reflection;
+using CorePlugin.Attributes.EditorAddons;
+using CorePlugin.Extensions;
 using UnityEditor;
 using UnityEngine;
 
-namespace CorePlugin.Extensions
+namespace CorePlugin.Editor.Extensions
 {
     /// <summary>
     /// Extensions for Unity Editor classes
@@ -32,6 +36,16 @@ namespace CorePlugin.Extensions
         {
             var style = new GUIStyle(EditorStyles.helpBox) {richText = true, fontSize = 11};
             HelpBox(message, type, style);
+        }
+
+        public static string PrettyEditorObjectName(this Object input, params string[] remove)
+        {
+            var attr = input.GetType().GetCustomAttribute<DisplayNameAttribute>();
+            var name = input.name;
+            if (attr != null) name = attr.GetDisplayName(name);
+            if (remove == null) return name.PrettyCamelCase();
+            name = remove.Aggregate(name, (current, s) => current.Replace(s, string.Empty));
+            return name.PrettyCamelCase();
         }
 
         /// <summary>

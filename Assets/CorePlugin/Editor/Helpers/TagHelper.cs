@@ -16,7 +16,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace CorePlugin.Editor
+namespace CorePlugin.Editor.Helpers
 {
     public static class TagHelper
     {

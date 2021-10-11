@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace Extensions
+namespace CorePlugin.Extensions
 {
     public static class TaskExtensions
     {

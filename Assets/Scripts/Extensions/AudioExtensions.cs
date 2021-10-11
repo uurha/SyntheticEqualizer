@@ -5,6 +5,7 @@ namespace Extensions
 {
     public static class AudioExtensions
     {
+        //TODO: Rework as fabric method
         public enum BandType
         {
             FourBand = 0,

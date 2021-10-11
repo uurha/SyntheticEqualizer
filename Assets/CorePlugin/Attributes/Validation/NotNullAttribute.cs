@@ -14,7 +14,7 @@
 #endregion
 
 using System;
-using CorePlugin.Attributes.Validation.Base;
+using CorePlugin.Attributes.Base;
 
 namespace CorePlugin.Attributes.Validation
 {

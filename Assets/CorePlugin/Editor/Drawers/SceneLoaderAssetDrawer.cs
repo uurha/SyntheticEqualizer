@@ -17,13 +17,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using CorePlugin.Extensions;
+using CorePlugin.Editor.Extensions;
 using CorePlugin.SceneManagement;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace CorePlugin.Attributes.Editor.Drawers
+namespace CorePlugin.Editor.Drawers
 {
     [CustomPropertyDrawer(typeof(SceneLoaderAsset))]
     public class SceneLoaderAssetDrawer : PropertyDrawer

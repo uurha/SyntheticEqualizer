@@ -8,7 +8,7 @@ using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
 
-namespace Modules.AudioAnalyse.Systems.DataProcessors
+namespace Modules.AudioAnalyse.Systems.Processors
 {
     public class SpectrumDataProcessor : MonoBehaviour, IEventSubscriber, IEventHandler
     {

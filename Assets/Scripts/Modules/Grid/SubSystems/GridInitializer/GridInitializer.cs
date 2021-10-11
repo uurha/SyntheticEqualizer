@@ -2,9 +2,9 @@ using System;
 using Base;
 using Base.BaseTypes;
 using Base.Deque;
-using CorePlugin.Attributes;
 using CorePlugin.Attributes.EditorAddons;
 using CorePlugin.Attributes.Headers;
+using CorePlugin.Core.Interface;
 using CorePlugin.Cross.Events.Interface;
 using CorePlugin.Extensions;
 using Extensions;
@@ -15,8 +15,9 @@ using SubModules.Cell.Interfaces;
 using SubModules.Cell.Model;
 using UnityEngine;
 
-namespace Modules.Grid.SubSystems
+namespace Modules.Grid.SubSystems.GridInitializer
 {
+    [CoreManagerElement]
     public class GridInitializer : MonoBehaviour, IEventHandler
     {
         [SerializeField] private int columnCount;
@@ -26,9 +27,9 @@ namespace Modules.Grid.SubSystems
 
         [PrefabHeader]
         [SerializeField] private BeomPreset preset;
-
         [SerializeField] private int rowCount;
         [SerializeField] private int seedValue;
+        
         private GridGenerator _gridGenerator;
         private Vector3 _initialPosition = Vector3.zero;
         private EntityRoute _previousGridExit;

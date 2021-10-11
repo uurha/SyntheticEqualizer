@@ -14,8 +14,9 @@
 #endregion
 
 using System.Collections.Generic;
-using CorePlugin.Attributes.Editor;
-using CorePlugin.Attributes.Validation.Base;
+using CorePlugin.Attributes.Base;
+using CorePlugin.Editor.Helpers;
+using CorePlugin.Extensions;
 using CorePlugin.Logger;
 using UnityEngine;
 

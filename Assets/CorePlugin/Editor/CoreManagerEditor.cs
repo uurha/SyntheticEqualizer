@@ -13,53 +13,22 @@
 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using CorePlugin.Attributes.Editor;
 using CorePlugin.Core;
+using CorePlugin.Editor.Windows;
 using UnityEditor;
 using UnityEngine;
 
 namespace CorePlugin.Editor
 {
-    /// <summary>
-    /// Custom Editor CoreManager class.
-    /// <seealso cref="CorePlugin.Core.CoreManager"/>
-    /// </summary>
     [CustomEditor(typeof(CoreManager))]
     public class CoreManagerEditor : ValidationAttributeEditor
     {
-
-        private readonly SymbolDefiner _symbolDefiner = new SymbolDefiner();
-        private CoreManager _manager;
-
-        protected override void OnEnable()
-        {
-            base.OnEnable();
-            _manager = (CoreManager) target;
-            _symbolDefiner.OnEnable();
-        }
-
-        private static IEnumerable<FieldInfo> GetConstants(Type type)
-        {
-            var fieldInfos = type.GetFields(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static);
-            return fieldInfos.Where(fi => fi.IsLiteral && !fi.IsInitOnly).ToList();
-        }
-
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
-
-            foreach (var value in from fieldInfo in GetConstants(typeof(CoreManager))
-                                  select (string) fieldInfo.GetValue(_manager)
-                                  into value
-                                  where !TagHelper.IsTagsExistsInternal(value)
-                                  where GUILayout.Button($"Define Tag: {value}")
-                                  select value)
-                TagHelper.AddTag(value);
-            _symbolDefiner.ShowSymbolsButtons();
+            if (!CoreManager.ReadyForWindow) return;
+            if (GUILayout.Button("Show Core Selector Window")) CoreSelectorWindow.Init();
         }
     }
 }

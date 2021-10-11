@@ -15,7 +15,7 @@
 
 using UnityEngine;
 
-namespace CorePlugin.Attributes.Validation.Base
+namespace CorePlugin.Attributes.Base
 {
     /// <summary>
     /// Base attribute for class validation.

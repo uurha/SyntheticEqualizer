@@ -13,6 +13,7 @@
 
 #endregion
 
+using CorePlugin.Editor.Extensions;
 using CorePlugin.SceneManagement;
 using UnityEditor;
 

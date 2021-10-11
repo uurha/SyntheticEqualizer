@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Base;
 using Base.Deque;
+using CorePlugin.Attributes.EditorAddons;
 using CorePlugin.Cross.Events.Interface;
 using CorePlugin.Extensions;
 using Modules.AudioAnalyse.Model;
@@ -9,6 +10,7 @@ using UnityEngine;
 
 namespace Modules.AudioAnalyse.Systems.BeatDetector
 {
+    [CoreManagerElement]
     public class BeatAnalyzer : MonoBehaviour, IEventHandler, IEventSubscriber
     {
         [SerializeField] private float analyzeTime = 1f;

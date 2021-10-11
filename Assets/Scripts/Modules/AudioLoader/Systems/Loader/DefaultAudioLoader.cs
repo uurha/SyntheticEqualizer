@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using Base;
+using CorePlugin.Attributes.EditorAddons;
 using CorePlugin.Attributes.Headers;
 using CorePlugin.Cross.Events.Interface;
 using CorePlugin.Extensions;
@@ -12,6 +13,7 @@ using UnityEngine;
 namespace Modules.AudioLoader.Systems.Loader
 {
     [RequireComponent(typeof(PlaylistComponent))]
+    [CoreManagerElement]
     public class DefaultAudioLoader : MonoBehaviour, IEventHandler
     {
         [ReferencesHeader]

@@ -15,12 +15,12 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using CorePlugin.Editor;
 using CorePlugin.Editor.Extensions;
+using CorePlugin.Editor.Helpers;
 using UnityEditor;
 using UnityEngine;
 
-namespace CorePlugin.Attributes.Editor
+namespace CorePlugin.Editor.EditorState
 {
     /// <summary>
     /// Class responsible for pre play mode validation checks

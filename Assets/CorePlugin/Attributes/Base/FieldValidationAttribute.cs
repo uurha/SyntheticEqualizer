@@ -18,7 +18,7 @@ using System.Collections;
 using System.Reflection;
 using Object = UnityEngine.Object;
 
-namespace CorePlugin.Attributes.Validation.Base
+namespace CorePlugin.Attributes.Base
 {
     /// <summary>
     /// Base attribute for field validation.

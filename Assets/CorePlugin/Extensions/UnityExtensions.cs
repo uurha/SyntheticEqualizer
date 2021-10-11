@@ -16,6 +16,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using CorePlugin.Serializable.Interface;
 using UnityEngine;
 using UnityEngine.UI;
@@ -37,6 +38,23 @@ namespace CorePlugin.Extensions
         public static bool IsNotNullAndNotEqual(this IUnique lci, IUnique rci)
         {
             return lci?.Equals(rci) == false;
+        }
+
+        public static void Add<TKey, TValue>(this List<Named<TKey, TValue>> list, TKey key, TValue value)
+        {
+            list.Add(new Named<TKey, TValue>(key, value));
+        }
+
+        public static string PrettyObjectName(this Object input, params string[] remove)
+        {
+            if (remove == null) return input.name.PrettyCamelCase();
+            foreach (var s in remove) input.name = input.name.Replace(s, string.Empty);
+            return input.name.PrettyCamelCase();
+        }
+
+        public static string PrettyCamelCase(this string input)
+        {
+            return Regex.Replace(input, "((?<!^)([A-Z][a-z]|(?<=[a-z])[A-Z]))", " $1").Trim();
         }
 
         /// <summary>

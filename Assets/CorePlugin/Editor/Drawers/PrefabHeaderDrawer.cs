@@ -17,7 +17,7 @@ using CorePlugin.Attributes.Headers;
 using UnityEditor;
 using UnityEngine;
 
-namespace CorePlugin.Attributes.Editor.Drawers
+namespace CorePlugin.Editor.Drawers
 {
     [CustomPropertyDrawer(typeof(PrefabHeaderAttribute))]
     internal sealed class PrefabHeaderDrawer : DecoratorDrawer

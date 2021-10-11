@@ -17,7 +17,7 @@ using System;
 using CorePlugin.Extensions;
 using Object = UnityEngine.Object;
 
-namespace CorePlugin.Attributes.Editor
+namespace CorePlugin.Editor.Helpers
 {
     [Serializable]
     internal class ErrorObjectPair : Named<string, Object>

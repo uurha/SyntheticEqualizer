@@ -17,7 +17,7 @@ using System;
 using System.Diagnostics;
 using CorePlugin.Extensions;
 
-namespace CorePlugin.Attributes.Validation.Base
+namespace CorePlugin.Attributes.Base
 {
     /// <summary>
     /// Base attribute for validation

@@ -42,6 +42,16 @@ namespace CorePlugin.Extensions
             set => _value = value;
         }
 
+        public Named(TKey key, TValue value)
+        {
+            _key = key;
+            _value = value;
+        }
+
+        public Named()
+        {
+        }
+
         public static implicit operator KeyValuePair<TKey, TValue>(Named<TKey, TValue> obj)
         {
             return new KeyValuePair<TKey, TValue>(obj.Key, obj.Value);

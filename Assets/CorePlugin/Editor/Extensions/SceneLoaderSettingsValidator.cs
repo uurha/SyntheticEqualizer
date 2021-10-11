@@ -19,7 +19,7 @@ using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEngine;
 
-namespace CorePlugin.Editor
+namespace CorePlugin.Editor.Extensions
 {
     /// <summary>
     /// Validator class for <seealso cref="CorePlugin.SceneManagement.SceneLoaderSettings"/>
