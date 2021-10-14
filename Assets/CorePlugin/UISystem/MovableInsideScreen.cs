@@ -26,7 +26,7 @@ namespace CorePlugin.UISystem
     public class MovableInsideScreen : MonoBehaviour, IDragHandler, IEndDragHandler, IBeginDragHandler
     {
         [NotNull] [SerializeField] private RectTransform drivenTransform;
-        [NotNull] [SerializeField] private RectTransform container;
+        [SerializeField] private RectTransform container;
         private Vector3 _dragOffset;
 
         private void SetDraggedPosition(PointerEventData data)

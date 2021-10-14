@@ -12,15 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3f5a3f70b704a4f84d6876399707c8f, type: 3}
   m_Name: SceneLoaderSettings
   m_EditorClassIdentifier: 
-  scenes:
-  - fullPath: Assets/CorePlugin/Samples/Scenes/SenderSample.unity
-    name: SenderSample
-    instanceID: 15674
-  - fullPath: Assets/CorePlugin/Samples/Scenes/ReceiverSample.unity
-    name: ReceiverSample
-    instanceID: 15672
+  scenes: []
   intermediateScene:
-    fullPath: Assets/CorePlugin/Samples/Scenes/IntermediateSample.unity
-    name: IntermediateSample
-    instanceID: 15670
+    fullPath: 
+    name: 
+    instanceID: 0
   timeInIntermediateScene: 5
