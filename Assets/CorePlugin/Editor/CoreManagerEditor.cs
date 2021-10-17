@@ -16,6 +16,7 @@
 using CorePlugin.Attributes.Editor;
 using CorePlugin.Core;
 using CorePlugin.Editor.Windows;
+using CorePlugin.Extensions;
 using UnityEditor;
 using UnityEngine;
 
@@ -27,8 +28,7 @@ namespace CorePlugin.Editor
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
-            if (!CoreManager.ReadyForWindow) return;
-            if (GUILayout.Button("Show Core Selector Window")) CoreSelectorWindow.Init();
+            if (GUILayout.Button($"Show {nameof(CoreSelectorWindow).PrettyCamelCase()}")) CoreSelectorWindow.Init();
         }
     }
 }

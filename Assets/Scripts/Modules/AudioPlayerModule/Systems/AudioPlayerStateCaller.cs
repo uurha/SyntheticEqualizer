@@ -1,13 +1,11 @@
 ﻿using System;
 using Base;
 using CorePlugin.Attributes.EditorAddons;
-using CorePlugin.Core;
 using CorePlugin.Cross.Events.Interface;
 using CorePlugin.Extensions;
 using CorePlugin.Singletons;
 using Modules.AudioPlayerModule.Systems.PlayerStates;
 using Modules.AudioPlayerModule.Systems.Playlist;
-using UnityEngine;
 
 namespace Modules.AudioPlayerModule.Systems
 {
@@ -29,7 +27,7 @@ namespace Modules.AudioPlayerModule.Systems
             }
         }
 
-        [EditorButton("Next", 1)]
+        [EditorButton("Next", 1, 2)]
         public static void PlayNext()
         {
             if (!IsInitialised) return;
@@ -38,7 +36,7 @@ namespace Modules.AudioPlayerModule.Systems
                                                                        PlaylistDirection.Next));
         }
 
-        [EditorButton("Previous", 1)]
+        [EditorButton("Previous", 1,1)]
         public static void PlayPrevious()
         {
             if (!IsInitialised) return;

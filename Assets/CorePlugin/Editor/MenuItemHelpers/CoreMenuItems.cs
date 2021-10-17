@@ -36,7 +36,6 @@ namespace CorePlugin.Editor.MenuItemHelpers
         [MenuItem("Core/Show Selector Window")]
         private static void ShowSelectorWindow()
         {
-            if (!CoreManager.ReadyForWindow) return;
             CoreSelectorWindow.Init();
         }
 
@@ -75,7 +74,7 @@ namespace CorePlugin.Editor.MenuItemHelpers
         private static void Highlight()
         {
             var settings = Resources.Load<SceneLoaderSettings>(nameof(SceneLoaderSettings));
-            Selection.SetActiveObjectWithContext(settings, null);
+            Selection.SetActiveObjectWithContext(settings, settings);
         }
 
         private static string PrefabPath<T>()

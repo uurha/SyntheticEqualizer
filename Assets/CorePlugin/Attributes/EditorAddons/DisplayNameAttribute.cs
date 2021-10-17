@@ -19,22 +19,29 @@ using CorePlugin.Extensions;
 
 namespace CorePlugin.Attributes.EditorAddons
 {
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface)]
     [Conditional(EditorDefinition.UnityEditor)]
-    public class CoreManagerElementAttribute : DisplayNameAttribute
+    public class DisplayNameAttribute : Attribute
     {
-        public CoreManagerElementAttribute()
+        private readonly string _displayName;
+
+        public DisplayNameAttribute()
         {
+            _displayName = string.Empty;
         }
 
-        public CoreManagerElementAttribute(string displayName) : base(displayName)
+        public DisplayNameAttribute(string displayName)
         {
+            _displayName = displayName;
         }
-    }
 
-    [AttributeUsage(AttributeTargets.Field)]
-    [Conditional(EditorDefinition.UnityEditor)]
-    public class CoreManagerElementsFieldAttribute : Attribute
-    {
+        private bool IsValidName()
+        {
+            return !string.IsNullOrWhiteSpace(_displayName) && !string.IsNullOrWhiteSpace(_displayName);
+        }
+
+        public string GetDisplayName(string name)
+        {
+            return IsValidName() ? _displayName : name;
+        }
     }
 }

@@ -13,14 +13,12 @@
 
 #endregion
 
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
+using CorePlugin.Attributes.EditorAddons;
 using CorePlugin.Attributes.Headers;
 using CorePlugin.Attributes.Validation;
 using CorePlugin.Core.Interface;
-using CorePlugin.Extensions;
 using CorePlugin.Logger;
 using CorePlugin.ReferenceDistribution;
 using UnityEngine;
@@ -41,11 +39,8 @@ namespace CorePlugin.Core
 
         [PrefabHeader]
         [SerializeField] [PrefabRequired] [HasComponent(typeof(ICore))]
+        [CoreManagerElementsField]
         private List<GameObject> managers;
-
-        #if UNITY_EDITOR
-        public static bool ReadyForWindow { get; private set; }
-        #endif
 
         private void Awake()
         {
@@ -58,7 +53,6 @@ namespace CorePlugin.Core
         {
             EventInitializer.InitializeSubscriptions();
             EventInitializer.InvokeBase();
-            WaitForReady();
         }
 
         /// <summary>
@@ -71,18 +65,6 @@ namespace CorePlugin.Core
                 DebugLogger.Log($"Create manager: {o.name}");
                 if (!o.TryGetComponent(out ICore manager)) continue;
                 manager.InitializeElements();
-            }
-        }
-
-        [Conditional(EditorDefinition.UnityEditor)]
-        private void WaitForReady()
-        {
-            StartCoroutine(Wait());
-
-            IEnumerator Wait()
-            {
-                yield return new WaitForSeconds(0.2f);
-                ReadyForWindow = true;
             }
         }
     }

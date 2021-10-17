@@ -28,11 +28,10 @@ namespace CorePlugin.Logger
     /// If <see langword="ENABLE_RELEASE_LOGS"/> defined logs will displayed in Release Build.
     /// Otherwise only Editor and Developer Build will display logs.
     /// For defining preprocessor open CoreManager or write down in PlayerSettings in field "Scripting Define Symbols".
+    /// It's fully stripped from Release Builds.
     /// </remarks>
     /// <seealso cref="CorePlugin.Core.CoreManager"/>
     /// </summary>
-
-    //TODO: Strip logger from RELEASE builds
     public static class DebugLogger
     {
         [Conditional(EditorDefinition.Debug)] [Conditional(EditorDefinition.EnableReleaseLogs)]

@@ -89,8 +89,8 @@ namespace CorePlugin.Attributes.Editor
                     {
                         EditorGUILayout.BeginHorizontal();
 
-                        foreach (var attribute in @group.Value)
-                            DrawButton(new KeyValuePair<MethodInfo, EditorButtonAttribute>(@group.Key, attribute), guiStyle);
+                        foreach (var attribute in group.Value)
+                            DrawButton(new KeyValuePair<MethodInfo, EditorButtonAttribute>(group.Key, attribute), guiStyle);
                         EditorGUILayout.EndHorizontal();
                     }
                     EditorGUILayout.EndVertical();

@@ -13,12 +13,15 @@
 
 #endregion
 
+using CorePlugin.Attributes.EditorAddons;
+
 namespace CorePlugin.Core.Interface
 {
 
     /// <summary>
     /// Interface for Manager declaration.
     /// </summary>
+    [CoreManagerElement]
     public interface ICore
     {
         /// <summary>

@@ -14,10 +14,12 @@
 #endregion
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using CorePlugin.Attributes.EditorAddons;
+using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -90,14 +92,64 @@ namespace CorePlugin.Extensions
                                                          Action<IEnumerable<Object>> action)
             where T : Attribute
         {
-            WhereAsync<T>(behaviour.GetComponentsInChildren<Component>(true), action);
+            behaviour.GetComponentsInChildren<Component>(true);
         }
 
-        private static async void WhereAsync<T>(this IEnumerable<Component> enumerable,
-                                                Action<IEnumerable<Object>> action) where T : Attribute
+        public static IEnumerable<Object> GetComponentsWithAttribute<T>(this GameObject gameObject) where T : Attribute
         {
-            action?.Invoke(await TaskExtensions.CreateTask(() => enumerable.Where(b => b.GetType()
-                                                                                        .GetClassAttributes<T>().Any())));
+            return gameObject.GetComponents<Component>().Where(x => GetBaseTypes(x.GetType()).Any(t => t.GetCustomAttribute<T>(false) != null));
+        }
+
+        public static IEnumerable<Object> GetCoreElementsRecursively(this Object instance)
+        {
+            var field = instance.GetType().GetFieldWithAttribute<CoreManagerElementsFieldAttribute>(instance);
+            var empty = Enumerable.Empty<Object>();
+            if (field == null) return empty;
+
+            switch (field)
+            {
+                case IEnumerable enumerable:
+                {
+                    var list = enumerable.Cast<GameObject>().ToList();
+                    if (!list.Any()) return empty;
+                    var elements = list.SelectMany(x => x.GetComponentsWithAttribute<CoreManagerElementAttribute>());
+                    if (EditorApplication.isPlaying) elements = elements.Select(x => Object.FindObjectOfType(x.GetType()));
+                    var objects = elements.ToList();
+
+                    empty = objects.Aggregate(objects,
+                                              (current, element) => current.Concat(GetCoreElementsRecursively(element)).ToList());
+                    break;
+                }
+                case Object obj:
+                {
+                    empty = empty.Concat(GetCoreElementsRecursively(obj));
+                    break;
+                }
+            }
+            return empty;
+        }
+
+        private static IEnumerable<Type> GetBaseTypes(Type type)
+        {
+            if (type == null) return Enumerable.Empty<Type>();
+            var empty = Enumerable.Empty<Type>();
+            return empty.Append(type).Concat(type.GetInterfaces()).Concat(GetBaseTypes(type.BaseType));
+        }
+
+        public static object GetFieldWithAttribute<T>(this Type type, Object instance) where T : Attribute
+        {
+            if (type == null) return null;
+            var fieldInfos = type.GetFields(Flags);
+
+            var field = fieldInfos.FirstOrDefault(x => x.GetCustomAttribute<T>() != null)?.GetValue(instance) ??
+                        type.BaseType.GetFieldWithAttribute<T>(instance);
+            return field;
+        }
+
+        public static bool IsPrefab(this Object obj)
+        {
+            return PrefabUtility.GetPrefabInstanceStatus(obj) == PrefabInstanceStatus.NotAPrefab &&
+                   PrefabUtility.GetPrefabAssetType(obj) != PrefabAssetType.NotAPrefab;
         }
 
         public static IEnumerable<KeyValuePair<MethodInfo, IEnumerable<T>>> GetMethodsAttributes<T>(this Type t)

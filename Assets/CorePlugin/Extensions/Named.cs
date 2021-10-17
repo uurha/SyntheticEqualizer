@@ -19,6 +19,10 @@ using UnityEngine;
 
 namespace CorePlugin.Extensions
 {
+    public class NamedGroup<TKey, TValue>
+    {
+    }
+
     /// <summary>
     /// Replacement for dictionary in Unity Inspector
     /// </summary>

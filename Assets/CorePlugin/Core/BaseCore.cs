@@ -15,6 +15,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using CorePlugin.Attributes.EditorAddons;
 using CorePlugin.Attributes.Headers;
 using CorePlugin.Attributes.Validation;
 using CorePlugin.Core.Interface;
@@ -29,7 +30,8 @@ namespace CorePlugin.Core
     public abstract class BaseCore : MonoBehaviour, ICore
     {
         [PrefabHeader]
-        [SerializeField] [PrefabRequired] private protected List<GameObject> elements;
+        [SerializeField] [PrefabRequired] [CoreManagerElementsField]
+        private protected List<GameObject> elements;
 
         public virtual void InitializeElements()
         {

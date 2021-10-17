@@ -15,7 +15,7 @@
 
 using System;
 using CorePlugin.Attributes.Base;
-using UnityEditor;
+using CorePlugin.Extensions;
 using Object = UnityEngine.Object;
 
 namespace CorePlugin.Attributes.Validation
@@ -36,8 +36,7 @@ namespace CorePlugin.Attributes.Validation
 
         private protected override bool ValidState(object obj)
         {
-            return PrefabUtility.GetPrefabInstanceStatus((Object) obj) == PrefabInstanceStatus.NotAPrefab &&
-                   PrefabUtility.GetPrefabAssetType((Object) obj) != PrefabAssetType.NotAPrefab;
+            return ((Object) obj).IsPrefab();
         }
 
         private protected override string ErrorText()
