@@ -2,7 +2,7 @@
 
 namespace Modules.AudioAnalyse.Model
 {
-    public struct SpectrumListenerOutput
+    public readonly struct SpectrumListenerOutput
     {
         public int Frequency { get; }
         public int NumberOfSamples { get; }

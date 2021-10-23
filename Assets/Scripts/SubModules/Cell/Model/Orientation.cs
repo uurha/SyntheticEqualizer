@@ -4,7 +4,7 @@ using UnityEngine;
 namespace SubModules.Cell.Model
 {
     [BurstCompile]
-    public struct Orientation
+    public readonly struct Orientation
     {
         public Vector3 Position { get; }
         public Quaternion Rotation { get; }

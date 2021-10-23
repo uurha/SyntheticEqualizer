@@ -5,11 +5,11 @@ namespace Modules.AudioPlayerModule.Systems.PlayerStates
 {
     public readonly struct SwitchPlayState : IPlayerState
     {
-        private readonly AudioPlayerEvents.RequestPlaylistClip RequestPlaylistClip;
+        public readonly AudioPlayerEvents.RequestPlaylistClip _requestPlaylistClip;
 
         public SwitchPlayState(AudioPlayerEvents.RequestPlaylistClip requestPlaylistClip)
         {
-            RequestPlaylistClip = requestPlaylistClip;
+            _requestPlaylistClip = requestPlaylistClip;
         }
 
         public void Execute(IAudioPlayer audioPlayer)
@@ -22,9 +22,10 @@ namespace Modules.AudioPlayerModule.Systems.PlayerStates
             }
             else
             {
-                playerState = audioPlayer.IsPaused
-                                  ? (IPlayerState) new SwitchPauseState()
-                                  : (IPlayerState) new PlayState(RequestPlaylistClip);
+                if (audioPlayer.IsPaused)
+                    playerState = new SwitchPauseState();
+                else
+                    playerState = new PlayState(_requestPlaylistClip);
             }
             playerState.Execute(audioPlayer);
         }

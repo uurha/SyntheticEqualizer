@@ -37,7 +37,7 @@ namespace CorePlugin.Console
         [NotNull] [SerializeField] private List<CountDisplayer> countDisplayers;
 
         private CanvasGroup _consoleCanvasGroup;
-        private Action onConsoleMaximized;
+        private Action _onConsoleMaximized;
         private bool _previouslyDragged;
 
         public List<CountDisplayer> CountDisplayers => countDisplayers;
@@ -51,7 +51,7 @@ namespace CorePlugin.Console
         public MinimizedConsole Initialize(Action onMaximized, ConsoleIcons icons)
         {
             _consoleCanvasGroup = GetComponent<CanvasGroup>();
-            onConsoleMaximized += onMaximized;
+            _onConsoleMaximized += onMaximized;
             foreach (var countDisplayer in countDisplayers) countDisplayer.Initialize(icons);
             return this;
         }
@@ -59,7 +59,7 @@ namespace CorePlugin.Console
         private void Maximize()
         {
             SetActive(false);
-            onConsoleMaximized?.Invoke();
+            _onConsoleMaximized?.Invoke();
         }
 
         /// <summary>

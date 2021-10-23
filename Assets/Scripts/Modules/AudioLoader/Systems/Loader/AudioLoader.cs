@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using Base;
-using CorePlugin.Attributes.EditorAddons;
 using CorePlugin.Cross.Events.Interface;
 using Modules.AudioLoader.Model;
 using UnityEngine;

@@ -88,13 +88,6 @@ namespace CorePlugin.Extensions
             return objects;
         }
 
-        public static void FindComponentWithAttribute<T>(this MonoBehaviour behaviour,
-                                                         Action<IEnumerable<Object>> action)
-            where T : Attribute
-        {
-            behaviour.GetComponentsInChildren<Component>(true);
-        }
-
         public static IEnumerable<Object> GetComponentsWithAttribute<T>(this GameObject gameObject) where T : Attribute
         {
             return gameObject.GetComponents<Component>().Where(x => GetBaseTypes(x.GetType()).Any(t => t.GetCustomAttribute<T>(false) != null));

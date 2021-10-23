@@ -5,7 +5,7 @@ using Modules.AudioLoader.Model;
 using Modules.AudioPlayerModule.Interfaces;
 using Modules.AudioPlayerModule.Model;
 using Modules.AudioPlayerModule.Systems.Playlist;
-using Modules.GlobalAudioSettings.Systems;
+using Modules.AudioPlayerUI.Model;
 using Modules.Grid.Model;
 using UnityEngine;
 

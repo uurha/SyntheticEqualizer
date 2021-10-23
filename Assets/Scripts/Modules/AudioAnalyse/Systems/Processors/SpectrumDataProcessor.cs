@@ -33,7 +33,7 @@ namespace Modules.AudioAnalyse.Systems.Processors
             {
                 var multiplier = _volume > 0 ? 1 / _volume : 0f;
                 jobs[channel] = new MultiplyJob(listenerData.RawSpectrumData[channel], multiplier);
-                var handle = jobs[channel].Schedule(listenerData.NumberOfSamples, 1);
+                var handle = IJobParallelForExtensions.Schedule(jobs[channel], listenerData.NumberOfSamples, 1);
                 JobHandle.CombineDependencies(_handle, handle);
                 handle.Complete();
             }
@@ -65,7 +65,7 @@ namespace Modules.AudioAnalyse.Systems.Processors
                 _output = new NativeArray<float>(input.Length, Allocator.TempJob);
             }
 
-            public NativeArray<float> Output => _output;
+            public readonly NativeArray<float> Output => _output;
 
             public void Execute(int index)
             {

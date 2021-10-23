@@ -6,7 +6,7 @@ using CorePlugin.Cross.Events.Interface;
 using CorePlugin.Extensions;
 using Modules.AudioAnalyse.Model;
 using Modules.AudioPlayerModule.Systems.AudioPlayerComponent;
-using Modules.GlobalAudioSettings.Systems;
+using Modules.AudioPlayerUI.Model;
 using UnityEngine;
 
 namespace Modules.AudioPlayerModule.Systems.SpectrumListenerComponent

@@ -36,13 +36,14 @@ namespace CorePlugin.ReferenceDistribution
         private IEnumerable<IDistributingReference> _distributingReferences;
         private bool _isInitialized;
         private static ReferenceDistributor _instance;
-        private static readonly string[] warningCallers = {"Awake", "OnEnable"};
+        private static readonly string[] WarningCallers = {"Awake", "OnEnable"};
 
         /// <summary>
         /// Finding reference if passed parameter is null.
         /// Use this if you need reference not in Start() and/or reference should be received in some event
         /// </summary>
         /// <param name="reference"></param>
+        /// <param name="callerName"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         public static bool AskReference<T>(ref T reference, [CallerMemberName] string callerName = "") where T : MonoBehaviour, IDistributingReference
@@ -112,7 +113,7 @@ namespace CorePlugin.ReferenceDistribution
 
         private static void ValidateCaller(string callerName)
         {
-            if (warningCallers.Contains(callerName))
+            if (WarningCallers.Contains(callerName))
                 DebugLogger.LogError($"It's not safe to call {nameof(ReferenceDistributor)} from {nameof(UnityEngine)}.{callerName}",
                                      _instance);
         }

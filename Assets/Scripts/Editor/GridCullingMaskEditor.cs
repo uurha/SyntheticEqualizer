@@ -8,20 +8,20 @@ namespace Editor
     [CustomEditor(typeof(GridCullingMask))]
     public class GridCullingMaskEditor : ValidationAttributeEditor
     {
-        private bool showHandles;
+        private bool _showHandles;
 
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
             EditorGUILayout.Space();
             if (!GUILayout.Button("Toggle culling boundary handles")) return;
-            showHandles = !showHandles;
+            _showHandles = !_showHandles;
             SceneView.RepaintAll();
         }
 
         public void OnSceneGUI()
         {
-            if (!showHandles) return;
+            if (!_showHandles) return;
             var startProperty = serializedObject.FindProperty("cullingStart");
             var endProperty = serializedObject.FindProperty("cullingEnd");
             var start = startProperty.vector3Value;

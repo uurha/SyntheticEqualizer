@@ -10,7 +10,7 @@ using CorePlugin.Cross.Events.Interface;
 using CorePlugin.Extensions;
 using Extensions;
 using Modules.AudioAnalyse.Model;
-using Modules.GlobalAudioSettings.Systems;
+using Modules.AudioPlayerUI.Model;
 using Modules.Grid.Model;
 using SubModules.Cell.Model;
 using UnityEngine;

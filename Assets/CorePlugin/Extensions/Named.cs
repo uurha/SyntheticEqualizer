@@ -19,10 +19,6 @@ using UnityEngine;
 
 namespace CorePlugin.Extensions
 {
-    public class NamedGroup<TKey, TValue>
-    {
-    }
-
     /// <summary>
     /// Replacement for dictionary in Unity Inspector
     /// </summary>
@@ -31,25 +27,25 @@ namespace CorePlugin.Extensions
     [Serializable]
     public class Named<TKey, TValue>
     {
-        [SerializeField] protected TKey _key;
-        [SerializeField] protected TValue _value;
+        [SerializeField] protected TKey key;
+        [SerializeField] protected TValue value;
 
         public TKey Key
         {
-            get => _key;
-            set => _key = value;
+            get => key;
+            set => key = value;
         }
 
         public TValue Value
         {
-            get => _value;
-            set => _value = value;
+            get => value;
+            set => this.value = value;
         }
 
         public Named(TKey key, TValue value)
         {
-            _key = key;
-            _value = value;
+            this.key = key;
+            this.value = value;
         }
 
         public Named()
@@ -68,28 +64,29 @@ namespace CorePlugin.Extensions
     /// <typeparam name="TName"></typeparam>
     /// <typeparam name="TKey"></typeparam>
     /// <typeparam name="TValue"></typeparam>
+    [Serializable]
     public class Named<TName, TKey, TValue>
     {
-        [SerializeField] protected TKey _key;
-        [SerializeField] protected TName _name;
-        [SerializeField] protected TValue _value;
+        [SerializeField] protected TKey key;
+        [SerializeField] protected TName name;
+        [SerializeField] protected TValue value;
 
         public TName Name
         {
-            get => _name;
-            set => _name = value;
+            get => name;
+            set => name = value;
         }
 
         public TKey Key
         {
-            get => _key;
-            set => _key = value;
+            get => key;
+            set => key = value;
         }
 
         public TValue Value
         {
-            get => _value;
-            set => _value = value;
+            get => value;
+            set => this.value = value;
         }
     }
 }

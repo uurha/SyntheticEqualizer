@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using Base;
-using CorePlugin.Attributes.EditorAddons;
 using CorePlugin.Cross.Events.Interface;
 using CorePlugin.Extensions;
 using Extensions;
 using Modules.AudioAnalyse.Model;
-using Modules.GlobalAudioSettings.Systems;
+using Modules.AudioPlayerUI.Model;
 using UnityEngine;
 
 namespace Modules.AudioAnalyse.Systems.SpectrumAnalyse

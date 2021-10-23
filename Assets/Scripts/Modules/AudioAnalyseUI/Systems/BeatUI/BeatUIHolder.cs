@@ -1,7 +1,5 @@
 ﻿using System;
 using Base;
-using CorePlugin.Attributes.EditorAddons;
-using CorePlugin.Core.Interface;
 using CorePlugin.Cross.Events.Interface;
 using CorePlugin.Extensions;
 using Modules.AudioAnalyse.Model;

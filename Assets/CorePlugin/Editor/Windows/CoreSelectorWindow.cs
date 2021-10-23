@@ -175,8 +175,8 @@ namespace CorePlugin.Editor.Windows
             {
             }
 
-            public string Name => _value;
-            public Object Object => _key;
+            public string Name => value;
+            public Object Object => key;
         }
 
         private class NamedGroup : Named<NamedObject, List<NamedObject>>
@@ -191,9 +191,9 @@ namespace CorePlugin.Editor.Windows
             {
             }
 
-            public Object Object => _key.Object;
-            public NamedObject NamedObject => _key;
-            public List<NamedObject> NamedObjects => _value;
+            public Object Object => key.Object;
+            public NamedObject NamedObject => key;
+            public List<NamedObject> NamedObjects => value;
         }
     }
 }

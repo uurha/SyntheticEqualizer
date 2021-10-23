@@ -59,7 +59,6 @@ namespace CorePlugin.Console
             maximizedConsole.OnLogCountUpdated +=
                 minimizedConsole.CountDisplayers.Aggregate<CountDisplayer, Action<HashSet<LogType>, int>>(null,
                     (current, displayer) => current + displayer.OnLogCountChanged);
-            ;
             maximizedConsole.Initialize(OnConsoleMinimized, icons).SetActive(!initializeMinimized);
         }
 

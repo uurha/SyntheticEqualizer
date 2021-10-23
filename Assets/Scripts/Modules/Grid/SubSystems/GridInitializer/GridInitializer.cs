@@ -4,7 +4,6 @@ using Base.BaseTypes;
 using Base.Deque;
 using CorePlugin.Attributes.EditorAddons;
 using CorePlugin.Attributes.Headers;
-using CorePlugin.Core.Interface;
 using CorePlugin.Cross.Events.Interface;
 using CorePlugin.Extensions;
 using Extensions;

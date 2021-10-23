@@ -2,46 +2,16 @@
 using Base;
 using CorePlugin.Attributes.EditorAddons;
 using CorePlugin.Attributes.Headers;
-using CorePlugin.Core.Interface;
 using CorePlugin.Cross.Events.Interface;
 using CorePlugin.Extensions;
 using Extensions;
 using Modules.AudioAnalyse.Systems.SpectrumAnalyse;
 using Modules.AudioPlayerModule.Systems.SpectrumListenerComponent;
+using Modules.AudioPlayerUI.Model;
 using UnityEngine;
 
 namespace Modules.GlobalAudioSettings.Systems
 {
-    public struct SpectrumAnalyzerSettings
-    {
-        public AudioExtensions.BandType BandType { get; }
-        public float Sensibility { get; }
-        public float FallSpeed { get; }
-        public bool IsValid { get; }
-
-        public SpectrumAnalyzerSettings(AudioExtensions.BandType bandType, float sensibility, float fallSpeed)
-        {
-            BandType = bandType;
-            Sensibility = sensibility;
-            FallSpeed = fallSpeed;
-            IsValid = true;
-        }
-    }
-
-    public struct SpectrumListenerSettings
-    {
-        public FFTWindow FFTWindow { get; }
-        public int NumberOfSamples { get; }
-        public bool IsValid { get; }
-
-        public SpectrumListenerSettings(FFTWindow fftWindow, int numberOfSamples)
-        {
-            FFTWindow = fftWindow;
-            NumberOfSamples = numberOfSamples;
-            IsValid = true;
-        }
-    }
-
     [CoreManagerElement]
     public class AudioSettingsDistributor : MonoBehaviour, IEventHandler
     {

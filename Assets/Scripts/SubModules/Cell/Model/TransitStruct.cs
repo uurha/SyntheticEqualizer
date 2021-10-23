@@ -6,7 +6,7 @@ using UnityEngine.Jobs;
 
 namespace SubModules.Cell.Model
 {
-    public struct TransitStruct
+    public readonly struct TransitStruct
     {
         public IJobBehaviour JobBehaviour { get; }
         public NativeArray<Orientation> InitialOrientations { get; }

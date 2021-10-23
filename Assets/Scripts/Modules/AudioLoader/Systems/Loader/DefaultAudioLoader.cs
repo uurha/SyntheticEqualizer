@@ -24,7 +24,7 @@ namespace Modules.AudioLoader.Systems.Loader
 
         [SerializeField] private AudioType type = AudioType.OGGVORBIS;
 
-        private string defaultPath = Application.streamingAssetsPath;
+        private readonly string _defaultPath = Application.streamingAssetsPath;
 
         private event AudioPlayerEvents.AudioLoadRequested RequestAudioLoad;
 
@@ -35,8 +35,8 @@ namespace Modules.AudioLoader.Systems.Loader
 
         private void Start()
         {
-            if (!Directory.Exists(defaultPath)) Directory.CreateDirectory(defaultPath);
-            var files = Directory.GetFiles(defaultPath, $"*{type.GetExtension()}", SearchOption.AllDirectories);
+            if (!Directory.Exists(_defaultPath)) Directory.CreateDirectory(_defaultPath);
+            var files = Directory.GetFiles(_defaultPath, $"*{type.GetExtension()}", SearchOption.AllDirectories);
 
             foreach (var file in files)
             {

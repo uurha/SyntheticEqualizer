@@ -24,8 +24,8 @@ namespace CorePlugin.Editor.Helpers
     {
         public ErrorObjectPair(string error, Object obj)
         {
-            _key = error.Replace("\n", " ");
-            _value = obj;
+            key = error.Replace("\n", " ");
+            value = obj;
         }
     }
 }

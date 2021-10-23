@@ -25,17 +25,17 @@ namespace CorePlugin.Editor
     [CustomEditor(typeof(SceneLoaderSettings))]
     public class SceneLoaderSettingsEditor : UnityEditor.Editor
     {
-        private SceneLoaderSettings sceneLoaderSettings;
+        private SceneLoaderSettings _sceneLoaderSettings;
 
         private void OnEnable()
         {
-            sceneLoaderSettings = (SceneLoaderSettings) target;
+            _sceneLoaderSettings = (SceneLoaderSettings) target;
         }
 
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
-            SceneLoaderSettingsValidator.ValidateScenesLoaderSettings(sceneLoaderSettings);
+            SceneLoaderSettingsValidator.ValidateScenesLoaderSettings(_sceneLoaderSettings);
         }
     }
 }

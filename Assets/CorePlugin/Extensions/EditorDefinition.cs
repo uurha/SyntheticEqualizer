@@ -15,7 +15,7 @@
 
 namespace CorePlugin.Extensions
 {
-    public struct EditorDefinition
+    public readonly struct EditorDefinition
     {
         public const string UnityEditor = "UNITY_EDITOR";
         public const string Debug = "DEBUG";

@@ -1,6 +1,6 @@
 ﻿namespace Modules.AudioAnalyse.Model
 {
-    public struct BPMCalculatorOutput
+    public readonly struct BPMCalculatorOutput
     {
         public bool BPMChanged { get; }
         public int BPM { get; }

@@ -1,5 +1,4 @@
 ﻿using Modules.AudioPlayerModule.Interfaces;
-using UnityEngine;
 
 namespace Modules.AudioPlayerModule.Systems.PlayerStates
 {

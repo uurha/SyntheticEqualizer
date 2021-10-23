@@ -65,15 +65,15 @@ namespace CorePlugin.Console
                                                                    LogType.Exception
                                                                };
 
-        private Action<HashSet<LogType>, int> onLogCountUpdated;
-        private Action onConsoleMinimized;
+        private Action<HashSet<LogType>, int> _onLogCountUpdated;
+        private Action _onConsoleMinimized;
         private CanvasGroup _consoleCanvasGroup;
         private string _recentSearchText;
 
         public event Action<HashSet<LogType>, int> OnLogCountUpdated
         {
-            add => onLogCountUpdated += value;
-            remove => onLogCountUpdated -= value;
+            add => _onLogCountUpdated += value;
+            remove => _onLogCountUpdated -= value;
         }
 
         private bool AutoScrollThreshold()
@@ -87,7 +87,7 @@ namespace CorePlugin.Console
         {
             foreach (var message in _logs.Values.SelectMany(messages => messages)) Destroy(message.gameObject);
             _logs.Clear();
-            onLogCountUpdated?.Invoke(LogTypes(new HashSet<LogType> {LogType.Log, LogType.Warning, LogType.Error}), 0);
+            _onLogCountUpdated?.Invoke(LogTypes(new HashSet<LogType> {LogType.Log, LogType.Warning, LogType.Error}), 0);
         }
 
         private void ClearSearch()
@@ -111,7 +111,7 @@ namespace CorePlugin.Console
             {
                 _logs.Add(type, new List<ConsoleMessage> {instance});
             }
-            onLogCountUpdated?.Invoke(LogTypes(type), _logs[type].Count);
+            _onLogCountUpdated?.Invoke(LogTypes(type), _logs[type].Count);
             DisplayByLogType(instance);
 
             if (!string.IsNullOrEmpty(_recentSearchText) &&
@@ -142,8 +142,8 @@ namespace CorePlugin.Console
             layoutGroup.reverseArrangement = reverseOrder;
             reverseSortingToggle.isOn = reverseOrder;
             Application.logMessageReceivedThreaded += MessageReceivedThreaded;
-            foreach (var logButton in logButtons) onLogCountUpdated += logButton.Initialize(icons).SetInteractionAction(OnStateChanged).OnLogCountChanged;
-            onConsoleMinimized += onMinimized;
+            foreach (var logButton in logButtons) _onLogCountUpdated += logButton.Initialize(icons).SetInteractionAction(OnStateChanged).OnLogCountChanged;
+            _onConsoleMinimized += onMinimized;
             searchInputField.onValueChanged.AddListener(text => _recentSearchText = text);
             searchInputField.onValueChanged.AddListener(SearchLogs);
             clearSearchButton.onClick.AddListener(ClearSearch);
@@ -182,7 +182,7 @@ namespace CorePlugin.Console
         private void Minimize()
         {
             SetActive(false);
-            onConsoleMinimized?.Invoke();
+            _onConsoleMinimized?.Invoke();
         }
 
         private void OnDestroy()

@@ -16,7 +16,7 @@ namespace Modules.InputManagement
     public class InputHandler : StaticObjectSingleton<InputHandler>
     {
         #if UNITY_EDITOR
-        [SerializeField] private bool _showEditorLogs;
+        [SerializeField] private bool showEditorLogs;
         #endif
 
         private readonly Array _keyCodes = Enum.GetValues(typeof(KeyCode));
@@ -64,7 +64,7 @@ namespace Modules.InputManagement
             {
                 if (!predicate.Invoke(keyCode)) continue;
                 #if UNITY_EDITOR
-                if (_showEditorLogs)
+                if (showEditorLogs)
                     #endif
                     DebugLogger.Log($"KeyCode {actionType}: " + keyCode);
                 if (_keyEventDictionary.TryGetValue(keyCode, actionType, out var action)) action?.Invoke();

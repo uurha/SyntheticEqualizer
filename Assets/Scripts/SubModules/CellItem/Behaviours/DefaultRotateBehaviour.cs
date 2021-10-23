@@ -10,7 +10,7 @@ namespace SubModules.CellItem.Behaviours
     {
         private BehaviourData _data;
 
-        public void Execute(int index, TransformAccess transform)
+        public readonly void Execute(int index, TransformAccess transform)
         {
             transform.localRotation =
                 _data.InitialData[index].Rotation * _data.AdditionalData[index % _data.Lenght].Rotation;

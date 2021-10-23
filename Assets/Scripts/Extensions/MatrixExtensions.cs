@@ -133,8 +133,8 @@ namespace Extensions
             for (var i = 0; i < colLength; i++) matrix[column, i] = colVector[i];
         }
 
-        public static T[] FillDimension<T, V>(this V[,] bufferList, MatrixDimension dimension,
-                                              Func<V[], T> onCreateInstance = null) where T : new()
+        public static T[] FillDimension<T, TV>(this TV[,] bufferList, MatrixDimension dimension,
+                                              Func<TV[], T> onCreateInstance = null) where T : new()
         {
             var lineCount = bufferList.GetLength((int) dimension);
             var bufferLines = new T[lineCount];

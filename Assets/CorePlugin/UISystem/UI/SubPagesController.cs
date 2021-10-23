@@ -31,7 +31,7 @@ namespace CorePlugin.UISystem.UI
         [SerializeField] private float delayTime;
         [SerializeField] private bool showFirstOnAwake = true;
 
-        private List<UIPage> _pages = new List<UIPage>();
+        private readonly List<UIPage> _pages = new List<UIPage>();
 
         /// <summary>
         /// Adding new UIPage to this subpages controller

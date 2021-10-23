@@ -73,7 +73,6 @@ namespace CorePlugin.Editor.Drawers
                 if (!string.Equals(path, sceneManagerAsset.FullPath, StringComparison.Ordinal))
                 {
                     CheckSceneLoaderAsset(oldScene, targetObject, bufferList, index);
-                    var t = property.serializedObject.hasModifiedProperties;
                     EditorUtility.SetDirty(targetObject);
                     return;
                 }

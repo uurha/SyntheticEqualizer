@@ -89,11 +89,11 @@ namespace Modules.AudioAnalyse.Systems.BeatDetector
 
         private BeatDetectorOutput GenerateDetectorOutput(BeatDetectorData data)
         {
-            _bpmCalculator.Update(Time.deltaTime, data.IsBass, out var bpmOutput);
+            _bpmCalculator.Update(Time.deltaTime, data._isBass, out var bpmOutput);
             var bpmChanged = bpmOutput.BPMChanged;
-            if (data.IsBass) Debug.Log("Bass beat");
+            if (data._isBass) Debug.Log("Bass beat");
             if (bpmChanged) Debug.Log($"BPM: {bpmOutput.BPM} Average BPM: {bpmOutput.AverageBPM}");
-            return new BeatDetectorOutput(data.AvgSpectrum, data.FreqSpectrum, data.IsBass, data.IsLow, bpmOutput);
+            return new BeatDetectorOutput(data._avgSpectrum, data._freqSpectrum, data._isBass, data._isLow, bpmOutput);
         }
 
         /// <summary>
@@ -114,32 +114,32 @@ namespace Modules.AudioAnalyse.Systems.BeatDetector
                     for (var channel = 0; channel < _numChannels; ++channel)
                     {
                         var tempSample = spectrum[channel];
-                        referenceData.FreqSpectrum[numBand] += tempSample[indexFFT];
+                        referenceData._freqSpectrum[numBand] += tempSample[indexFFT];
                     }
                 }
 
-                referenceData.FreqSpectrum[numBand] /=
+                referenceData._freqSpectrum[numBand] /=
                     _beatDetectorBandLimits[numBand + 1] - _beatDetectorBandLimits[numBand] * numBand;
             }
 
             if (_fftHistoryBeatDetector.Count > 0)
             {
-                FillAvgSpectrum(NumBands, ref referenceData.AvgSpectrum, ref _fftHistoryBeatDetector);
+                FillAvgSpectrum(NumBands, ref referenceData._avgSpectrum, ref _fftHistoryBeatDetector);
                 var varianceSpectrum = new float[NumBands];
 
-                FillVarianceSpectrum(NumBands, ref varianceSpectrum, ref referenceData.AvgSpectrum,
+                FillVarianceSpectrum(NumBands, ref varianceSpectrum, ref referenceData._avgSpectrum,
                                      ref _fftHistoryBeatDetector);
                 const int bass = (int) BeatType.Bass;
 
-                referenceData.IsBass = referenceData.FreqSpectrum[bass] - 0.05 >
-                                       BeatThreshold(varianceSpectrum[bass]) * referenceData.AvgSpectrum[bass];
+                referenceData._isBass = referenceData._freqSpectrum[bass] - 0.05 >
+                                       BeatThreshold(varianceSpectrum[bass]) * referenceData._avgSpectrum[bass];
                 const int low = (int) BeatType.Low;
 
-                referenceData.IsLow = referenceData.FreqSpectrum[low] - 0.005 >
-                                      BeatThreshold(varianceSpectrum[low]) * referenceData.AvgSpectrum[low];
+                referenceData._isLow = referenceData._freqSpectrum[low] - 0.005 >
+                                      BeatThreshold(varianceSpectrum[low]) * referenceData._avgSpectrum[low];
             }
             var fftResult = new List<float>(NumBands);
-            for (var index = 0; index < NumBands; ++index) fftResult.Add(referenceData.FreqSpectrum[index]);
+            for (var index = 0; index < NumBands; ++index) fftResult.Add(referenceData._freqSpectrum[index]);
             _fftHistoryBeatDetector.AddLast(fftResult);
         }
 
@@ -165,10 +165,10 @@ namespace Modules.AudioAnalyse.Systems.BeatDetector
 
             _data = new BeatDetectorData
                     {
-                        FreqSpectrum = new float[2],
-                        AvgSpectrum = new float[2],
-                        IsBass = false,
-                        IsLow = false
+                        _freqSpectrum = new float[2],
+                        _avgSpectrum = new float[2],
+                        _isBass = false,
+                        _isLow = false
                     };
             _bpmCalculator = new BPMCalculator(analyzeTime);
             _isInitialized = true;
@@ -204,22 +204,22 @@ namespace Modules.AudioAnalyse.Systems.BeatDetector
             /// <summary>
             /// Reference to the array containing average values for the sample amplitudes
             /// </summary>
-            public float[] AvgSpectrum;
+            public float[] _avgSpectrum;
 
             /// <summary>
             /// Reference to the array containing current samples and amplitudes
             /// </summary>
-            public float[] FreqSpectrum;
+            public float[] _freqSpectrum;
 
             /// <summary>
             /// Bool to check if current value is higher than average for bass frequencies
             /// </summary>
-            public bool IsBass;
+            public bool _isBass;
 
             /// <summary>
             /// Bool to check if current value is higher than average for low-mid frequencies
             /// </summary>
-            public bool IsLow;
+            public bool _isLow;
         }
 
         public void InvokeEvents()

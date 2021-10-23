@@ -20,20 +20,24 @@ namespace Extensions
         [SerializeField] private Axis positionRestrictedAxis;
         [SerializeField] private Axis rotationRestrictedAxis;
 
-        private Vector3 storedPosition;
-        private Quaternion storedRotation;
+        private Vector3 _storedPosition;
+        private Quaternion _storedRotation;
 
         private void LateUpdate()
         {
             if (transform.hasChanged)
             {
                 var thisTransform = transform;
-                thisTransform.position = Restore(thisTransform.position, storedPosition, positionRestrictedAxis);
+                var position = thisTransform.position;
+                position = Restore(position, _storedPosition, positionRestrictedAxis);
+                thisTransform.position = position;
+                var rotation = thisTransform.rotation;
 
-                thisTransform.rotation = Quaternion.Euler(Restore(thisTransform.rotation.eulerAngles,
-                                                                  storedRotation.eulerAngles, rotationRestrictedAxis));
-                storedPosition = transform.position;
-                storedRotation = transform.rotation;
+                rotation = Quaternion.Euler(Restore(rotation.eulerAngles,
+                                                    _storedRotation.eulerAngles, rotationRestrictedAxis));
+                thisTransform.rotation = rotation;
+                _storedPosition = position;
+                _storedRotation = rotation;
                 thisTransform.hasChanged = false;
             }
         }

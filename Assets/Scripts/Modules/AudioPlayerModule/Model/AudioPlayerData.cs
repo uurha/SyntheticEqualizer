@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Modules.AudioPlayerModule.Model
 {
-    public struct AudioPlayerData
+    public readonly struct AudioPlayerData
     {
         public float Volume { get; }
 

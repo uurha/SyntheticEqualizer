@@ -1,6 +1,6 @@
 ﻿namespace Modules.AudioAnalyse.Model
 {
-    public struct BeatDetectorOutput
+    public readonly struct BeatDetectorOutput
     {
         public float[] AvgSpectrum { get; }
         public float[] FreqSpectrum { get; }

@@ -22,10 +22,7 @@ namespace CorePlugin.Cross.Events.Interface
     /// <code>
     /// <br/>public void Subscribe(params Delegate[] subscriber)
     /// <br/>{
-    /// <br/>    foreach (var action in subscriber.OfType<EventTypes.DelegateClass>())
-    /// <br/>    {
-    /// <br/>        MyEvent += action;
-    /// <br/>    }
+    /// <br/>   EventExtensions.Subscribe(ref event, subscribers);
     /// <br/>}
     /// </code>
     /// <seealso cref="CorePlugin.Cross.Events.EventTypes"/>
