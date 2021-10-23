@@ -6,12 +6,16 @@ using CorePlugin.Extensions;
 using CorePlugin.Singletons;
 using Modules.AudioPlayerModule.Systems.PlayerStates;
 using Modules.AudioPlayerModule.Systems.Playlist;
+using Modules.InputManagement;
+using UnityEngine;
 
 namespace Modules.AudioPlayerModule.Systems
 {
     [CoreManagerElement("Audio Player Controls")]
     public class AudioPlayerStateCaller : Singleton<AudioPlayerStateCaller>, IEventHandler
     {
+        [SerializeField] private float sensivity = 0.08f;
+
         private event AudioPlayerEvents.RequestPlaylistClip RequestPlaylistClip;
         private event AudioPlayerEvents.UpdateAudioPlayerState UpdatePlayerState;
 
@@ -25,6 +29,16 @@ namespace Modules.AudioPlayerModule.Systems
             {
                 Destroy(gameObject);
             }
+        }
+        
+        private void Start()
+        {
+            InputHandler.OnMouseScrollDelta += OnMouseScrollDelta;
+        }
+
+        private void OnMouseScrollDelta(Vector2 value)
+        {
+            UpdateVolume(value.y * sensivity, true);
         }
 
         [EditorButton("Next", 1, 2)]
@@ -79,13 +93,13 @@ namespace Modules.AudioPlayerModule.Systems
             _instance.UpdatePlayerState?.Invoke(new Time01State(time));
         }
 
-        [EditorButton("Minimum volume", 3, 0.1f)]
-        [EditorButton("Default volume", 3, 0.5f)]
-        [EditorButton("Maximum volume", 3, 1.0f)]
-        public static void UpdateVolume(float value)
+        [EditorButton("Minimum volume", 3, 0.1f, false)]
+        [EditorButton("Default volume", 3, 0.5f, false)]
+        [EditorButton("Maximum volume", 3, 1.0f, false)]
+        public static void UpdateVolume(float value, bool additive)
         {
             if (!IsInitialised) return;
-            var playerState = new VolumeState(value);
+            var playerState = new VolumeState(value, additive);
             _instance.UpdatePlayerState?.Invoke(playerState);
         }
 

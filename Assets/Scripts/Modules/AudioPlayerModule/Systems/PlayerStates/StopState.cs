@@ -2,7 +2,7 @@
 
 namespace Modules.AudioPlayerModule.Systems.PlayerStates
 {
-    public struct StopState : IPlayerState
+    public readonly struct StopState : IPlayerState
     {
         public void Execute(IAudioPlayer audioPlayer)
         {

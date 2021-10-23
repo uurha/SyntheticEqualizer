@@ -4,9 +4,9 @@ using Modules.AudioPlayerModule.Systems.Playlist;
 
 namespace Modules.AudioPlayerModule.Systems.PlayerStates
 {
-    public struct PlayState : IPlayerState
+    public readonly struct PlayState : IPlayerState
     {
-        private AudioPlayerEvents.RequestPlaylistClip RequestPlaylistClip;
+        private readonly AudioPlayerEvents.RequestPlaylistClip RequestPlaylistClip;
 
         public PlayState(AudioPlayerEvents.RequestPlaylistClip requestPlaylistClip)
         {

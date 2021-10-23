@@ -13,8 +13,14 @@ namespace Modules.AudioAnalyse.Systems.Processors
     public class SpectrumDataProcessor : MonoBehaviour, IEventSubscriber, IEventHandler
     {
         private JobHandle _handle;
+        private float _volume;
         private event AudioPlayerEvents.RequestAudioPlayerData RequestAudioPlayerData;
         private event DataProcessorsEvents.SpectrumProcessorDataEvent SpectrumListenerDataPrecessed;
+
+        private void OnAudioPlayerVolumeChanged(float volume)
+        {
+            _volume = volume;
+        }
 
         private void OnSpectrumDataReceived(SpectrumListenerOutput listenerData)
         {
@@ -22,13 +28,10 @@ namespace Modules.AudioAnalyse.Systems.Processors
             if (!_handle.IsCompleted) return;
             var channels = listenerData.Channels;
             var jobs = new MultiplyJob[channels];
-            var audioPlayerData = RequestAudioPlayerData.Invoke();
-            if (!audioPlayerData.IsValid) return;
 
             for (var channel = 0; channel < listenerData.Channels; channel++)
             {
-                var volume = audioPlayerData.Volume;
-                var multiplier = volume > 0 ? 1 / volume : 0f;
+                var multiplier = _volume > 0 ? 1 / _volume : 0f;
                 jobs[channel] = new MultiplyJob(listenerData.RawSpectrumData[channel], multiplier);
                 var handle = jobs[channel].Schedule(listenerData.NumberOfSamples, 1);
                 JobHandle.CombineDependencies(_handle, handle);
@@ -90,7 +93,8 @@ namespace Modules.AudioAnalyse.Systems.Processors
         {
             return new Delegate[]
                    {
-                       (DataProcessorsEvents.SpectrumListenerDataEvent) OnSpectrumDataReceived
+                       (DataProcessorsEvents.SpectrumListenerDataEvent) OnSpectrumDataReceived,
+                       (AudioPlayerEvents.AudioPlayerVolumeEvent) OnAudioPlayerVolumeChanged
                    };
         }
     }

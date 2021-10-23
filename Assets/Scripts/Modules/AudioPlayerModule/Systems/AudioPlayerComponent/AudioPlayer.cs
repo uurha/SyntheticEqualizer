@@ -25,6 +25,7 @@ namespace Modules.AudioPlayerModule.Systems.AudioPlayerComponent
         private AudioPlayerState _currentState;
 
         private event AudioPlayerEvents.AudioPlayerStateEvent OnAudioPlayerState;
+        private event AudioPlayerEvents.AudioPlayerVolumeEvent OnAudioPlayerVolume;
         private event AudioPlayerEvents.RequestPlaylistClip RequestPlaylistClip;
         private event AudioPlayerEvents.PlaybackTime01ChangedEvent OnPlaybackTime01ChangedEvent;
         private event AudioPlayerEvents.AudioClipChangedEvent OnAudioClipChanged;
@@ -61,7 +62,12 @@ namespace Modules.AudioPlayerModule.Systems.AudioPlayerComponent
         public float Volume
         {
             get => audioSource.volume;
-            set => audioSource.volume = value;
+            set
+            {
+                var buffer = Mathf.Clamp01(value);
+                audioSource.volume = buffer;
+                OnAudioPlayerVolume?.Invoke(buffer);
+            }
         }
 
         private void Update()
@@ -134,7 +140,7 @@ namespace Modules.AudioPlayerModule.Systems.AudioPlayerComponent
         public void InvokeEvents()
         {
             Stop();
-            audioSource.volume = initialVolume;
+            Volume = initialVolume;
         }
 
         public void Subscribe(params Delegate[] subscribers)
@@ -143,6 +149,7 @@ namespace Modules.AudioPlayerModule.Systems.AudioPlayerComponent
             EventExtensions.Subscribe(ref OnAudioClipChanged, subscribers);
             EventExtensions.Subscribe(ref OnPlaybackTime01ChangedEvent, subscribers);
             EventExtensions.Subscribe(ref RequestPlaylistClip, subscribers);
+            EventExtensions.Subscribe(ref OnAudioPlayerVolume, subscribers);
         }
 
         public void Unsubscribe(params Delegate[] unsubscribers)
@@ -151,6 +158,7 @@ namespace Modules.AudioPlayerModule.Systems.AudioPlayerComponent
             EventExtensions.Unsubscribe(ref OnAudioClipChanged, unsubscribers);
             EventExtensions.Unsubscribe(ref OnPlaybackTime01ChangedEvent, unsubscribers);
             EventExtensions.Unsubscribe(ref RequestPlaylistClip, unsubscribers);
+            EventExtensions.Unsubscribe(ref OnAudioPlayerVolume, unsubscribers);
         }
 
         public Delegate[] GetSubscribers()

@@ -38,12 +38,13 @@ namespace Modules.Grid.SubSystems.Processors
         {
             if (_cellVisualBehaviours == null) return;
             if (!_analyzerSettings.IsValid) return;
-            var arrayLenght = data.MeanSpectrumData[0].Length;
+            var floats = data.MeanSpectrumData[0];
+            var arrayLenght = floats.Length;
             var curveArray = curve.CurveToArray(arrayLenght);
             var orientations = new Orientation[arrayLenght];
 
             for (var index = 0; index < arrayLenght; index++)
-                orientations[index] = Selector(data.MeanSpectrumData[0][index] * curveArray[index]);
+                orientations[index] = Selector(floats[index] * curveArray[index]);
             foreach (var behaviour in _cellVisualBehaviours) behaviour.RunBehaviour(orientations);
         }
 

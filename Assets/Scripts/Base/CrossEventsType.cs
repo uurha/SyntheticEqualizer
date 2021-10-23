@@ -18,6 +18,8 @@ namespace Base
         public delegate void AudioLoadRequested(AudioLoaderSettings loaderSettings, Action<AudioDataProgress> action);
 
         public delegate void AudioPlayerStateEvent(AudioPlayerState state);
+        
+        public delegate void AudioPlayerVolumeEvent(float volume);
 
         public delegate void PlaybackTime01ChangedEvent(float data);
 

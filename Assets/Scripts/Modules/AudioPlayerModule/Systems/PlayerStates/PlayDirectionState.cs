@@ -4,10 +4,10 @@ using Modules.AudioPlayerModule.Systems.Playlist;
 
 namespace Modules.AudioPlayerModule.Systems.PlayerStates
 {
-    public struct PlayDirectionState : IPlayerState
+    public readonly struct PlayDirectionState : IPlayerState
     {
-        private AudioPlayerEvents.RequestPlaylistClip RequestPlaylistClip;
-        private PlaylistDirection _direction;
+        private readonly AudioPlayerEvents.RequestPlaylistClip RequestPlaylistClip;
+        private readonly PlaylistDirection _direction;
 
         public PlayDirectionState(AudioPlayerEvents.RequestPlaylistClip requestPlaylistClip,
                                   PlaylistDirection direction)

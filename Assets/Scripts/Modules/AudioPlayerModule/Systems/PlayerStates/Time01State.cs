@@ -2,9 +2,9 @@
 
 namespace Modules.AudioPlayerModule.Systems.PlayerStates
 {
-    public struct Time01State : IPlayerState
+    public readonly struct Time01State : IPlayerState
     {
-        private float _time01;
+        private readonly float _time01;
 
         public Time01State(float time01)
         {

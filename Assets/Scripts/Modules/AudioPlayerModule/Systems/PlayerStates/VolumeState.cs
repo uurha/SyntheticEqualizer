@@ -1,19 +1,30 @@
 ﻿using Modules.AudioPlayerModule.Interfaces;
+using UnityEngine;
 
 namespace Modules.AudioPlayerModule.Systems.PlayerStates
 {
-    public struct VolumeState : IPlayerState
+    public readonly struct VolumeState : IPlayerState
     {
-        private float _volume;
+        private readonly float _volume;
+        private readonly bool _additive;
 
-        public VolumeState(float volume)
+        public VolumeState(float volume, bool additive)
         {
+            _additive = additive;
             _volume = volume;
         }
 
         public void Execute(IAudioPlayer audioPlayer)
         {
-            audioPlayer.Volume = _volume;
+            if (_additive)
+            {
+                
+                audioPlayer.Volume += _volume;
+            }
+            else
+            {
+                audioPlayer.Volume = _volume;
+            }
         }
     }
 }

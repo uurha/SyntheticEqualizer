@@ -43,9 +43,12 @@ namespace Modules.AudioPlayerUI.Systems.Signers
         {
             _playButton.OnClick +=  AudioPlayerStateCaller.SwitchPlay;
             _playbackSlider.OnValueChanged +=  AudioPlayerStateCaller.SetPlaybackTime01;
-            _volumeSlider.OnValueChanged +=  AudioPlayerStateCaller.UpdateVolume;
-            var data = RequestAudioPlayerData?.Invoke();
-            if (data.HasValue) SetVolume(data.Value.Volume);
+            _volumeSlider.OnValueChanged += OnVolumeSliderValueChanged;
+        }
+
+        private void OnVolumeSliderValueChanged(float value)
+        {
+            AudioPlayerStateCaller.UpdateVolume(value, false);
         }
 
         private void PlayButtonTextUpdate(AudioPlayerState state)
@@ -55,11 +58,6 @@ namespace Modules.AudioPlayerUI.Systems.Signers
                 _playButton.Text = "Stop";
             else
                 _playButton.Text = "Play";
-        }
-
-        private void SetVolume(float volume)
-        {
-            _volumeSlider.SetValueWithoutNotify(volume);
         }
 
         public void InvokeEvents()
@@ -81,7 +79,8 @@ namespace Modules.AudioPlayerUI.Systems.Signers
             return new Delegate[]
                    {
                        (AudioPlayerEvents.AudioPlayerStateEvent) PlayButtonTextUpdate,
-                       (AudioPlayerEvents.PlaybackTime01ChangedEvent) _playbackSlider.SetValueWithoutNotify
+                       (AudioPlayerEvents.PlaybackTime01ChangedEvent) _playbackSlider.SetValueWithoutNotify,
+                       (AudioPlayerEvents.AudioPlayerVolumeEvent) _volumeSlider.SetValueWithoutNotify
                    };
         }
     }
