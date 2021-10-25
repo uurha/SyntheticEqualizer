@@ -19,16 +19,16 @@ namespace Modules.Grid.SubSystems.GridInitializer
     [CoreManagerElement]
     public class GridInitializer : MonoBehaviour, IEventHandler
     {
-        [SerializeField] private int columnCount;
-
         [SettingsHeader]
+        [SerializeField] private int columnCount;
+        [SerializeField] private int rowCount;
         [Min(1)] [SerializeField] private int maxGridCount;
+        [SerializeField] private int seedValue;
 
         [PrefabHeader]
         [SerializeField] private BeomPreset preset;
-        [SerializeField] private int rowCount;
-        [SerializeField] private int seedValue;
-        
+
+
         private GridGenerator _gridGenerator;
         private Vector3 _initialPosition = Vector3.zero;
         private EntityRoute _previousGridExit;
@@ -44,10 +44,11 @@ namespace Modules.Grid.SubSystems.GridInitializer
         {
             Initialize();
         }
-        
+
         [EditorButton("Generate Next Grid")]
         public void GenerateNextGrid()
         {
+            if (!Application.isPlaying) return;
             _gridGenerator.GenerateNextGrid(OnGridGenerated);
         }
 
