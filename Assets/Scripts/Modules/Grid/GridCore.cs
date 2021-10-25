@@ -1,6 +1,4 @@
 ﻿using CorePlugin.Core;
-using CorePlugin.Core.Interface;
-using UnityEngine;
 
 namespace Modules.Grid
 {

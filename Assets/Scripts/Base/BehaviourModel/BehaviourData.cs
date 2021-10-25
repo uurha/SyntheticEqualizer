@@ -6,7 +6,7 @@ using Unity.Collections;
 namespace Base.BehaviourModel
 {
     [BurstCompile]
-    public struct BehaviourData : IBehaviourData
+    public readonly struct BehaviourData : IBehaviourData
     {
         [field: ReadOnly]
         public NativeArray<Orientation> InitialData { get; }

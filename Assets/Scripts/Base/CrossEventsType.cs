@@ -2,9 +2,10 @@
 using Base.Deque;
 using Modules.AudioAnalyse.Model;
 using Modules.AudioLoader.Model;
-using Modules.AudioPlayer.Interfaces;
-using Modules.AudioPlayer.Model;
-using Modules.AudioPlayer.SubSystems.Playlist;
+using Modules.AudioPlayerModule.Interfaces;
+using Modules.AudioPlayerModule.Model;
+using Modules.AudioPlayerModule.Systems.Playlist;
+using Modules.AudioPlayerUI.Model;
 using Modules.Grid.Model;
 using UnityEngine;
 
@@ -17,6 +18,8 @@ namespace Base
         public delegate void AudioLoadRequested(AudioLoaderSettings loaderSettings, Action<AudioDataProgress> action);
 
         public delegate void AudioPlayerStateEvent(AudioPlayerState state);
+        
+        public delegate void AudioPlayerVolumeEvent(float volume);
 
         public delegate void PlaybackTime01ChangedEvent(float data);
 
@@ -29,23 +32,30 @@ namespace Base
 
     public static class AudioAnalyzerEvents
     {
-        public delegate void SpectrumAnalyzerDataEvent(SpectrumAnalyzerData data);
+        public delegate void SpectrumAnalyzerDataEvent(SpectrumAnalyzerOutput data);
     }
 
     public static class BeatDetectionEvents
     {
-        public delegate void BeatDetectorEvent(BeatAnalyzeData beatAnalyzeData);
+        public delegate void BeatDetectorEvent(BeatDetectorOutput beatAnalyzeData);
+    }
+
+    public static class GlobalAudioSettingsEvents
+    {
+        public delegate void OnSpectrumAnalyzerSettingsEvent(SpectrumAnalyzerSettings analyzerSettings);
+
+        public delegate void OnSpectrumListenerSettingsEvent(SpectrumListenerSettings analyzerSettings);
     }
 
     public static class GridEvents
     {
-        public delegate void GridUpdatedEvent(Conveyor<GridConfiguration> gridConfigurations);
+        public delegate void GridConfigurationChangedEvent(Conveyor<GridConfiguration> gridConfigurations);
     }
 
     public static class DataProcessorsEvents
     {
-        public delegate void SpectrumProcessorDataEvent(SpectrumProcessorData listenerData);
+        public delegate void SpectrumListenerDataEvent(SpectrumListenerOutput listenerData);
 
-        public delegate void SpectrumListenerDataEvent(SpectrumListenerData listenerData);
+        public delegate void SpectrumProcessorDataEvent(SpectrumProcessorOutput listenerData);
     }
 }

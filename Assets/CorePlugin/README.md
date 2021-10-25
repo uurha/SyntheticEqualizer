@@ -1,9 +1,9 @@
 # CoreManager
 
 Reasons to use this package:
-  - It allows avoiding reference serialization via Inspector.
-  - It removes the need for GOD objects.
-  - Provides high script flexibility and low cohesion.
+- It allows avoiding reference serialization via Inspector.
+- It removes the need for GOD objects.
+- Provides high script flexibility and low cohesion.
 
 ## Technical details
 
@@ -27,7 +27,16 @@ Any OS supported. Unity version 2020 and above. (Package requires C# 8.0)
 12. <b>Extensions</b> - for Editor and base classes.
 13. <b>Scene Loader</b> - allows to asynchronously load scene through an intermediate scene and allows to serialize SceneAssets through Inspector (use SceneLoaderAsset).
 14. <b>Runtime console</b> - console with Unity logs for debug and/or release builds. Allows display console logs like in Unity Editor. Strips from release builds if other not predetermined.
+15. <b>Scene Loader</b> - add callbacks on scene changing.
 
+## Improvements
+1. <b>RequireInterfaceAttribute</b>
+2. <b>Delegate</b> combination for subscribing (checkout samples to learn how to use)
 
-##Improvements
-1. <b>Scene Loader</b> - add callbacks on scene changing.
+## Breaking changes
+
+### v1.1.2
+1. Event interfaces accept arrays instead of <b>IEnumerable</b>.
+
+### v1.1.3
+1. Event interfaces accept <b>params</b> arrays.

@@ -6,7 +6,7 @@ using Extensions;
 using SubModules.Cell.Model;
 using UnityEngine;
 using Random = System.Random;
-using TaskExtensions = Extensions.TaskExtensions;
+using TaskExtensions = CorePlugin.Extensions.TaskExtensions;
 
 namespace SubModules.Route.Generator
 {

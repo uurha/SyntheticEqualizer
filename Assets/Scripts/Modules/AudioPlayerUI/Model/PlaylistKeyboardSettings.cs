@@ -1,7 +1,7 @@
 ﻿using Modules.InputManagement.Model;
 using UnityEngine;
 
-namespace Modules.AudioPlayer.Model
+namespace Modules.AudioPlayerUI.Model
 {
     [CreateAssetMenu(menuName = "Playlist/Keyboard Settings", fileName = "KeyboardSettings", order = 0)]
     public class PlaylistKeyboardSettings : ScriptableObject
