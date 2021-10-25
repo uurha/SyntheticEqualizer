@@ -7,6 +7,8 @@ namespace Modules.Grid.Model
 {
     public struct GridConfiguration
     {
+        public ICellEntity[] RoadEntities { get; }
+
         public LineConfiguration[] RowConfiguration { get; private set; }
 
         public LineConfiguration[] ColumnsConfiguration { get; private set; }
@@ -17,8 +19,10 @@ namespace Modules.Grid.Model
 
         public bool IsInitialized { get; private set; }
 
-        public GridConfiguration(ICellEntity[,] cellEntities)
+        public GridConfiguration(ICellEntity[,] cellEntities, ICellEntity[] roadEntities)
         {
+            RoadEntities = roadEntities;
+
             RowConfiguration =
                 cellEntities.FillDimension(MatrixDimension.Row, entities => new LineConfiguration(entities));
 
@@ -60,8 +64,8 @@ namespace Modules.Grid.Model
         public void Clear()
         {
             for (var row = 0; row < RowLenght; row++) RowConfiguration[row].DestroyAll();
-            RowConfiguration = new LineConfiguration[0];
-            ColumnsConfiguration = new LineConfiguration[0];
+            RowConfiguration = Array.Empty<LineConfiguration>();
+            ColumnsConfiguration = Array.Empty<LineConfiguration>();
             ColumnLenght = 0;
             RowLenght = 0;
             IsInitialized = false;

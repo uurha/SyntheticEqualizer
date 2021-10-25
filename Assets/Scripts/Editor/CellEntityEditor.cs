@@ -31,21 +31,21 @@ namespace Editor
 
             var inDir = targetObject.InDirection switch
                         {
-                            EntityRoute.None => Vector3.zero,
-                            EntityRoute.North => Vector3.back,
-                            EntityRoute.East => Vector3.left,
-                            EntityRoute.South => Vector3.forward,
-                            EntityRoute.West => Vector3.right,
+                            RoadDirection.None => Vector3.zero,
+                            RoadDirection.North => Vector3.back,
+                            RoadDirection.East => Vector3.left,
+                            RoadDirection.South => Vector3.forward,
+                            RoadDirection.West => Vector3.right,
                             _ => throw new ArgumentOutOfRangeException()
                         };
 
             var outDir = targetObject.OutDirection switch
                          {
-                             EntityRoute.None => Vector3.zero,
-                             EntityRoute.North => Vector3.back,
-                             EntityRoute.East => Vector3.left,
-                             EntityRoute.South => Vector3.forward,
-                             EntityRoute.West => Vector3.right,
+                             RoadDirection.None => Vector3.zero,
+                             RoadDirection.North => Vector3.back,
+                             RoadDirection.East => Vector3.left,
+                             RoadDirection.South => Vector3.forward,
+                             RoadDirection.West => Vector3.right,
                              _ => throw new ArgumentOutOfRangeException()
                          };
             var dir = inDir - outDir;

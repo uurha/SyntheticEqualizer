@@ -10,11 +10,11 @@ namespace Extensions
 {
     public static class EntityExtensions
     {
-        public static EntityRoute Negative(this EntityRoute entityType)
+        public static RoadDirection Negative(this RoadDirection entityType)
         {
             var current = (int) entityType;
             var next = current * -1;
-            return (EntityRoute) next;
+            return (RoadDirection) next;
         }
 
         public static Vector3 Sum<T>(this IEnumerable<T> entities, Func<T, Vector3> predicate)

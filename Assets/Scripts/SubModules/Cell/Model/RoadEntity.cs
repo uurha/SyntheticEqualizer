@@ -1,6 +1,6 @@
 ﻿namespace SubModules.Cell.Model
 {
-    public enum EntityRoute
+    public enum RoadDirection
     {
         None = 0,
         North = -1,

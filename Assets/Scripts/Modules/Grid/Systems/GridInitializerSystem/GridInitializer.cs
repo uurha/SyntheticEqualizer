@@ -8,16 +8,16 @@ using CorePlugin.Cross.Events.Interface;
 using CorePlugin.Extensions;
 using Extensions;
 using Modules.Grid.Model;
-using Modules.Grid.SubSystems.Generator;
+using Modules.Grid.Systems.Generator;
 using SubModules.Beom;
 using SubModules.Cell.Interfaces;
 using SubModules.Cell.Model;
 using UnityEngine;
 
-namespace Modules.Grid.SubSystems.GridInitializer
+namespace Modules.Grid.Systems.GridInitializerSystem
 {
     [CoreManagerElement]
-    public class GridInitializer : MonoBehaviour, IEventHandler
+    public class GridInitializer : MonoBehaviour, IEventHandler, IEventSubscriber
     {
         [SettingsHeader]
         [SerializeField] private int columnCount;
@@ -31,13 +31,11 @@ namespace Modules.Grid.SubSystems.GridInitializer
 
         private GridGenerator _gridGenerator;
         private Vector3 _initialPosition = Vector3.zero;
-        private EntityRoute _previousGridExit;
+        private RoadDirection _previousGridExit;
+        private bool _isInitialized;
+        private Conveyor<GridConfiguration> _instancedGrids;
 
         private event GridEvents.GridConfigurationChangedEvent OnGridChanged;
-
-        public bool IsInitialized { get; private set; }
-
-        public Conveyor<GridConfiguration> InstancedGrids { get; private set; }
 
         // Start is called before the first frame update
         private void Start()
@@ -46,7 +44,7 @@ namespace Modules.Grid.SubSystems.GridInitializer
         }
 
         [EditorButton("Generate Next Grid")]
-        public void GenerateNextGrid()
+        private void GenerateNextGrid()
         {
             if (!Application.isPlaying) return;
             _gridGenerator.GenerateNextGrid(OnGridGenerated);
@@ -57,16 +55,18 @@ namespace Modules.Grid.SubSystems.GridInitializer
         {
             if (!Application.isPlaying) return;
 
-            if (IsInitialized)
+            if (_isInitialized)
             {
-                IsInitialized = false;
+                _isInitialized = false;
 
-                if (InstancedGrids != null)
-                    foreach (var gridConfiguration in InstancedGrids)
-                        gridConfiguration.Clear();
+                if (_instancedGrids != null)
+                {
+                    foreach (var gridConfiguration in _instancedGrids) gridConfiguration.Clear();
+                }
             }
-            InstancedGrids = new Conveyor<GridConfiguration>(maxGridCount, configuration => configuration.Clear());
+            _instancedGrids ??= new Conveyor<GridConfiguration>(maxGridCount, configuration => configuration.Clear());
             _initialPosition = Vector3.zero;
+            OnGridChanged?.Invoke(_instancedGrids, _isInitialized);
             InstantiateGrid(preset);
         }
 
@@ -78,31 +78,42 @@ namespace Modules.Grid.SubSystems.GridInitializer
 
         private void OnGridGenerated(GridGeneratorOutput gridGeneratorOutput)
         {
-            var bufferList = new ICellEntity[columnCount, rowCount];
-            var bufferGrid = gridGeneratorOutput.Grid;
-            var previousGrid = InstancedGrids.IsEmpty ? default : InstancedGrids.Last;
+            var bufferGrid = new ICellEntity[columnCount, rowCount];
+
+            var bufferRoad = new ICellEntity[gridGeneratorOutput.RoadLenght];
+            var intRoadIndex = 0;
+            
+            var bufferGeneratedGrid = gridGeneratorOutput.Grid;
+            var previousGrid = _instancedGrids.IsEmpty ? default : _instancedGrids.Last;
             var lineSize = Vector3.zero;
 
             for (var row = 0; row < rowCount; row++)
             {
                 for (var column = 0; column < columnCount; column++)
                 {
-                    var cellEntity = (ICellEntity) bufferGrid[column, row].CreateInstance(transform);
+                    var cellEntity = (ICellEntity) bufferGeneratedGrid[column, row].CreateInstance(transform);
                     var positionInGrid = new TupleInt(column, row);
                     if (previousGrid.IsInitialized) lineSize = previousGrid.LineSize(_previousGridExit, positionInGrid);
                     var bufferPosition = new Orientation(_initialPosition + lineSize, Quaternion.identity);
-                    cellEntity.Initialize().SetOrientation(cellEntity.Orient(bufferPosition, positionInGrid));
-                    cellEntity.Name = $"{cellEntity.Name} {column}X{row}";
-                    bufferList[column, row] = cellEntity;
+                    cellEntity.Initialize($"{cellEntity.Name} {column}X{row}").SetOrientation(cellEntity.Orient(bufferPosition, positionInGrid));
+
+                    if (cellEntity.IsRoad)
+                    {
+                        bufferRoad[intRoadIndex] = cellEntity;
+                        intRoadIndex++;
+                    }
+                    
+                    bufferGrid[column, row] = cellEntity;
                 }
             }
-            var gridConfiguration = new GridConfiguration(bufferList);
-            InstancedGrids.AddLast(gridConfiguration);
+            
+            var gridConfiguration = new GridConfiguration(bufferGrid, bufferRoad);
+            _instancedGrids.AddLast(gridConfiguration);
             _previousGridExit = gridGeneratorOutput.GridExit;
             var entity = gridConfiguration.ColumnsConfiguration[0].GetCells()[0];
             _initialPosition = entity.GetOrientation().Position;
-            IsInitialized = true;
-            OnGridChanged?.Invoke(InstancedGrids);
+            _isInitialized = true;
+            OnGridChanged?.Invoke(_instancedGrids, _isInitialized);
         }
 
         public void InvokeEvents()
@@ -117,6 +128,14 @@ namespace Modules.Grid.SubSystems.GridInitializer
         public void Unsubscribe(params Delegate[] unsubscribers)
         {
             EventExtensions.Unsubscribe(ref OnGridChanged, unsubscribers);
+        }
+
+        public Delegate[] GetSubscribers()
+        {
+            return new Delegate[]
+                   {
+                       (GridEvents.RequestNextGrid) GenerateNextGrid
+                   };
         }
     }
 }

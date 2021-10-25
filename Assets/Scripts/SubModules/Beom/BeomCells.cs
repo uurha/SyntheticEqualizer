@@ -16,7 +16,7 @@ namespace SubModules.Beom
             _entities = cellEntities as ICellEntity[] ?? cellEntities.ToArray();
         }
 
-        public ICellEntity GetCell(EntityRoute entityType, Direction direction)
+        public ICellEntity GetCell(RoadDirection entityType, Direction direction)
         {
             return direction switch
                    {
@@ -26,7 +26,7 @@ namespace SubModules.Beom
                    };
         }
 
-        public readonly ICellEntity GetCell(EntityRoute inDir, EntityRoute outDir)
+        public readonly ICellEntity GetCell(RoadDirection inDir, RoadDirection outDir)
         {
             return _entities.FirstOrDefault(x => x.InDirection == inDir && x.OutDirection == outDir);
         }

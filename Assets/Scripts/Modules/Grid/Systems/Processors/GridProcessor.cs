@@ -15,7 +15,7 @@ using Modules.Grid.Model;
 using SubModules.Cell.Model;
 using UnityEngine;
 
-namespace Modules.Grid.SubSystems.Processors
+namespace Modules.Grid.Systems.Processors
 {
     [CoreManagerElement]
     public class GridProcessor : MonoBehaviour, IEventSubscriber
@@ -25,6 +25,7 @@ namespace Modules.Grid.SubSystems.Processors
 
         private ICellVisualBehaviour[] _cellVisualBehaviours;
         private SpectrumAnalyzerSettings _analyzerSettings;
+        private bool _isInitialized;
 
         [Conditional(EditorDefinition.UnityEditor)]
         [EditorButton]
@@ -36,7 +37,7 @@ namespace Modules.Grid.SubSystems.Processors
 
         private void OnAnalyzedDataReceived(SpectrumAnalyzerOutput data)
         {
-            if (_cellVisualBehaviours == null) return;
+            if (!_isInitialized) return;
             if (!_analyzerSettings.IsValid) return;
             var floats = data.MeanSpectrumData[0];
             var arrayLenght = floats.Length;
@@ -53,8 +54,9 @@ namespace Modules.Grid.SubSystems.Processors
             _analyzerSettings = analyzerSettings;
         }
 
-        private void OnGridConfigurationChanged(Conveyor<GridConfiguration> newGridConfigurations)
+        private void OnGridConfigurationChanged(Conveyor<GridConfiguration> newGridConfigurations, bool isInitialized)
         {
+            _isInitialized = isInitialized;
             _cellVisualBehaviours = newGridConfigurations
                                    .SelectMany(x => x.RowConfiguration.SelectMany(y => y.GetCells()
                                                   .Select(z => z.VisualBehaviour.Initialize())))

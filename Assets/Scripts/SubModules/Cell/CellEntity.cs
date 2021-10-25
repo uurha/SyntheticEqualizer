@@ -12,16 +12,18 @@ namespace SubModules.Cell
         [SerializeField] private Vector3 cellSize;
 
         [SettingsHeader]
-        [SerializeField] private EntityRoute inDirection;
+        [SerializeField] private RoadDirection inDirection;
 
-        [SerializeField] private EntityRoute outDirection;
+        [SerializeField] private RoadDirection outDirection;
         private ICellVisualBehaviour _behaviour;
 
         public Vector3 CellSize => cellSize;
 
-        public EntityRoute InDirection => inDirection;
+        public RoadDirection InDirection => inDirection;
 
-        public EntityRoute OutDirection => outDirection;
+        public RoadDirection OutDirection => outDirection;
+
+        public bool IsRoad => inDirection == RoadDirection.None || outDirection == RoadDirection.None;
 
         public ICellVisualBehaviour VisualBehaviour => _behaviour;
 
@@ -50,6 +52,14 @@ namespace SubModules.Cell
         {
             if (!TryGetComponent(out _behaviour))
                 DebugLogger.LogWarning($"No Visual behaviour attached to {transform.name}", this);
+            return this;
+        }
+
+        public ICellEntity Initialize(string objectName)
+        {
+            if (!TryGetComponent(out _behaviour))
+                DebugLogger.LogWarning($"No Visual behaviour attached to {transform.name}", this);
+            Name = objectName;
             return this;
         }
 
