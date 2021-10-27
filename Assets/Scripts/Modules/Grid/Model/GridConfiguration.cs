@@ -1,13 +1,13 @@
 ﻿using System;
 using Extensions;
-using SubModules.Cell.Interfaces;
+using Modules.Grid.Interfaces;
 using UnityEngine;
 
 namespace Modules.Grid.Model
 {
     public struct GridConfiguration
     {
-        public ICellEntity[] RoadEntities { get; }
+        public ICellComponent[] RoadEntities { get; }
 
         public LineConfiguration[] RowConfiguration { get; private set; }
 
@@ -19,7 +19,7 @@ namespace Modules.Grid.Model
 
         public bool IsInitialized { get; private set; }
 
-        public GridConfiguration(ICellEntity[,] cellEntities, ICellEntity[] roadEntities)
+        public GridConfiguration(ICellComponent[,] cellEntities, ICellComponent[] roadEntities)
         {
             RoadEntities = roadEntities;
 

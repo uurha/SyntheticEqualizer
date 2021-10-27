@@ -12,7 +12,6 @@ using Extensions;
 using Modules.AudioAnalyse.Model;
 using Modules.AudioPlayerUI.Model;
 using Modules.Grid.Model;
-using SubModules.Cell.Model;
 using UnityEngine;
 
 namespace Modules.Grid.Systems.Processors
@@ -59,7 +58,7 @@ namespace Modules.Grid.Systems.Processors
             _isInitialized = isInitialized;
             _cellVisualBehaviours = newGridConfigurations
                                    .SelectMany(x => x.RowConfiguration.SelectMany(y => y.GetCells()
-                                                  .Select(z => z.VisualBehaviour.Initialize())))
+                                                  .Select(z => z.VisualBehaviourComponent?.Initialize())))
                                    .ToArray();
         }
 

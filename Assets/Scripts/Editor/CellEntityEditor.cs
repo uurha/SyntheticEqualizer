@@ -1,35 +1,44 @@
 ﻿using System;
 using CorePlugin.Attributes.Editor;
-using SubModules.Cell;
-using SubModules.Cell.Interfaces;
-using SubModules.Cell.Model;
+using Modules.Carting.Interfaces;
+using Modules.Grid.Interfaces;
+using Modules.Grid.Model;
+using Modules.Grid.Systems.CellEntity;
 using UnityEditor;
 using UnityEngine;
 
 namespace Editor
 {
-    [CustomEditor(typeof(CellEntity))]
+    [CustomEditor(typeof(DefaultCellComponent))]
     public class CellEntityEditor : ValidationAttributeEditor
     {
         private readonly float size = 1f;
+        private ICartingRoadComponent _cartingRoadComponent;
+        private ICellComponent _cellEntity;
+        private bool _isRoadComponentAttached;
 
         protected override void OnEnable()
         {
             base.OnEnable();
+            var cell = target as DefaultCellComponent;
+            if(cell == null) return;
+            _isRoadComponentAttached = cell.TryGetComponent(out _cartingRoadComponent);
+            _cellEntity = cell;
             SceneView.duringSceneGui += OnSceneGUIUpdate;
         }
 
         private void OnDisable()
         {
+            if(_cellEntity == null) return;
             SceneView.duringSceneGui -= OnSceneGUIUpdate;
         }
 
-        public void OnSceneGUIUpdate(SceneView obj)
+        private void OnSceneGUIUpdate(SceneView obj)
         {
-            if (!(target is ICellEntity targetObject)) return;
-            var orientation = targetObject.GetOrientation();
+            if (!_isRoadComponentAttached) return;
+            var orientation = _cellEntity.GetOrientation();
 
-            var inDir = targetObject.InDirection switch
+            var inDir = _cartingRoadComponent.InDirection switch
                         {
                             RoadDirection.None => Vector3.zero,
                             RoadDirection.North => Vector3.back,
@@ -39,7 +48,7 @@ namespace Editor
                             _ => throw new ArgumentOutOfRangeException()
                         };
 
-            var outDir = targetObject.OutDirection switch
+            var outDir = _cartingRoadComponent.OutDirection switch
                          {
                              RoadDirection.None => Vector3.zero,
                              RoadDirection.North => Vector3.back,
@@ -52,7 +61,7 @@ namespace Editor
             var rotation = orientation.Rotation * dir;
             if (rotation == Vector3.zero) return;
             Handles.color = Handles.zAxisColor;
-            var cellSize = targetObject.CellSize;
+            var cellSize = _cellEntity.CellSize;
             var scaledDir = Vector3.Scale(new Vector3(size, size, size), dir);
 
             var arrowMiddlePosition =

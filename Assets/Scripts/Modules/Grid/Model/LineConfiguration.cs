@@ -1,19 +1,19 @@
-﻿using SubModules.Cell.Interfaces;
+﻿using Modules.Grid.Interfaces;
 
 namespace Modules.Grid.Model
 {
     public struct LineConfiguration
     {
-        private ICellEntity[] _cells;
+        private ICellComponent[] _cells;
 
         public int Lenght => _cells.Length;
 
-        public LineConfiguration(ICellEntity[] cells)
+        public LineConfiguration(ICellComponent[] cells)
         {
             _cells = cells;
         }
 
-        public ICellEntity[] GetCells()
+        public ICellComponent[] GetCells()
         {
             return _cells;
         }
@@ -21,7 +21,7 @@ namespace Modules.Grid.Model
         public void DestroyAll()
         {
             foreach (var cell in _cells) cell.Destroy();
-            _cells = new ICellEntity[0];
+            _cells = new ICellComponent[0];
         }
     }
 }

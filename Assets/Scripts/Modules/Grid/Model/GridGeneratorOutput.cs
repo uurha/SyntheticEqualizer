@@ -1,15 +1,14 @@
-﻿using SubModules.Cell.Interfaces;
-using SubModules.Cell.Model;
+﻿using Modules.Grid.Interfaces;
 
 namespace Modules.Grid.Model
 {
     public readonly struct GridGeneratorOutput
     {
-        public ICellEntity[,] Grid { get; }
+        public ICellComponent[,] Grid { get; }
         public RoadDirection GridExit { get; }
         public int RoadLenght { get; }
 
-        public GridGeneratorOutput(ICellEntity[,] grid, RoadDirection gridExit, int roadLenght)
+        public GridGeneratorOutput(ICellComponent[,] grid, RoadDirection gridExit, int roadLenght)
         {
             Grid = grid;
             GridExit = gridExit;

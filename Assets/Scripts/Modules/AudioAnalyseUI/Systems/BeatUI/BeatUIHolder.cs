@@ -4,7 +4,7 @@ using CorePlugin.Cross.Events.Interface;
 using CorePlugin.Extensions;
 using Modules.AudioAnalyse.Model;
 using Modules.AudioAnalyse.Systems.BeatDetector;
-using Modules.AudioPlayerModule.Model;
+using Modules.AudioPlayer.Model;
 using UnityEngine;
 
 namespace Modules.AudioAnalyseUI.Systems.BeatUI

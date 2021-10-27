@@ -4,8 +4,8 @@ using CorePlugin.Attributes.Headers;
 using CorePlugin.Attributes.Validation;
 using CorePlugin.Cross.Events.Interface;
 using CorePlugin.Extensions;
-using Modules.AudioPlayerModule.Model;
-using Modules.AudioPlayerModule.Systems;
+using Modules.AudioPlayer.Model;
+using Modules.AudioPlayer.Systems;
 using SubModules.UI;
 using UnityEngine;
 

@@ -1,5 +1,5 @@
 ﻿using CorePlugin.Attributes.Headers;
-using Modules.AudioPlayerModule.Systems;
+using Modules.AudioPlayer.Systems;
 using Modules.AudioPlayerUI.Model;
 using Modules.InputManagement;
 using UnityEngine;

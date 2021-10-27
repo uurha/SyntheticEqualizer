@@ -5,7 +5,7 @@ using CorePlugin.Attributes.Headers;
 using CorePlugin.Cross.Events.Interface;
 using Extensions;
 using Modules.Grid.Model;
-using Modules.Grid.Systems.GridInitializerSystem;
+using Modules.Grid.Systems.Initializer;
 using UnityEngine;
 
 namespace Modules.Grid.Systems

@@ -2,10 +2,11 @@
 using Base.Deque;
 using Modules.AudioAnalyse.Model;
 using Modules.AudioLoader.Model;
-using Modules.AudioPlayerModule.Interfaces;
-using Modules.AudioPlayerModule.Model;
-using Modules.AudioPlayerModule.Systems.Playlist;
+using Modules.AudioPlayer.Interfaces;
+using Modules.AudioPlayer.Model;
+using Modules.AudioPlayer.Systems.Playlist;
 using Modules.AudioPlayerUI.Model;
+using Modules.Grid.Interfaces;
 using Modules.Grid.Model;
 using UnityEngine;
 
@@ -52,6 +53,12 @@ namespace Base
         public delegate void GridConfigurationChangedEvent(Conveyor<GridConfiguration> gridConfigurations, bool isInitialized);
 
         public delegate void RequestNextGrid();
+    }
+
+    public static class RoadEvents
+    {
+        public delegate ICellComponent RequestNextRoadEntity();
+        public delegate void OnRoadReadyEvent(bool isReady);
     }
 
     public static class DataProcessorsEvents

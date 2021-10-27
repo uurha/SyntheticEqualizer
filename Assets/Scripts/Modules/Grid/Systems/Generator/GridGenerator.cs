@@ -3,11 +3,10 @@ using System.Threading.Tasks;
 using Base.BaseTypes;
 using Base.Deque;
 using Extensions;
+using Modules.Carting.Systems.Road.Generator;
+using Modules.Grid.Interfaces;
 using Modules.Grid.Model;
 using SubModules.Beom;
-using SubModules.Cell.Interfaces;
-using SubModules.Cell.Model;
-using SubModules.Road.Generator;
 using TaskExtensions = CorePlugin.Extensions.TaskExtensions;
 
 namespace Modules.Grid.Systems.Generator
@@ -83,7 +82,7 @@ namespace Modules.Grid.Systems.Generator
 
         private GridGeneratorOutput GenerateGrid(Deque<RoadDirection> generatedPath)
         {
-            var cellGrid = new ICellEntity[_columnsCount, _rowCount];
+            var cellGrid = new ICellComponent[_columnsCount, _rowCount];
             var currentPosition = StartPosition(_lastEntity);
             RoadDirection entityType;
 
@@ -117,7 +116,7 @@ namespace Modules.Grid.Systems.Generator
             }
             _lastColumn = currentPosition.Item1;
             _lastRow = currentPosition.Item2;
-            _lastEntity = stepInOut.PreviousCellEntity.OutDirection;
+            _lastEntity = stepInOut.PreviousCellEntity.CartingRoadComponent.OutDirection;
             return new GridGeneratorOutput(cellGrid, _lastEntity, count);
         }
 
@@ -153,10 +152,10 @@ namespace Modules.Grid.Systems.Generator
             return currentPosition;
         }
 
-        private bool LoopStep(Deque<RoadDirection> generatedPath, ref ICellEntity[,] cellGrid, ref LoopInOut loopInOut)
+        private bool LoopStep(Deque<RoadDirection> generatedPath, ref ICellComponent[,] cellGrid, ref LoopInOut loopInOut)
         {
             var next = generatedPath.RemoveLast();
-            var inDir = loopInOut.PreviousCellEntity.OutDirection.Negative();
+            var inDir = loopInOut.PreviousCellEntity.CartingRoadComponent.OutDirection.Negative();
             var nextCell = _preset.GetCell(inDir, next);
             var currentPosition = loopInOut.CurrentPosition;
             var prevPosition = new TupleInt(currentPosition);
@@ -208,10 +207,10 @@ namespace Modules.Grid.Systems.Generator
         [Serializable]
         private readonly ref struct LoopInOut
         {
-            public ICellEntity PreviousCellEntity { get; }
+            public ICellComponent PreviousCellEntity { get; }
             public TupleInt CurrentPosition { get; }
 
-            public LoopInOut(ICellEntity previousCellEntity, TupleInt currentPosition)
+            public LoopInOut(ICellComponent previousCellEntity, TupleInt currentPosition)
             {
                 PreviousCellEntity = previousCellEntity;
                 CurrentPosition = currentPosition;

@@ -7,7 +7,7 @@ using CorePlugin.Cross.Events.Interface;
 using CorePlugin.Extensions;
 using Extensions;
 using Modules.AudioLoader.Model;
-using Modules.AudioPlayerModule.Systems.Playlist;
+using Modules.AudioPlayer.Systems.Playlist;
 using UnityEngine;
 
 namespace Modules.AudioLoader.Systems.Loader

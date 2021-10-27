@@ -1,6 +1,5 @@
 ﻿using Base.BaseTypes;
 using Modules.Grid.Model;
-using SubModules.Cell.Model;
 using UnityEngine;
 
 namespace Extensions
