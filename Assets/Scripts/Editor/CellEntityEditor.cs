@@ -24,6 +24,7 @@ namespace Editor
             if(cell == null) return;
             _isRoadComponentAttached = cell.TryGetComponent(out _cartingRoadComponent);
             _cellEntity = cell;
+            if(_cellEntity == null) return;
             SceneView.duringSceneGui += OnSceneGUIUpdate;
         }
 

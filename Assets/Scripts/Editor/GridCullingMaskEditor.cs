@@ -1,4 +1,5 @@
-﻿using CorePlugin.Attributes.Editor;
+﻿using System;
+using CorePlugin.Attributes.Editor;
 using Modules.Grid.Systems;
 using UnityEditor;
 using UnityEngine;
@@ -10,6 +11,17 @@ namespace Editor
     {
         private bool _showHandles;
 
+        protected override void OnEnable()
+        {
+            base.OnEnable();
+            SceneView.duringSceneGui += DuringSceneGui;
+        }
+
+        private void OnDisable()
+        {
+            SceneView.duringSceneGui -= DuringSceneGui;
+        }
+
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
@@ -19,7 +31,7 @@ namespace Editor
             SceneView.RepaintAll();
         }
 
-        public void OnSceneGUI()
+        public void DuringSceneGui(SceneView obj)
         {
             if (!_showHandles) return;
             var startProperty = serializedObject.FindProperty("cullingStart");

@@ -42,6 +42,21 @@ namespace CorePlugin.Extensions
                           .Concat(GetFieldsAttributes<T>(t.BaseType));
         }
 
+        public static IEnumerable<T> GetFields<T>(this object obj)
+        {
+            return obj.GetType().GetFields(Flags).Where(x => x.FieldType == typeof(T)).Select(x=>(T) x.GetValue(obj));
+        }
+        
+        public static T GetField<T>(this object obj, string name)
+        {
+            return (T)obj.GetType().GetField(name, Flags)?.GetValue(obj);
+        }
+        
+        public static void SetValue(this object obj, string name, object value)
+        {
+            obj.GetType().GetField(name, Flags)?.SetValue(obj, value);
+        }
+        
         public static string PrettyMemberName(this MemberInfo input)
         {
             return input.Name.PrettyCamelCase();
