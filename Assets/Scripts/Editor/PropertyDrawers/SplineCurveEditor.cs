@@ -31,17 +31,17 @@ namespace Editor.PropertyDrawers
         {
             base.OnEnable();
             SceneView.duringSceneGui += DuringSceneGui;
-            _splineCurves = (SplineCurve) target;
-            EditorData.GetData(typeof(SplineCurveEditor), ref _lineColor, nameof(_lineColor));
-            EditorData.GetData(typeof(SplineCurveEditor), ref _tangentsColor, nameof(_tangentsColor));
-            EditorData.GetData(typeof(SplineCurveEditor), ref _normalsColor, nameof(_normalsColor));
-            EditorData.GetData(typeof(SplineCurveEditor), ref _normalsLenght, nameof(_normalsLenght));
-            EditorData.GetData(typeof(SplineCurveEditor), ref _tangentsLenght, nameof(_tangentsLenght));
-            EditorData.GetData(typeof(SplineCurveEditor), ref _showPreviewPoint, nameof(_showPreviewPoint));
-            EditorData.GetData(typeof(SplineCurveEditor), ref _previewPoint, nameof(_previewPoint));
-            EditorData.GetData(typeof(SplineCurveEditor), ref _previewPointSize, nameof(_previewPointSize));
-            EditorData.GetData(typeof(SplineCurveEditor), ref _showTangents, nameof(_showTangents));
-            EditorData.GetData(typeof(SplineCurveEditor), ref _showNormals, nameof(_showNormals));
+            _splineCurves = (SplineCurve)target;
+            EditorData.GetData(this, nameof(_lineColor));
+            EditorData.GetData(this, nameof(_tangentsColor));
+            EditorData.GetData(this, nameof(_normalsColor));
+            EditorData.GetData(this, nameof(_normalsLenght));
+            EditorData.GetData(this, nameof(_tangentsLenght));
+            EditorData.GetData(this, nameof(_showPreviewPoint));
+            EditorData.GetData(this, nameof(_previewPoint));
+            EditorData.GetData(this, nameof(_previewPointSize));
+            EditorData.GetData(this, nameof(_showTangents));
+            EditorData.GetData(this, nameof(_showNormals));
         }
 
         private void DuringSceneGui(SceneView obj)
@@ -142,8 +142,8 @@ namespace Editor.PropertyDrawers
                     DrawColorField(ref _tangentsColor, nameof(_tangentsColor));
                     DrawFloatField(ref _tangentsLenght, nameof(_tangentsLenght), 0f);
                 }
-                
                 DrawBoolField(ref _showPreviewPoint, nameof(_showPreviewPoint));
+
                 if (_showPreviewPoint)
                 {
                     DrawFloatRangeField(ref _previewPoint, nameof(_previewPoint), 0f, 1f);
@@ -163,7 +163,7 @@ namespace Editor.PropertyDrawers
                                                                       .ToTitleCase()), color);
             if (color.Equals(buffer)) return;
             color = buffer;
-            EditorData.SetData(typeof(SplineCurveEditor), fieldName, color);
+            EditorData.SetData(this, fieldName);
             SceneView.RepaintAll();
         }
 
@@ -177,7 +177,7 @@ namespace Editor.PropertyDrawers
             if (buffer <= minValue) buffer = minValue;
             if (buffer >= maxValue) buffer = maxValue;
             value = buffer;
-            EditorData.SetData(typeof(SplineCurveEditor), fieldName, value);
+            EditorData.SetData(this, fieldName);
             SceneView.RepaintAll();
         }
 
@@ -191,7 +191,7 @@ namespace Editor.PropertyDrawers
             if (buffer <= minValue) buffer = minValue;
             if (buffer >= maxValue) buffer = maxValue;
             value = buffer;
-            EditorData.SetData(typeof(SplineCurveEditor), fieldName, value);
+            EditorData.SetData(this, fieldName);
             SceneView.RepaintAll();
         }
 
@@ -202,7 +202,7 @@ namespace Editor.PropertyDrawers
                                                                   .ToTitleCase()), value);
             if (value.Equals(buffer)) return;
             value = buffer;
-            EditorData.SetData(typeof(SplineCurveEditor), fieldName, value);
+            EditorData.SetData(this, fieldName);
             SceneView.RepaintAll();
         }
 

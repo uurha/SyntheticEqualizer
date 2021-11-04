@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
@@ -11,12 +12,13 @@ namespace EditorDataStorage.Editor
     /// Editor Data storage class
     /// Allows to store data between working sessions and/or populate it for different copies of Inspector
     /// </summary>
-    [CreateAssetMenu(fileName = "EditorDataStorage", menuName = "Custom Editor/Editor Data", order = 0)]
     internal sealed class EditorData : ScriptableObject
     {
         [SerializeField] private TopLevelData data;
 
         private const string Path = "Editor/Resources";
+
+        private const BindingFlags Binding = BindingFlags.Instance | BindingFlags.Public | BindingFlags.Static | BindingFlags.NonPublic;
 
         private static EditorData _instance;
 
@@ -33,39 +35,58 @@ namespace EditorDataStorage.Editor
         /// <summary>
         /// Get field data
         /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
+        /// <param name="editor">Reference to Editor class</param>
         /// <param name="fieldName"></param>
         /// <typeparam name="T"></typeparam>
         /// <remarks>To avoid performance issues in Editor, use this in OnEnable method</remarks>
-        internal static void GetData<T>(Type key, ref T value, string fieldName)
+        internal static void GetData<T>(T editor, string fieldName) where T : UnityEditor.Editor
         {
-            if (!Instance.data.TryGetValue(key, out var data)) return;
-            if (data.ContainsKey(fieldName)) value = GetTFromString<T>(data[fieldName]);
+            var type = editor.GetType();
+            if (!Instance.data.TryGetValue(type, out var data)) return;
+            var fieldInfo = type.GetField(fieldName, Binding);
+            if (fieldInfo is null) return;
+            if (data.ContainsKey(fieldName))
+            {
+                fieldInfo.SetValue(editor, StringToObject(fieldInfo.FieldType, data[fieldName]));
+            }
         }
 
-        private static T GetTFromString<T>(string input)
+        private static object StringToObject(Type type, string input)
         {
-            return JsonUtility.FromJson<Wrapper<T>>(input).value;
+            var wrapper = typeof(Wrapper<>).MakeGenericType(type);
+            var fromJson = JsonUtility.FromJson(input, wrapper);
+            return wrapper.GetField("value", Binding)?.GetValue(fromJson);
+        }
+        
+        private static object ObjectToWrapper(Type type, object input)
+        {
+            var wrapper = typeof(Wrapper<>).MakeGenericType(type);
+            var obj = Activator.CreateInstance(wrapper);
+            wrapper.GetField("value", Binding)?.SetValue(obj, input);
+            return obj;
         }
 
         /// <summary>
         /// Set field data
         /// </summary>
-        /// <param name="key"></param>
+        /// <param name="editor">Reference to Editor class</param>
         /// <param name="fieldName"></param>
-        /// <param name="fieldValue"></param>
         /// <typeparam name="T"></typeparam>
         /// <remarks>To avoid performance issues in Editor, use this only if value has been changed</remarks>
-        internal static void SetData<T>(Type key, string fieldName, T fieldValue)
+        internal static void SetData<T>(T editor, string fieldName) where T : UnityEditor.Editor
         {
-            if (Instance.data.ContainsKey(key))
+            var type = editor.GetType();
+            var fieldInfo = type.GetField(fieldName, Binding);
+            if (fieldInfo is null) return;
+
+            var fieldValue = fieldInfo.GetValue(editor);
+            if (Instance.data.ContainsKey(type))
             {
-                var dic = Instance.data[key];
+                var dic = Instance.data[type];
 
                 if (dic.ContainsKey(fieldName))
                 {
-                    var wrapper = new Wrapper<T> { value = fieldValue };
+                    var wrapper = ObjectToWrapper(fieldInfo.FieldType, fieldValue);
                     dic[fieldName] = wrapper.ToString();
                 }
                 else
@@ -75,8 +96,8 @@ namespace EditorDataStorage.Editor
             }
             else
             {
-                var wrapper = new Wrapper<T> { value = fieldValue };
-                Instance.data.Add(key, new LowLevelData { key = fieldName, value = wrapper.ToString() });
+                var wrapper = ObjectToWrapper(fieldInfo.FieldType, fieldValue);
+                Instance.data.Add(type, new LowLevelData { key = fieldName, value = wrapper.ToString() });
             }
         }
 
