@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace SubModules
+namespace SubModules.Splines
 {
     public enum SplineType
     {

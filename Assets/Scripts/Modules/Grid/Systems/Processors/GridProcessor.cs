@@ -9,6 +9,7 @@ using CorePlugin.Attributes.Headers;
 using CorePlugin.Cross.Events.Interface;
 using CorePlugin.Extensions;
 using Extensions;
+using JetBrains.Annotations;
 using Modules.AudioAnalyse.Model;
 using Modules.AudioPlayerUI.Model;
 using Modules.Grid.Model;
@@ -27,7 +28,7 @@ namespace Modules.Grid.Systems.Processors
         private bool _isInitialized;
 
         [Conditional(EditorDefinition.UnityEditor)]
-        [EditorButton]
+        [EditorButton] 
         private void InitializeCurve()
         {
             curve.Clear();
@@ -56,6 +57,7 @@ namespace Modules.Grid.Systems.Processors
         private void OnGridConfigurationChanged(Conveyor<GridConfiguration> newGridConfigurations, bool isInitialized)
         {
             _isInitialized = isInitialized;
+
             _cellVisualBehaviours = newGridConfigurations
                                    .SelectMany(x => x.RowConfiguration.SelectMany(y => y.GetCells()
                                                   .Select(z => z.VisualBehaviourComponent?.Initialize())))
@@ -72,9 +74,9 @@ namespace Modules.Grid.Systems.Processors
         {
             return new Delegate[]
                    {
-                       (GridEvents.GridConfigurationChangedEvent) OnGridConfigurationChanged,
-                       (AudioAnalyzerEvents.SpectrumAnalyzerDataEvent) OnAnalyzedDataReceived,
-                       (GlobalAudioSettingsEvents.OnSpectrumAnalyzerSettingsEvent) OnAudioAnalyzerSettingsChanged
+                       (GridEvents.GridConfigurationChangedEvent)OnGridConfigurationChanged,
+                       (AudioAnalyzerEvents.SpectrumAnalyzerDataEvent)OnAnalyzedDataReceived,
+                       (GlobalAudioSettingsEvents.OnSpectrumAnalyzerSettingsEvent)OnAudioAnalyzerSettingsChanged
                    };
         }
     }

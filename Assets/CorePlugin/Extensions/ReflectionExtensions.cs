@@ -14,7 +14,6 @@
 #endregion
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -28,7 +27,7 @@ namespace CorePlugin.Extensions
     public static class ReflectionExtensions
     {
         #if UNITY_EDITOR
-        private const BindingFlags Flags = BindingFlags.Public | BindingFlags.NonPublic |
+        public const BindingFlags Flags = BindingFlags.Public | BindingFlags.NonPublic |
                                            BindingFlags.Static | BindingFlags.Instance |
                                            BindingFlags.DeclaredOnly;
 
@@ -107,34 +106,10 @@ namespace CorePlugin.Extensions
         {
             return gameObject.GetComponents<Component>().Where(x => GetBaseTypes(x.GetType()).Any(t => t.GetCustomAttribute<T>(false) != null));
         }
-
-        public static IEnumerable<Object> GetCoreElementsRecursively(this Object instance)
+        
+        public static IEnumerable<Object> GetComponentsWithAttribute<T>(this MonoBehaviour monoBehaviour) where T : Attribute
         {
-            var field = instance.GetType().GetFieldWithAttribute<CoreManagerElementsFieldAttribute>(instance);
-            var empty = Enumerable.Empty<Object>();
-            if (field == null) return empty;
-
-            switch (field)
-            {
-                case IEnumerable enumerable:
-                {
-                    var list = enumerable.Cast<GameObject>().ToList();
-                    if (!list.Any()) return empty;
-                    var elements = list.SelectMany(x => x.GetComponentsWithAttribute<CoreManagerElementAttribute>());
-                    if (EditorApplication.isPlaying) elements = elements.Select(x => Object.FindObjectOfType(x.GetType()));
-                    var objects = elements.ToList();
-
-                    empty = objects.Aggregate(objects,
-                                              (current, element) => current.Concat(GetCoreElementsRecursively(element)).ToList());
-                    break;
-                }
-                case Object obj:
-                {
-                    empty = empty.Concat(GetCoreElementsRecursively(obj));
-                    break;
-                }
-            }
-            return empty;
+            return monoBehaviour.GetComponents<Component>().Where(x => GetBaseTypes(x.GetType()).Any(t => t.GetCustomAttribute<T>(false) != null));
         }
 
         private static IEnumerable<Type> GetBaseTypes(Type type)

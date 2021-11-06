@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections;
-using Modules.Carting.Interfaces;
+﻿using Modules.Carting.Interfaces;
 using Modules.Grid.Model;
 using Modules.Grid.Systems.CellEntity;
 using UnityEngine;
@@ -8,7 +6,7 @@ using UnityEngine;
 namespace Modules.Carting.Systems.CartingRoad
 {
     [RequireComponent(typeof(DefaultCellComponent))]
-    public class DefaultCartingRoadComponent : MonoBehaviour, ICartingRoadComponent
+    public class DefaultCartingRoad : MonoBehaviour, ICartingRoadComponent
     {
         [SerializeField] private RoadDirection inDirection;
         [SerializeField] private RoadDirection outDirection;

@@ -7,6 +7,7 @@ using CorePlugin.Attributes.Headers;
 using CorePlugin.Cross.Events.Interface;
 using CorePlugin.Extensions;
 using Extensions;
+using Modules.Carting.Interfaces;
 using Modules.Grid.Interfaces;
 using Modules.Grid.Model;
 using Modules.Grid.Systems.Generator;
@@ -79,7 +80,7 @@ namespace Modules.Grid.Systems.Initializer
         {
             var bufferGrid = new ICellComponent[columnCount, rowCount];
 
-            var bufferRoad = new ICellComponent[gridGeneratorOutput.RoadLenght];
+            var bufferRoad = new ICartingRoadComponent[gridGeneratorOutput.RoadLenght];
             var intRoadIndex = 0;
             
             var bufferGeneratedGrid = gridGeneratorOutput.Grid;
@@ -98,7 +99,7 @@ namespace Modules.Grid.Systems.Initializer
 
                     if (cellEntity.IsRoad)
                     {
-                        bufferRoad[intRoadIndex] = cellEntity;
+                        bufferRoad[intRoadIndex] = cellEntity.CartingRoadComponent;
                         intRoadIndex++;
                     }
                     

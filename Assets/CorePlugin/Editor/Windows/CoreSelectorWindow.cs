@@ -17,6 +17,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using CorePlugin.Attributes.EditorAddons;
 using CorePlugin.Core;
 using CorePlugin.Editor.Extensions;
@@ -35,7 +36,7 @@ namespace CorePlugin.Editor.Windows
         private int _subTab = -1;
 
         private UnityEditor.Editor _embeddedInspector;
-        private static readonly string[] StringsToRemove = {"(Clone)", "Core"};
+        private static readonly string[] StringsToRemove = { "(Clone)", "Core" };
 
         private void OnEnable()
         {
@@ -45,34 +46,106 @@ namespace CorePlugin.Editor.Windows
         private static void DrawSelectionButton(Object displayObject)
         {
             if (GUILayout.Button($"Show <b><i>{displayObject.PrettyEditorObjectName(StringsToRemove)}</i></b> Object",
-                                 new GUIStyle(GUI.skin.button) {richText = true}))
+                                 new GUIStyle(GUI.skin.button) { richText = true }))
                 Selection.SetActiveObjectWithContext(displayObject, displayObject);
+        }
+
+        private static IEnumerable<Object> GetCoreElementsRecursively(Object instance)
+        {
+            var fields = GetObjectsInField(instance.GetType(), instance).ToArray();
+            var empty = Enumerable.Empty<Object>();
+            if (!fields.Any()) return empty;
+
+            foreach (var field in fields)
+            {
+                switch (field)
+                {
+                    case IEnumerable enumerable:
+                    {
+                        var list = enumerable.Cast<GameObject>().ToList();
+                        if (!list.Any()) continue;
+
+                        var elements =
+                            list.SelectMany(x => x.GetComponentsWithAttribute<CoreManagerElementAttribute>());
+                        if (EditorApplication.isPlaying) elements = elements.Select(x => FindObjectOfType(x.GetType()));
+                        var objects = elements.ToList();
+
+                        var aggregate = objects.Aggregate(objects,
+                                                          (current, element) =>
+                                                              current.Concat(GetCoreElementsRecursively(element))
+                                                                     .ToList());
+                        empty = empty.Concat(aggregate);
+                        break;
+                    }
+                    case Object obj:
+                    {
+                        if (obj is MonoBehaviour gameObject)
+                        {
+                            var elements = gameObject.GetComponentsWithAttribute<CoreManagerElementAttribute>();
+                            if (EditorApplication.isPlaying) elements = elements.Select(x => FindObjectOfType(x.GetType()));
+                            var objects = elements.ToList();
+                            var aggregate = objects.Aggregate(objects,
+                                                              (current, element) =>
+                                                                  current.Concat(GetCoreElementsRecursively(element))
+                                                                         .ToList());
+                            empty = empty.Concat(aggregate);
+                        }
+                        break;
+                    }
+                }
+            }
+            return empty;
+        }
+
+        private static IEnumerable<object> GetObjectsInField(Type type, Object instance)
+        {
+            if (type == null) return Enumerable.Empty<object>();
+            var fieldInfos = type.GetFields(ReflectionExtensions.Flags);
+
+            var fields = fieldInfos.Where(x =>
+                                          {
+                                              var fieldAttribute =
+                                                  x.GetCustomAttribute<CoreManagerElementsFieldAttribute>();
+
+                                              return fieldAttribute != null &&
+                                                     fieldAttribute.CheckFlag(EditorApplication.isPlaying
+                                                                                  ? FieldType.PlayMode
+                                                                                  : FieldType.EditorMode);
+                                          }
+                                         ).Select(x => x.GetValue(instance))
+                                   .Concat(GetObjectsInField(type.BaseType, instance));
+            return fields;
         }
 
         private static IEnumerable<NamedGroup> ElementGathering(Type type, Object instance)
         {
-            var field = type.GetFieldWithAttribute<CoreManagerElementsFieldAttribute>(instance);
+            var fields = GetObjectsInField(type, instance).ToArray();
             var empty = Enumerable.Empty<NamedGroup>();
-            if (field == null) return empty;
+            if (!fields.Any()) return empty;
 
-            switch (field)
+            foreach (var field in fields)
             {
-                case IEnumerable enumerable:
+                switch (field)
                 {
-                    var list = enumerable.Cast<GameObject>().ToList();
-                    if (!list.Any()) return empty;
-                    var elements = list.SelectMany(x => x.GetComponentsWithAttribute<CoreManagerElementAttribute>());
-                    if (EditorApplication.isPlaying) elements = elements.Select(x => FindObjectOfType(x.GetType()));
+                    case IEnumerable enumerable:
+                    {
+                        var list = enumerable.Cast<GameObject>().ToList();
+                        if (!list.Any()) continue;
 
-                    empty = elements.Aggregate(empty,
-                                               (current, element) =>
-                                                   current.Append(new NamedGroup(element,
-                                                                                 element.GetCoreElementsRecursively())));
-                    break;
-                }
-                case Object obj:
-                {
-                    break;
+                        var elements =
+                            list.SelectMany(x => x.GetComponentsWithAttribute<CoreManagerElementAttribute>());
+                        if (EditorApplication.isPlaying) elements = elements.Select(x => FindObjectOfType(x.GetType()));
+
+                        empty = elements.Aggregate(empty,
+                                                   (current, element) =>
+                                                       current.Append(new NamedGroup(element,
+                                                                          GetCoreElementsRecursively(element))));
+                        break;
+                    }
+                    case Object obj:
+                    {
+                        break;
+                    }
                 }
             }
             return empty;
@@ -100,9 +173,9 @@ namespace CorePlugin.Editor.Windows
 
             _mainTab = UnityEditorExtension.SelectionGrid(_mainTab, _cores.Select(x => x.NamedObject.Name).ToArray(),
                                                           columnCount,
-                                                          new GUIStyle(GUI.skin.button) {stretchWidth = true});
+                                                          new GUIStyle(GUI.skin.button) { stretchWidth = true });
             if (_mainTab != bufferTab) _subTab = -1;
-            if (_mainTab > _cores.Count) return;
+            if (_mainTab >= _cores.Count) return;
             var key = _cores[_mainTab];
             var displayObject = key.Object;
             EditorGUILayout.Separator();
@@ -117,7 +190,8 @@ namespace CorePlugin.Editor.Windows
 
             _subTab = UnityEditorExtension.SelectionGrid(_subTab, key.NamedObjects.Select(x => x.Name).ToArray(),
                                                          columnCount,
-                                                         new GUIStyle(GUI.skin.button) {stretchWidth = true});
+                                                         new GUIStyle(GUI.skin.button) { stretchWidth = true });
+            if (_subTab >= key.Value.Count) return;
             if (_subTab != -1) displayObject = key.Value[_subTab].Object;
             EditorGUILayout.Separator();
             DrawSelectionButton(displayObject);
@@ -170,7 +244,6 @@ namespace CorePlugin.Editor.Windows
 
         private class NamedObject : Named<Object, string>
         {
-
             public NamedObject(Object obj) : base(obj, obj.PrettyEditorObjectName(StringsToRemove))
             {
             }
@@ -181,11 +254,6 @@ namespace CorePlugin.Editor.Windows
 
         private class NamedGroup : Named<NamedObject, List<NamedObject>>
         {
-
-            public NamedGroup(NamedObject namedObject, List<NamedObject> list) : base(namedObject, list)
-            {
-            }
-
             public NamedGroup(Object namedObject, IEnumerable<Object> list) : base(new NamedObject(namedObject),
                                                                                    list.Select(item => new NamedObject(item)).ToList())
             {

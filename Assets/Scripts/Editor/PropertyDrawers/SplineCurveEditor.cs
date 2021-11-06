@@ -2,7 +2,7 @@
 using CorePlugin.Attributes.Editor;
 using CorePlugin.Extensions;
 using EditorDataStorage.Editor;
-using SubModules;
+using SubModules.Splines;
 using UnityEditor;
 using UnityEngine;
 
@@ -12,19 +12,19 @@ namespace Editor.PropertyDrawers
     public class SplineCurveEditor : ValidationAttributeEditor
     {
         private SplineCurve _splineCurves;
-        private bool _showNormals = false;
+        private bool _showNormals;
         private float _normalsLenght = 0.2f;
         private Color _normalsColor = Color.gray;
 
-        private bool _showTangents = false;
+        private bool _showTangents;
         private float _tangentsLenght = 0.2f;
         private Color _tangentsColor = Color.red;
 
         private Color _lineColor = Color.white;
 
-        private bool _showPreviewPoint = false;
-        private float _previewPoint = 0;
-        private float _previewPointSize = 0;
+        private bool _showPreviewPoint;
+        private float _previewPoint;
+        private float _previewPointSize;
         private bool _showPreviewStyles = true;
 
         protected override void OnEnable()
@@ -204,13 +204,6 @@ namespace Editor.PropertyDrawers
             value = buffer;
             EditorData.SetData(this, fieldName);
             SceneView.RepaintAll();
-        }
-
-        private void ShowHeaderContextMenu(Rect position)
-        {
-            var menu = new GenericMenu();
-            menu.AddItem(new GUIContent(nameof(_splineCurves.SetDirty)), false, _splineCurves.SetDirty);
-            menu.DropDown(position);
         }
 
         private void OnDisable()

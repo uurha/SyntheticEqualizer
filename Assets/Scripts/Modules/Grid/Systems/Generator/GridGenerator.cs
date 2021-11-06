@@ -95,7 +95,7 @@ namespace Modules.Grid.Systems.Generator
             {
                 entityType = _lastEntity;
             }
-            var cell = _preset.GetCell(entityType.Negative(), entityType);
+            var cell = _preset.GetRoadCell(entityType.Negative(), entityType);
             var stepInOut = new LoopInOut(cell, currentPosition);
             cellGrid[currentPosition.Item1, currentPosition.Item2] = cell;
             var count = 0;
@@ -103,15 +103,15 @@ namespace Modules.Grid.Systems.Generator
 
             while (count <= breakCount)
             {
-                if (LoopStep(generatedPath, ref cellGrid, ref stepInOut)) break;
                 count++;
+                if (LoopStep(generatedPath, ref cellGrid, ref stepInOut)) break;
             }
 
             for (var row = 0; row < _rowCount; row++)
             {
                 for (var column = 0; column < _columnsCount; column++)
                 {
-                    cellGrid[column, row] ??= _preset.GetCell(RoadDirection.None, RoadDirection.None);
+                    cellGrid[column, row] ??= _preset.GetNonRoadCell();
                 }
             }
             _lastColumn = currentPosition.Item1;
@@ -156,7 +156,7 @@ namespace Modules.Grid.Systems.Generator
         {
             var next = generatedPath.RemoveLast();
             var inDir = loopInOut.PreviousCellEntity.CartingRoadComponent.OutDirection.Negative();
-            var nextCell = _preset.GetCell(inDir, next);
+            var nextCell = _preset.GetRoadCell(inDir, next);
             var currentPosition = loopInOut.CurrentPosition;
             var prevPosition = new TupleInt(currentPosition);
             cellGrid[currentPosition.Item1, currentPosition.Item2] = nextCell;

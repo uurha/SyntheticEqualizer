@@ -1,4 +1,4 @@
-﻿namespace SubModules
+﻿namespace SubModules.Splines
 {
     public class CubicPoly1D
     {

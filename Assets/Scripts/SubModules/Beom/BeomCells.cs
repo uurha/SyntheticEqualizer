@@ -16,19 +16,26 @@ namespace SubModules.Beom
             _entities = cellEntities as ICellComponent[] ?? cellEntities.ToArray();
         }
 
-        public ICellComponent GetCell(RoadDirection entityType, Direction direction)
+        public ICellComponent GetRoadCell(RoadDirection entityType, Direction direction)
         {
             return direction switch
                    {
-                       Direction.In => _entities.FirstOrDefault(x => x.CartingRoadComponent.InDirection == entityType),
-                       Direction.Out => _entities.FirstOrDefault(x => x.CartingRoadComponent.OutDirection == entityType),
+                       Direction.In => _entities.FirstOrDefault(x => x.IsRoad && x.CartingRoadComponent.InDirection == entityType),
+                       Direction.Out =>
+                           _entities.FirstOrDefault(x => x.IsRoad && x.CartingRoadComponent.OutDirection == entityType),
                        _ => throw new ArgumentOutOfRangeException(nameof(direction), direction, null)
                    };
         }
 
-        public readonly ICellComponent GetCell(RoadDirection inDir, RoadDirection outDir)
+        public readonly ICellComponent GetRoadCell(RoadDirection inDir, RoadDirection outDir)
         {
-            return _entities.FirstOrDefault(x => x.CartingRoadComponent.InDirection == inDir && x.CartingRoadComponent.OutDirection == outDir);
+            return _entities.FirstOrDefault(x => x.IsRoad && x.CartingRoadComponent.InDirection == inDir &&
+                                                 x.CartingRoadComponent.OutDirection == outDir);
+        }
+        
+        public readonly ICellComponent GetNonRoadCell()
+        {
+            return _entities.FirstOrDefault(x => !x.IsRoad);
         }
     }
 }

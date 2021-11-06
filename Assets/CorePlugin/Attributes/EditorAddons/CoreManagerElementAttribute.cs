@@ -32,9 +32,30 @@ namespace CorePlugin.Attributes.EditorAddons
         }
     }
 
+    [Flags]
+    public enum FieldType
+    {
+        None = 0,
+        PlayMode = 1,
+        EditorMode = 2,
+        Both = PlayMode | EditorMode
+    }
+    
     [AttributeUsage(AttributeTargets.Field)]
     [Conditional(EditorDefinition.UnityEditor)]
     public class CoreManagerElementsFieldAttribute : Attribute
     {
+        private readonly FieldType _fieldType;
+
+        public CoreManagerElementsFieldAttribute(FieldType type = FieldType.Both)
+        {
+            _fieldType = type;
+        }
+
+        public bool CheckFlag(FieldType type)
+        {
+            var checkFlag = _fieldType.HasFlag(type);
+            return checkFlag;
+        }
     }
 }

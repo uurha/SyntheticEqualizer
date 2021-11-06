@@ -6,7 +6,7 @@ using Modules.AudioPlayer.Interfaces;
 using Modules.AudioPlayer.Model;
 using Modules.AudioPlayer.Systems.Playlist;
 using Modules.AudioPlayerUI.Model;
-using Modules.Grid.Interfaces;
+using Modules.Carting.Interfaces;
 using Modules.Grid.Model;
 using UnityEngine;
 
@@ -57,7 +57,7 @@ namespace Base
 
     public static class RoadEvents
     {
-        public delegate ICellComponent RequestNextRoadEntity();
+        public delegate ICartingRoadComponent RequestNextRoadEntity();
         public delegate void OnRoadReadyEvent(bool isReady);
     }
 

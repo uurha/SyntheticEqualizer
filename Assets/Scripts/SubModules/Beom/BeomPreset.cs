@@ -14,7 +14,7 @@ namespace SubModules.Beom
 
         public BeomCells GetBeomEntities()
         {
-            return new BeomCells(beomCells.Select(x => x.GetComponent<ICellComponent>()));
+            return new BeomCells(beomCells.Select(x => x.GetComponent<ICellComponent>().Initialize()));
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using CorePlugin.Attributes.Editor;
+﻿using CorePlugin.Attributes.Editor;
 using Modules.Grid.Systems;
 using UnityEditor;
 using UnityEngine;

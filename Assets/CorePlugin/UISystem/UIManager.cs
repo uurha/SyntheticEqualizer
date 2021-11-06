@@ -48,8 +48,8 @@ namespace CorePlugin.UISystem
                 if (!o.TryGetComponent(out UIPage page)) continue;
                 var pageButton = Instantiate(page.PageButtonPrefab, pageButtonHolder);
                 _subPagesController.AddPage(page.Initialize(), out UnityAction action);
-                pageButton.onClick.AddListener(action);
-                pageButton.text = page.PageName;
+                pageButton.OnClick.AddListener(action);
+                pageButton.Text = page.PageName;
             }
             _subPagesController.Initialize();
         }

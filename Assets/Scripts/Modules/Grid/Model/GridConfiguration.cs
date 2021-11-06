@@ -1,5 +1,6 @@
 ﻿using System;
 using Extensions;
+using Modules.Carting.Interfaces;
 using Modules.Grid.Interfaces;
 using UnityEngine;
 
@@ -7,7 +8,7 @@ namespace Modules.Grid.Model
 {
     public struct GridConfiguration
     {
-        public ICellComponent[] RoadEntities { get; }
+        public ICartingRoadComponent[] RoadEntities { get; }
 
         public LineConfiguration[] RowConfiguration { get; private set; }
 
@@ -19,7 +20,7 @@ namespace Modules.Grid.Model
 
         public bool IsInitialized { get; private set; }
 
-        public GridConfiguration(ICellComponent[,] cellEntities, ICellComponent[] roadEntities)
+        public GridConfiguration(ICellComponent[,] cellEntities, ICartingRoadComponent[] roadEntities)
         {
             RoadEntities = roadEntities;
 

@@ -6,29 +6,30 @@ using Base.Deque;
 using CorePlugin.Attributes.EditorAddons;
 using CorePlugin.Cross.Events.Interface;
 using CorePlugin.Extensions;
-using Modules.Grid.Interfaces;
+using Modules.Carting.Interfaces;
 using Modules.Grid.Model;
 using UnityEngine;
 
-namespace Modules.Carting.Systems.CartingRoad
+namespace Modules.Carting.Systems.Road
 {
     [CoreManagerElement]
     public class RoadListener : MonoBehaviour, IEventSubscriber, IEventHandler
     {
         [SerializeField] private int roadLookAhead = 10;
-        private Queue<ICellComponent> _currentRoad = new Queue<ICellComponent>();
+        private Queue<ICartingRoadComponent> _currentRoad = new Queue<ICartingRoadComponent>();
+        
         private event GridEvents.RequestNextGrid RequestNextGrid;
         private event RoadEvents.OnRoadReadyEvent OnRoadReady;
         private bool _isInitialized;
-
+        
         private void OnGridChanged(Conveyor<GridConfiguration> configurations, bool isInitialized)
         {
             _isInitialized = isInitialized;
+            _currentRoad = _isInitialized ? new Queue<ICartingRoadComponent>(_currentRoad.Concat(configurations.Last.RoadEntities)) : new Queue<ICartingRoadComponent>();
             OnRoadReady?.Invoke(_isInitialized);
-            _currentRoad = _isInitialized ? new Queue<ICellComponent>(_currentRoad.Concat(configurations.Last.RoadEntities)) : new Queue<ICellComponent>();
         }
 
-        private ICellComponent GetNextRoadEntity()
+        private ICartingRoadComponent GetNextRoadEntity()
         {
             if (!_isInitialized) return null;
             if (_currentRoad.Count <= roadLookAhead)

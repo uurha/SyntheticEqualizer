@@ -26,15 +26,15 @@ namespace CorePlugin.UISystem.UI
         [SerializeField] [NotNull] private Button button;
         [SerializeField] [NotNull] private TMP_Text textLabel;
 
-        public UnityEvent onClick => button.onClick;
+        public UnityEvent OnClick => button.onClick;
 
-        public Color color
+        public Color Color
         {
             get => button.image.color;
             set => button.image.color = value;
         }
 
-        public string text
+        public string Text
         {
             set => textLabel.text = value;
             get => textLabel.text;

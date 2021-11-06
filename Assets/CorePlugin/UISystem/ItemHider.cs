@@ -30,14 +30,14 @@ namespace CorePlugin.UISystem
 
         [SerializeField] private List<LODGroup> lods;
 
-        private List<LODGroup> _LODsToHide;
-        private List<LODGroup> _LODsToShow;
+        private List<LODGroup> _lodToHide;
+        private List<LODGroup> _lodToShow;
         private RectTransform _thisRectTransform;
 
         private void Awake()
         {
-            _LODsToHide = new List<LODGroup>(lods);
-            _LODsToShow = new List<LODGroup>();
+            _lodToHide = new List<LODGroup>(lods);
+            _lodToShow = new List<LODGroup>();
             _thisRectTransform = (RectTransform) transform;
         }
 
@@ -62,15 +62,15 @@ namespace CorePlugin.UISystem
 
         private void OnRectTransformDimensionsChange()
         {
-            var listInitialized = _LODsToHide != null && _LODsToShow != null;
-            if (listInitialized && _LODsToHide.Count > 0) _LODsToShow.AddRange(CheckLODGroups(ref _LODsToHide, false));
-            if (listInitialized && _LODsToShow.Count > 0) _LODsToHide.AddRange(CheckLODGroups(ref _LODsToShow, true));
+            var listInitialized = _lodToHide != null && _lodToShow != null;
+            if (listInitialized && _lodToHide.Count > 0) _lodToShow.AddRange(CheckLODGroups(ref _lodToHide, false));
+            if (listInitialized && _lodToShow.Count > 0) _lodToHide.AddRange(CheckLODGroups(ref _lodToShow, true));
         }
 
         private void OnValidate()
         {
-            _LODsToHide = new List<LODGroup>(lods);
-            _LODsToShow = new List<LODGroup>();
+            _lodToHide = new List<LODGroup>(lods);
+            _lodToShow = new List<LODGroup>();
             _thisRectTransform = (RectTransform) transform;
         }
 

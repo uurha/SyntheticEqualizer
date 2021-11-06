@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using JetBrains.Annotations;
 using UnityEditor;
 using UnityEngine;
 
@@ -18,7 +19,8 @@ namespace EditorDataStorage.Editor
 
         private const string Path = "Editor/Resources";
 
-        private const BindingFlags Binding = BindingFlags.Instance | BindingFlags.Public | BindingFlags.Static | BindingFlags.NonPublic;
+        private const BindingFlags Binding =
+            BindingFlags.Instance | BindingFlags.Public | BindingFlags.Static | BindingFlags.NonPublic;
 
         private static EditorData _instance;
 
@@ -45,6 +47,7 @@ namespace EditorDataStorage.Editor
             if (!Instance.data.TryGetValue(type, out var data)) return;
             var fieldInfo = type.GetField(fieldName, Binding);
             if (fieldInfo is null) return;
+
             if (data.ContainsKey(fieldName))
             {
                 fieldInfo.SetValue(editor, StringToObject(fieldInfo.FieldType, data[fieldName]));
@@ -57,7 +60,7 @@ namespace EditorDataStorage.Editor
             var fromJson = JsonUtility.FromJson(input, wrapper);
             return wrapper.GetField("value", Binding)?.GetValue(fromJson);
         }
-        
+
         private static object ObjectToWrapper(Type type, object input)
         {
             var wrapper = typeof(Wrapper<>).MakeGenericType(type);
@@ -78,8 +81,8 @@ namespace EditorDataStorage.Editor
             var type = editor.GetType();
             var fieldInfo = type.GetField(fieldName, Binding);
             if (fieldInfo is null) return;
-
             var fieldValue = fieldInfo.GetValue(editor);
+
             if (Instance.data.ContainsKey(type))
             {
                 var dic = Instance.data[type];
