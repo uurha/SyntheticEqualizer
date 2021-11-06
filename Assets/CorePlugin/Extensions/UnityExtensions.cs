@@ -76,17 +76,6 @@ namespace CorePlugin.Extensions
         }
 
         /// <summary>
-        /// Scrolls ScrollRect to last item
-        /// </summary>
-        /// <param name="scrollRect"></param>
-        /// <param name="reverseOrder"></param>
-        public static void SnapToLatest(this ScrollRect scrollRect, bool reverseOrder)
-        {
-            Canvas.ForceUpdateCanvases();
-            scrollRect.verticalNormalizedPosition = reverseOrder ? 1f : 0f;
-        }
-
-        /// <summary>
         /// Puts the string into the Clipboard.
         /// </summary>
         public static void CopyToClipboard(this string str)

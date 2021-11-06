@@ -29,8 +29,7 @@ namespace CorePlugin.Editor.Helpers
     {
         private readonly Dictionary<string, bool> _symbols = new Dictionary<string, bool>
                                                              {
-                                                                 {EditorDefinition.EnableReleaseLogs, false},
-                                                                 {EditorDefinition.EnableReleaseConsole, false}
+                                                                 {EditorDefinition.EnableReleaseLogs, false}
                                                              };
 
         /// <summary>

@@ -20,6 +20,5 @@ namespace CorePlugin.Extensions
         public const string UnityEditor = "UNITY_EDITOR";
         public const string Debug = "DEBUG";
         public const string EnableReleaseLogs = "ENABLE_RELEASE_LOGS";
-        public const string EnableReleaseConsole = "ENABLE_RELEASE_CONSOLE";
     }
 }
