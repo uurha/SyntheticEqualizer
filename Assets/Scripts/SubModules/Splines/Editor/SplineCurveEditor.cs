@@ -2,17 +2,17 @@
 using CorePlugin.Attributes.Editor;
 using CorePlugin.Extensions;
 using EditorDataStorage.Editor;
-using SubModules.Splines;
 using UnityEditor;
 using UnityEngine;
 
-namespace Editor.PropertyDrawers
+namespace SubModules.Splines.Editor
 {
     [CustomEditor(typeof(SplineCurve))]
     public class SplineCurveEditor : ValidationAttributeEditor
     {
         private SplineCurve _splineCurves;
         private bool _showNormals;
+        private bool _showHandles;
         private float _normalsLenght = 0.2f;
         private Color _normalsColor = Color.gray;
 
@@ -31,6 +31,7 @@ namespace Editor.PropertyDrawers
         {
             base.OnEnable();
             SceneView.duringSceneGui += DuringSceneGui;
+            Undo.undoRedoPerformed += UndoRedoPerformed;
             _splineCurves = (SplineCurve)target;
             EditorData.GetData(this, nameof(_lineColor));
             EditorData.GetData(this, nameof(_tangentsColor));
@@ -42,37 +43,63 @@ namespace Editor.PropertyDrawers
             EditorData.GetData(this, nameof(_previewPointSize));
             EditorData.GetData(this, nameof(_showTangents));
             EditorData.GetData(this, nameof(_showNormals));
+            EditorData.GetData(this, nameof(_showHandles));
+        }
+
+        private void UndoRedoPerformed()
+        {
+            _splineCurves.SetDirty();
+            EditorUtility.SetDirty(target);
         }
 
         private void DuringSceneGui(SceneView obj)
         {
-            var field = _splineCurves.GetControlPoints();
-            var size = field.Length;
             var dirty = false;
+            var splineCurvesTransform = _splineCurves.transform;
+            var field = _splineCurves.GetControlPoints();
 
-            for (var i = 0; i < size; i++)
+            if (_showHandles)
             {
-                var item = field[i];
-                field[i] = Handles.PositionHandle(item, Quaternion.identity);
-                if (field[i] == item) continue;
-                dirty = true;
+                var size = field.Length;
+
+                for (var i = 0; i < size; i++)
+                {
+                    var item = field[i];
+
+                    item =
+                        splineCurvesTransform
+                           .InverseTransformPoint(Handles.PositionHandle(splineCurvesTransform.TransformPoint(item),
+                                                                         Quaternion.identity));
+                    if (field[i] == item) continue;
+                    Undo.RecordObject(target, "Spline Control Points changed");
+                    field[i] = item;
+                    dirty = true;
+                }
             }
-            var points = _splineCurves.GetPoints();
+            var points = _splineCurves.GetPoints(true);
 
             for (var index = 1; index < points.Length; index++)
             {
                 var prevCurvePoint = points[index - 1];
                 var curvePoint = points[index];
                 Handles.color = _lineColor;
-                Handles.DrawLine(prevCurvePoint.position, curvePoint.position);
+                var curvePointPosition = curvePoint.position;
+                var prevCurvePointPosition = prevCurvePoint.position;
+                Handles.DrawLine(prevCurvePointPosition, curvePointPosition);
+
+                Handles.ConeHandleCap(0, curvePointPosition,
+                                      Quaternion.LookRotation(curvePointPosition - prevCurvePointPosition,
+                                                              curvePoint.normal), _normalsLenght / 5f,
+                                      EventType.Repaint);
                 DrawNormal(prevCurvePoint);
                 DrawTangent(prevCurvePoint);
 
                 if (_showPreviewPoint)
                 {
                     Handles.color = Color.white;
+                    var position = _splineCurves.GetPoint(_previewPoint, true).position;
 
-                    Handles.SphereHandleCap(0, _splineCurves.GetPoint(_previewPoint).position, Quaternion.identity,
+                    Handles.SphereHandleCap(0, position, Quaternion.identity,
                                             _previewPointSize, EventType.Repaint);
                 }
             }
@@ -86,9 +113,10 @@ namespace Editor.PropertyDrawers
             if (_showTangents)
             {
                 Handles.color = _tangentsColor;
+                var position = prevCurvePoint.position;
 
-                Handles.DrawLine(prevCurvePoint.position,
-                                 prevCurvePoint.position + (prevCurvePoint.tangent * _tangentsLenght));
+                Handles.DrawLine(position,
+                                 position + (prevCurvePoint.tangent * _tangentsLenght));
             }
         }
 
@@ -97,9 +125,10 @@ namespace Editor.PropertyDrawers
             if (_showNormals)
             {
                 Handles.color = _normalsColor;
+                var position = prevCurvePoint.position;
 
-                Handles.DrawLine(prevCurvePoint.position,
-                                 prevCurvePoint.position + (prevCurvePoint.normal * _normalsLenght));
+                Handles.DrawLine(position,
+                                 position + (prevCurvePoint.normal * _normalsLenght));
             }
         }
 
@@ -118,6 +147,7 @@ namespace Editor.PropertyDrawers
             if (GUILayout.Button("Add Position"))
             {
                 field = field.Length > 0 ? field.Append(field[field.Length - 1]).ToArray() : new Vector3[1];
+                Undo.RecordObject(target, "Spline Control Points added");
                 _splineCurves.SetControlPoints(field);
             }
 
@@ -149,6 +179,7 @@ namespace Editor.PropertyDrawers
                     DrawFloatRangeField(ref _previewPoint, nameof(_previewPoint), 0f, 1f);
                     DrawFloatRangeField(ref _previewPointSize, nameof(_previewPointSize), 0.1f, 1f);
                 }
+                DrawBoolField(ref _showHandles, nameof(_showHandles));
             }
             EditorGUI.EndFoldoutHeaderGroup();
             if (!dirty) return;
@@ -209,6 +240,7 @@ namespace Editor.PropertyDrawers
         private void OnDisable()
         {
             SceneView.duringSceneGui -= DuringSceneGui;
+            Undo.undoRedoPerformed -= UndoRedoPerformed;
         }
     }
 }

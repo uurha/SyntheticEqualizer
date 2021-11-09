@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Base.BaseTypes;
 using Base.Deque;
@@ -101,10 +102,17 @@ namespace Modules.Grid.Systems.Generator
             var count = 0;
             var breakCount = generatedPath.Count + 1;
 
+            var roadPositions = new List<TupleInt> { new TupleInt(stepInOut.CurrentPosition) };
+
             while (count <= breakCount)
             {
                 count++;
-                if (LoopStep(generatedPath, ref cellGrid, ref stepInOut)) break;
+                if (!LoopStep(generatedPath, ref cellGrid, ref stepInOut))
+                {
+                    roadPositions.Add(new TupleInt(stepInOut.CurrentPosition));
+                    continue;
+                }
+                break;
             }
 
             for (var row = 0; row < _rowCount; row++)
@@ -117,7 +125,7 @@ namespace Modules.Grid.Systems.Generator
             _lastColumn = currentPosition.Item1;
             _lastRow = currentPosition.Item2;
             _lastEntity = stepInOut.PreviousCellEntity.CartingRoadComponent.OutDirection;
-            return new GridGeneratorOutput(cellGrid, _lastEntity, count);
+            return new GridGeneratorOutput(cellGrid, _lastEntity, roadPositions);
         }
 
         private TupleInt StartPosition(RoadDirection entityRoad)

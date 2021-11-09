@@ -20,17 +20,10 @@ namespace Modules.Carting.Systems
         
         private void OnRoadReady(bool isReady)
         {
-            if (isReady)
+            if (isReady && !_isRoadReady)
             {
                 _instancedCart = Instantiate(cartEntityPrefab);
                 _instancedCart.Initialize(OnRequestNextRoadEntity);
-            }
-            else
-            {
-                if (_isRoadReady)
-                {
-                    Destroy(_instancedCart);
-                }
             }
             _isRoadReady = isReady;
         }

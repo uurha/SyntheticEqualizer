@@ -1,4 +1,5 @@
-﻿using Modules.Grid.Interfaces;
+﻿using System;
+using Modules.Grid.Interfaces;
 
 namespace Modules.Grid.Model
 {
@@ -21,7 +22,7 @@ namespace Modules.Grid.Model
         public void DestroyAll()
         {
             foreach (var cell in _cells) cell.Destroy();
-            _cells = new ICellComponent[0];
+            _cells = Array.Empty<ICellComponent>();
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace Base.BaseTypes
+﻿using System;
+
+namespace Base.BaseTypes
 {
     public class TupleItems<T, TV>
     {

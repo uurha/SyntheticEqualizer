@@ -13,4 +13,14 @@ MonoBehaviour:
   m_Name: EditorData
   m_EditorClassIdentifier: 
   data:
-    data: []
+    data:
+    - key: SplineCurveEditor
+      values:
+      - key: _lineColor
+        value: '{"value":{"r":1.0,"g":0.0,"b":0.20000028610229493,"a":1.0}}'
+      - key: _showNormals
+        value: '{"value":true}'
+      - key: _normalsLenght
+        value: '{"value":0.38999998569488528}'
+      - key: _showHandles
+        value: '{"value":true}'

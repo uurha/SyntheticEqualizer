@@ -1,4 +1,6 @@
-﻿using Modules.Grid.Interfaces;
+﻿using System.Collections.Generic;
+using Base.BaseTypes;
+using Modules.Grid.Interfaces;
 
 namespace Modules.Grid.Model
 {
@@ -6,13 +8,13 @@ namespace Modules.Grid.Model
     {
         public ICellComponent[,] Grid { get; }
         public RoadDirection GridExit { get; }
-        public int RoadLenght { get; }
+        public List<TupleInt> RoadPositions { get; }
 
-        public GridGeneratorOutput(ICellComponent[,] grid, RoadDirection gridExit, int roadLenght)
+        public GridGeneratorOutput(ICellComponent[,] grid, RoadDirection gridExit, List<TupleInt> roadPositions)
         {
             Grid = grid;
             GridExit = gridExit;
-            RoadLenght = roadLenght;
+            RoadPositions = roadPositions;
         }
     }
 }

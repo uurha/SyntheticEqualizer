@@ -15,6 +15,16 @@ namespace Extensions
             return new Vector2(vector2.y, vector2.x);
         }
 
+        public static Vector3 TransformPoint(this Vector3 vector3, Transform transform)
+        {
+            return transform.TransformPoint(vector3);
+        }
+        
+        public static Vector3 TransformPoint(this Vector3 vector3, MonoBehaviour monoBehaviour)
+        {
+            return monoBehaviour.transform.TransformPoint(vector3);
+        }
+
         public static Vector3 OnlyOneAxis(this Vector3 vector3, Axis axis)
         {
             var newVector3 = axis switch
