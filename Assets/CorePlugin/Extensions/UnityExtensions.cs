@@ -17,7 +17,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Base.BaseTypes;
 using CorePlugin.Serializable.Interface;
 using UnityEngine;
 using UnityEngine.UI;

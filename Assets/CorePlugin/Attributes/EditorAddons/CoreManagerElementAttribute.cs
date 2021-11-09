@@ -19,6 +19,9 @@ using CorePlugin.Extensions;
 
 namespace CorePlugin.Attributes.EditorAddons
 {
+    /// <summary>
+    /// Provide component marked by this attribute to <seealso cref="CorePlugin.Editor.Windows.CoreSelectorWindow"/>
+    /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface)]
     [Conditional(EditorDefinition.UnityEditor)]
     public class CoreManagerElementAttribute : DisplayNameAttribute
@@ -41,6 +44,9 @@ namespace CorePlugin.Attributes.EditorAddons
         Both = PlayMode | EditorMode
     }
     
+    /// <summary>
+    /// Provide data from object field marked by this attribute to <seealso cref="CorePlugin.Editor.Windows.CoreSelectorWindow"/>
+    /// </summary>
     [AttributeUsage(AttributeTargets.Field)]
     [Conditional(EditorDefinition.UnityEditor)]
     public class CoreManagerElementsFieldAttribute : Attribute

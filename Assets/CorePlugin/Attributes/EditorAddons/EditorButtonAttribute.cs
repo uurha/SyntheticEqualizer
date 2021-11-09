@@ -19,15 +19,30 @@ using CorePlugin.Extensions;
 
 namespace CorePlugin.Attributes.EditorAddons
 {
+    /// <summary>
+    /// Displays Button in Inspector
+    /// </summary>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
     [Conditional(EditorDefinition.UnityEditor)]
     public class EditorButtonAttribute : DisplayNameAttribute
     {
 
+        /// <summary>
+        /// Provides Editor button
+        /// </summary>
+        /// <param name="displayName"></param>
+        /// <param name="invokeParams"></param>
         public EditorButtonAttribute(string displayName, params object[] invokeParams) : this(displayName, -1, -1, invokeParams)
         {
         }
-
+        
+        /// <summary>
+        /// Provides Editor button
+        /// </summary>
+        /// <param name="displayName"></param>
+        /// <param name="captureGroup"></param>
+        /// <param name="priority"></param>
+        /// <param name="invokeParams"></param>
         public EditorButtonAttribute(string displayName, int captureGroup, int priority, params object[] invokeParams) : base(displayName)
         {
             InvokeParams = invokeParams;
@@ -35,19 +50,40 @@ namespace CorePlugin.Attributes.EditorAddons
             CaptureGroup = captureGroup;
         }
 
+        /// <summary>
+        /// Provides Editor button
+        /// </summary>
+        /// <param name="invokeParams"></param>
         public EditorButtonAttribute(params object[] invokeParams) : this(string.Empty, -1, -1, invokeParams)
         {
         }
 
+        /// <summary>
+        /// Provides Editor button
+        /// </summary>
+        /// <param name="captureGroup"></param>
+        /// <param name="invokeParams"></param>
         public EditorButtonAttribute(int captureGroup, params object[] invokeParams) : this(string.Empty, captureGroup, -1, invokeParams)
         {
         }
 
+        /// <summary>
+        /// Provides Editor button
+        /// </summary>
+        /// <param name="displayName"></param>
+        /// <param name="captureGroup"></param>
+        /// <param name="invokeParams"></param>
         public EditorButtonAttribute(string displayName, int captureGroup, params object[] invokeParams) : this(displayName, captureGroup, -1,
             invokeParams)
         {
         }
 
+        /// <summary>
+        /// Provides Editor button
+        /// </summary>
+        /// <param name="captureGroup"></param>
+        /// <param name="priority"></param>
+        /// <param name="invokeParams"></param>
         public EditorButtonAttribute(int captureGroup, int priority, params object[] invokeParams) : this(string.Empty, captureGroup, priority,
             invokeParams)
         {

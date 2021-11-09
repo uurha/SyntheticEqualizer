@@ -28,9 +28,9 @@ namespace CorePlugin.Attributes.Editor
     /// <summary>
     /// Custom editor for Unity.Object class.
     /// If you want to create your own custom editor inherit from this class.
-    /// <seealso cref="ValidationAttribute"/>
-    /// <seealso cref="FieldValidationAttribute"/>
-    /// <seealso cref="ClassValidationAttribute"/>
+    /// <seealso cref="CorePlugin.Attributes.Base.ValidationAttribute"/>
+    /// <seealso cref="CorePlugin.Attributes.Base.FieldValidationAttribute"/>
+    /// <seealso cref="CorePlugin.Attributes.Base.ClassValidationAttribute"/>
     /// </summary>
     [CanEditMultipleObjects]
     [CustomEditor(typeof(Object), true)]

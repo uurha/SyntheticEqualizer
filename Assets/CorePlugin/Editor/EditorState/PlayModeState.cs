@@ -40,12 +40,13 @@ namespace CorePlugin.Editor.EditorState
         {
             if (state != PlayModeStateChange.ExitingEditMode) return;
             var pairs = AttributeExtensions.ErrorObjectPairs(); //TODO: validate sub prefabs on opened scene
-
+            #if SCENE_MANAGMENT_ASSET
             if (!SceneLoaderSettingsValidator.Validate(out var settings))
             {
                 var error = new ErrorObjectPair(SceneLoaderSettingsValidator.ReturnErrorText(settings), null);
                 pairs = pairs.Concat(new[] {error});
             }
+            #endif
             var errorObjectPairs = pairs as ErrorObjectPair[] ?? pairs.ToArray();
             if (IsPlayModeAvailable(errorObjectPairs)) return;
             EditorApplication.Beep();

@@ -42,12 +42,13 @@ namespace CorePlugin.Editor.EditorState
             var pairs = Enumerable.Empty<ErrorObjectPair>();
             pairs = pairs.Concat(CheckSceneObjects());
             pairs = pairs.Concat(CheckPrefabs());
-
+            #if SCENE_MANAGMENT_ASSET
             if (!SceneLoaderSettingsValidator.Validate(out var settings))
             {
                 var error = new ErrorObjectPair(SceneLoaderSettingsValidator.ReturnErrorText(settings), null);
                 pairs = pairs.Concat(new[] {error});
             }
+            #endif
             var errors = pairs as ErrorObjectPair[] ?? pairs.ToArray();
 
             if (!errors.Any())

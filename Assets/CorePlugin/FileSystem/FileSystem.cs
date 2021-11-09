@@ -27,7 +27,7 @@ namespace CorePlugin.FileSystem
     /// Class for saving Json file to disk.
     /// <seealso cref="CorePlugin.Serializable.Unique"/>
     /// </summary>
-    public class FileSystem
+    public class FileSystem : IDisposable
     {
         private static SemaphoreSlim _semaphoreSlim;
         private readonly string _defaultExtension = ".json";
@@ -161,6 +161,12 @@ namespace CorePlugin.FileSystem
             {
                 _semaphoreSlim.Release();
             }
+        }
+
+        public void Dispose()
+        {
+            _semaphoreSlim.Dispose();
+            _semaphoreSlim = null;
         }
     }
 }
