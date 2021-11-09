@@ -1,4 +1,5 @@
 ﻿using Modules.Grid.Model;
+using SubModules.Splines;
 using UnityEngine;
 
 namespace Modules.Carting.Interfaces
@@ -9,6 +10,6 @@ namespace Modules.Carting.Interfaces
 
         public RoadDirection OutDirection { get; }
 
-        public bool GetPoint(float passedPath, out Vector3 vector3);
+        public bool GetPoint(float passedPath, out CurvePoint vector3);
     }
 }

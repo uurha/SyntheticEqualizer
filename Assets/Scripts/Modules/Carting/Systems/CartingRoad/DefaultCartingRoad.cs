@@ -20,10 +20,10 @@ namespace Modules.Carting.Systems.CartingRoad
         public RoadDirection InDirection => inDirection;
         public RoadDirection OutDirection => outDirection;
 
-        public bool GetPoint(float passedPath, out Vector3 vector3)
+        public bool GetPoint(float passedPath, out CurvePoint vector3)
         {
-            vector3 = curve.GetPoint(passedPath, true).position;
-            return passedPath <= 0.9f;
+            vector3 = curve.GetPoint(passedPath, true);
+            return passedPath <= 0.99f;
         }
     }
 }

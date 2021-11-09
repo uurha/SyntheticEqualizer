@@ -13,14 +13,14 @@ namespace Modules.Carting.Systems.Cart
         private event RoadEvents.RequestNextRoadEntity OnRequestNextRoadEntity;
         private bool _isInitialized;
         private ICartingRoadComponent _currentCartingRoad;
-        private float _passedPath;
-        private float _time;
+        private PathOverTime _pathOverTime;
         
         public void Initialize(RoadEvents.RequestNextRoadEntity onRequestNextRoad)
         {
             OnRequestNextRoadEntity = onRequestNextRoad ?? throw new ArgumentNullException();
             _isInitialized = true;
             _currentCartingRoad = OnRequestNextRoadEntity.Invoke();
+            _pathOverTime = new PathOverTime();
         }
 
         private void Update()
@@ -31,21 +31,46 @@ namespace Modules.Carting.Systems.Cart
             }
         }
 
+        private class PathOverTime
+        {
+            private float _time;
+            private float _passedPath;
+
+            public float PassedPath => _passedPath;
+
+            public void UpdateTime()
+            {
+                _time += Time.deltaTime;
+            }
+
+            public void UpdatePath(float speed)
+            {
+                _passedPath = Mathf.InverseLerp(0, speed, _time);
+            }
+
+            public void Reset()
+            {
+                _time = 0;
+                _passedPath = 0;
+            }
+        }
+
         private void InteractMove()
         {
-            _passedPath = Mathf.InverseLerp(0, speed, _time);
-            _time += Time.deltaTime;
+            _pathOverTime.UpdatePath(speed);
+            _pathOverTime.UpdateTime();
             while (true)
             {
-                if (_currentCartingRoad != null && _currentCartingRoad.GetPoint(_passedPath, out var movePoint))
+                if (_currentCartingRoad != null && _currentCartingRoad.GetPoint(_pathOverTime.PassedPath, out var movePoint))
                 {
-                    transform.position = movePoint;
+                    transform.position = movePoint.position;
+                    transform.forward = movePoint.tangent;
                 }
                 else
                 {
                     _currentCartingRoad = OnRequestNextRoadEntity?.Invoke();
-                    _passedPath = 0f;
-                    _time = 0f;
+                    _pathOverTime.Reset();
+                    _pathOverTime.UpdateTime();
                     continue;
                 }
                 break;
