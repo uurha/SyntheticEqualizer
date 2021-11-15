@@ -29,10 +29,14 @@ namespace CorePlugin.Extensions
         /// <param name="camera">Camera.</param>
         public static int CountCornersVisibleFrom(this RectTransform rectTransform, Camera camera)
         {
-            var screenBounds = new Rect(0f, 0f, Screen.width, Screen.height); // Screen space bounds (assumes camera renders across the entire screen)
+            var screenBounds =
+                new Rect(0f, 0f, Screen.width,
+                         Screen.height); // Screen space bounds (assumes camera renders across the entire screen)
             var objectCorners = new Vector3[4];
             rectTransform.GetWorldCorners(objectCorners);
-            return objectCorners.Select(camera.WorldToScreenPoint).Count(tempScreenSpaceCorner => screenBounds.Contains(tempScreenSpaceCorner));
+
+            return objectCorners.Select(camera.WorldToScreenPoint)
+                                .Count(tempScreenSpaceCorner => screenBounds.Contains(tempScreenSpaceCorner));
         }
 
         /// <summary>
@@ -43,10 +47,14 @@ namespace CorePlugin.Extensions
         /// <param name="camera">Camera.</param>
         public static int CountCornersNotVisibleFrom(this RectTransform rectTransform, Camera camera)
         {
-            var screenBounds = new Rect(0f, 0f, Screen.width, Screen.height); // Screen space bounds (assumes camera renders across the entire screen)
+            var screenBounds =
+                new Rect(0f, 0f, Screen.width,
+                         Screen.height); // Screen space bounds (assumes camera renders across the entire screen)
             var objectCorners = new Vector3[4];
             rectTransform.GetWorldCorners(objectCorners);
-            return objectCorners.Select(camera.WorldToScreenPoint).Count(tempScreenSpaceCorner => !screenBounds.Contains(tempScreenSpaceCorner));
+
+            return objectCorners.Select(camera.WorldToScreenPoint)
+                                .Count(tempScreenSpaceCorner => !screenBounds.Contains(tempScreenSpaceCorner));
         }
 
         public static void KeepFullyOnScreen(this RectTransform movable, RectTransform container)
@@ -81,10 +89,14 @@ namespace CorePlugin.Extensions
         /// <param name="camera">Camera.</param>
         public static IEnumerable<Vector3> CornersNotVisibleFrom(this RectTransform rectTransform, Camera camera)
         {
-            var screenBounds = new Rect(0f, 0f, Screen.width, Screen.height); // Screen space bounds (assumes camera renders across the entire screen)
+            var screenBounds =
+                new Rect(0f, 0f, Screen.width,
+                         Screen.height); // Screen space bounds (assumes camera renders across the entire screen)
             var objectCorners = new Vector3[4];
             rectTransform.GetWorldCorners(objectCorners);
-            return objectCorners.Select(camera.WorldToScreenPoint).Where(tempScreenSpaceCorner => !screenBounds.Contains(tempScreenSpaceCorner));
+
+            return objectCorners.Select(camera.WorldToScreenPoint)
+                                .Where(tempScreenSpaceCorner => !screenBounds.Contains(tempScreenSpaceCorner));
         }
 
         /// <summary>
@@ -95,10 +107,14 @@ namespace CorePlugin.Extensions
         /// <param name="camera">Camera.</param>
         public static IEnumerable<Vector3> CornersVisibleFrom(this RectTransform rectTransform, Camera camera)
         {
-            var screenBounds = new Rect(0f, 0f, Screen.width, Screen.height); // Screen space bounds (assumes camera renders across the entire screen)
+            var screenBounds =
+                new Rect(0f, 0f, Screen.width,
+                         Screen.height); // Screen space bounds (assumes camera renders across the entire screen)
             var objectCorners = new Vector3[4];
             rectTransform.GetWorldCorners(objectCorners);
-            return objectCorners.Select(camera.WorldToScreenPoint).Where(tempScreenSpaceCorner => screenBounds.Contains(tempScreenSpaceCorner));
+
+            return objectCorners.Select(camera.WorldToScreenPoint)
+                                .Where(tempScreenSpaceCorner => screenBounds.Contains(tempScreenSpaceCorner));
         }
 
         /// <summary>

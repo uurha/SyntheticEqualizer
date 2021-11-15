@@ -9,7 +9,6 @@ using CorePlugin.Attributes.Headers;
 using CorePlugin.Cross.Events.Interface;
 using CorePlugin.Extensions;
 using Extensions;
-using JetBrains.Annotations;
 using Modules.AudioAnalyse.Model;
 using Modules.AudioPlayerUI.Model;
 using Modules.Grid.Model;

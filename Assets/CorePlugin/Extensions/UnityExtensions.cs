@@ -19,7 +19,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using CorePlugin.Serializable.Interface;
 using UnityEngine;
-using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
 namespace CorePlugin.Extensions

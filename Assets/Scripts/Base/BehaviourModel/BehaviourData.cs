@@ -15,13 +15,13 @@ namespace Base.BehaviourModel
         [field: DeallocateOnJobCompletion]
         public NativeArray<Orientation> AdditionalData { get; }
 
-        public int Lenght { get; }
+        public int AdditionalDataLenght { get; }
 
         public BehaviourData(NativeArray<Orientation> initialData, Orientation[] additionalData)
         {
             InitialData = initialData;
             AdditionalData = new NativeArray<Orientation>(additionalData, Allocator.TempJob);
-            Lenght = additionalData.Length;
+            AdditionalDataLenght = additionalData.Length;
         }
     }
 }

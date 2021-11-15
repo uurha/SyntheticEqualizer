@@ -1,6 +1,8 @@
 ﻿using Base.BehaviourModel;
 using Base.BehaviourModel.Interfaces;
 using Unity.Burst;
+using Unity.Collections;
+using UnityEngine;
 using UnityEngine.Jobs;
 
 namespace Modules.Grid.Systems.CellEntity.Behaviours
@@ -10,10 +12,12 @@ namespace Modules.Grid.Systems.CellEntity.Behaviours
     {
         private BehaviourData _data;
 
-        public readonly void Execute(int index, TransformAccess transform)
+        public void Execute(int index, TransformAccess transform)
         {
-            transform.localRotation =
-                _data.InitialData[index].Rotation * _data.AdditionalData[index % _data.Lenght].Rotation;
+            var position = _data.InitialData[index].Rotation;
+            var additional = _data.AdditionalData[index % _data.AdditionalDataLenght].Rotation;
+
+            transform.localRotation = position * additional;
         }
 
         public void SetData(IBehaviourData data)

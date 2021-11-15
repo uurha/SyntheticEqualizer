@@ -1,5 +1,4 @@
-﻿using System;
-using CorePlugin.Attributes.Headers;
+﻿using CorePlugin.Attributes.Headers;
 using Modules.Carting.Interfaces;
 using Modules.Grid.Model;
 using Modules.Grid.Systems.CellEntity;

@@ -10,10 +10,12 @@ namespace Modules.Grid.Systems.CellEntity.Behaviours
     {
         private BehaviourData _data;
 
-        public readonly void Execute(int index, TransformAccess transform)
+        public void Execute(int index, TransformAccess transform)
         {
-            transform.localPosition =
-                _data.InitialData[index].Position + _data.AdditionalData[index % _data.Lenght].Position;
+            var position = _data.InitialData[index].Position;
+            var additional = _data.AdditionalData[index % _data.AdditionalDataLenght].Position;
+
+            transform.localPosition = position + additional;
         }
 
         public void SetData(IBehaviourData data)

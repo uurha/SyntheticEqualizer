@@ -3,6 +3,7 @@ using Base;
 using CorePlugin.Attributes.EditorAddons;
 using CorePlugin.Cross.Events.Interface;
 using CorePlugin.Extensions;
+using Modules.AudioPlayer.Model;
 using Modules.Carting.Systems.Cart;
 using UnityEngine;
 
@@ -15,9 +16,12 @@ namespace Modules.Carting.Systems
         private CartEntity cartEntityPrefab;
 
         private event RoadEvents.RequestNextRoadEntity OnRequestNextRoadEntity;
-        [CoreManagerElementsField(FieldType.PlayMode)] private CartEntity _instancedCart;
+
+        [CoreManagerElementsField(FieldType.PlayMode)]
+        private CartEntity _instancedCart;
+
         private bool _isRoadReady;
-        
+
         private void OnRoadReady(bool isReady)
         {
             if (isReady && !_isRoadReady)
@@ -32,13 +36,18 @@ namespace Modules.Carting.Systems
         {
             return new Delegate[]
                    {
-                       (RoadEvents.OnRoadReadyEvent)OnRoadReady
+                       (RoadEvents.OnRoadReadyEvent)OnRoadReady,
+                       (AudioPlayerEvents.AudioPlayerStateEvent)AudioPlayerStateChanged
                    };
+        }
+
+        private void AudioPlayerStateChanged(AudioPlayerState state)
+        {
+            if (_isRoadReady) _instancedCart.SetReadyMove(state.HasFlag(AudioPlayerState.Play));
         }
 
         public void InvokeEvents()
         {
-            
         }
 
         public void Subscribe(params Delegate[] subscribers)

@@ -13,7 +13,6 @@
 
 #endregion
 
-using System;
 using System.IO;
 using CorePlugin.Core;
 using CorePlugin.Cross.SceneData;

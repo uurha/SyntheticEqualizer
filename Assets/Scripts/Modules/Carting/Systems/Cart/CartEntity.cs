@@ -1,6 +1,8 @@
 ﻿using System;
 using Base;
 using CorePlugin.Attributes.EditorAddons;
+using CorePlugin.Cross.Events.Interface;
+using Modules.AudioPlayer.Model;
 using Modules.Carting.Interfaces;
 using UnityEngine;
 
@@ -12,8 +14,10 @@ namespace Modules.Carting.Systems.Cart
         [SerializeField] private float speed;
         private event RoadEvents.RequestNextRoadEntity OnRequestNextRoadEntity;
         private bool _isInitialized;
+        private bool _readyMove;
         private ICartingRoadComponent _currentCartingRoad;
         private PathOverTime _pathOverTime;
+        private Transform _thisTransform;
         
         public void Initialize(RoadEvents.RequestNextRoadEntity onRequestNextRoad)
         {
@@ -21,11 +25,17 @@ namespace Modules.Carting.Systems.Cart
             _isInitialized = true;
             _currentCartingRoad = OnRequestNextRoadEntity.Invoke();
             _pathOverTime = new PathOverTime();
+            _thisTransform = transform;
+        }
+
+        public void SetReadyMove(bool state)
+        {
+            _readyMove = state;
         }
 
         private void Update()
         {
-            if (_isInitialized)
+            if (_isInitialized && _readyMove)
             {
                 InteractMove();
             }
@@ -63,8 +73,8 @@ namespace Modules.Carting.Systems.Cart
             {
                 if (_currentCartingRoad != null && _currentCartingRoad.GetPoint(_pathOverTime.PassedPath, out var movePoint))
                 {
-                    transform.position = movePoint.position;
-                    transform.forward = movePoint.tangent;
+                    _thisTransform.position = movePoint.position;
+                    _thisTransform.forward = movePoint.tangent;
                 }
                 else
                 {
