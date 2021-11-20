@@ -36,22 +36,22 @@ Material:
     - _CurrentDelta: 0.02
     - _Emission: 1
     - _EmissionPower: 1
-    - _LowestDelta: 0.1
+    - _LowestDelta: 0.3
     - _MaxDelta: 0.95
     - _MaxY1: 0.35
     - _MaxY2: 0.95
-    - _MiddleDelta: 0.5
+    - _MiddleDelta: 0.8
     - _MinY1: 0.25
     - _MinY2: 0.35000002
     - _display: 0
     m_Colors:
-    - _AddColor: {r: 0, g: 0, b: 1, a: 1}
-    - _ExtColor: {r: 0, g: 0, b: 1, a: 1}
-    - _LowestColor: {r: 1, g: 0, b: 0, a: 1}
-    - _MainColor: {r: 1, g: 0, b: 0, a: 1}
-    - _MaxColor: {r: 0, g: 0.5, b: 1, a: 1}
+    - _AddColor: {r: 0.42745098, g: 0, b: 0.42745098, a: 1}
+    - _ExtColor: {r: 0.42745098, g: 0, b: 0.42745098, a: 1}
+    - _LowestColor: {r: 0, g: 1, b: 1, a: 1}
+    - _MainColor: {r: 0.4245283, g: 0, b: 0.4245283, a: 1}
+    - _MaxColor: {r: 1, g: 1, b: 0, a: 1}
     - _MaxColor1: {r: 0.50196075, g: 0, b: 1, a: 1}
     - _MaxColor2: {r: 0, g: 0.50196075, b: 1, a: 1}
-    - _MiddleColor: {r: 0.50196075, g: 0, b: 1, a: 1}
+    - _MiddleColor: {r: 1, g: 0, b: 1, a: 1}
     - _MinColor: {r: 1, g: 0.5019608, b: 0, a: 1}
   m_BuildTextureStacks: []

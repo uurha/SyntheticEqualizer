@@ -5,7 +5,7 @@ using CorePlugin.Attributes.Headers;
 using CorePlugin.Cross.Events.Interface;
 using CorePlugin.Extensions;
 using Modules.AudioAnalyse.Model;
-using Modules.AudioPlayerUI.Model;
+using Modules.GlobalSettings.Model;
 using UnityEngine;
 
 namespace Modules.AudioPlayer.Systems.SpectrumListenerComponent
@@ -80,7 +80,7 @@ namespace Modules.AudioPlayer.Systems.SpectrumListenerComponent
         {
             return new Delegate[]
                    {
-                       (GlobalAudioSettingsEvents.OnSpectrumListenerSettingsEvent) OnSpectrumListenerSettingsChanged
+                       (GlobalSettingsEvents.OnSpectrumListenerSettingsEvent) OnSpectrumListenerSettingsChanged
                    };
         }
     }

@@ -1,12 +1,11 @@
-﻿using System.Collections.Generic;
-using Base.BehaviourModel;
+﻿using Base.BehaviourModel;
 using Base.BehaviourModel.Interfaces;
 using CorePlugin.Attributes.Headers;
 using Extensions;
+using Modules.GlobalSettings.Model;
 using Modules.Grid.Model;
 using Modules.Grid.Systems.CellEntity.Behaviours;
 using Modules.Grid.Systems.CellEntity.Unit;
-using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
 
@@ -16,8 +15,9 @@ namespace Modules.Grid.Systems.CellEntity.VisualBehaviours
     {
         [ReferencesHeader]
         [SerializeField] private CellUnit[] leftItems;
+
         [SerializeField] private CellUnit[] rightItems;
-        
+
         private JobHandle _handleLeft;
         private JobHandle _handleRight;
 
@@ -28,6 +28,13 @@ namespace Modules.Grid.Systems.CellEntity.VisualBehaviours
         {
             _leftTransitData.Dispose();
             _rightTransitData.Dispose();
+        }
+
+        public ICellVisualBehaviour SetBlockSettings(CellUnitsSettings settings)
+        {
+            foreach (var cellUnit in leftItems) cellUnit.SetCellUnitData(settings.GetRandomData());
+            foreach (var cellUnit in rightItems) cellUnit.SetCellUnitData(settings.GetRandomData());
+            return this;
         }
 
         public ICellVisualBehaviour Initialize()

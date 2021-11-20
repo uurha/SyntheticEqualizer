@@ -10,7 +10,7 @@ using CorePlugin.Cross.Events.Interface;
 using CorePlugin.Extensions;
 using Extensions;
 using Modules.AudioAnalyse.Model;
-using Modules.AudioPlayerUI.Model;
+using Modules.GlobalSettings.Model;
 using Modules.Grid.Model;
 using UnityEngine;
 
@@ -24,10 +24,13 @@ namespace Modules.Grid.Systems.Processors
 
         private ICellVisualBehaviour[] _cellVisualBehaviours;
         private SpectrumAnalyzerSettings _analyzerSettings;
+        private CellUnitsSettings _blockColorSettings;
         private bool _isInitialized;
+        private int _arrayLenght;
+        private float[] _curveArray;
 
         [Conditional(EditorDefinition.UnityEditor)]
-        [EditorButton] 
+        [EditorButton]
         private void InitializeCurve()
         {
             curve.Clear();
@@ -39,12 +42,16 @@ namespace Modules.Grid.Systems.Processors
             if (!_isInitialized) return;
             if (!_analyzerSettings.IsValid) return;
             var floats = data.MeanSpectrumData[0];
-            var arrayLenght = floats.Length;
-            var curveArray = curve.CurveToArray(arrayLenght);
-            var orientations = new Orientation[arrayLenght];
 
-            for (var index = 0; index < arrayLenght; index++)
-                orientations[index] = Selector(floats[index] * curveArray[index]);
+            if (_arrayLenght != floats.Length)
+            {
+                _arrayLenght = floats.Length;
+                _curveArray = curve.CurveToArray(_arrayLenght);
+            }
+            var orientations = new Orientation[_arrayLenght];
+
+            for (var index = 0; index < _arrayLenght; index++)
+                orientations[index] = Selector(floats[index] * _curveArray[index]);
             foreach (var behaviour in _cellVisualBehaviours) behaviour.RunBehaviour(orientations);
         }
 
@@ -53,20 +60,28 @@ namespace Modules.Grid.Systems.Processors
             _analyzerSettings = analyzerSettings;
         }
 
+        private void OnBlockColorsChanged(CellUnitsSettings blockColorSettings)
+        {
+            _blockColorSettings = blockColorSettings;
+            if (_cellVisualBehaviours == null) return;
+
+            foreach (var visualBehaviour in _cellVisualBehaviours) visualBehaviour.SetBlockSettings(blockColorSettings);
+        }
+
         private void OnGridConfigurationChanged(Conveyor<GridConfiguration> newGridConfigurations, bool isInitialized)
         {
             _isInitialized = isInitialized;
 
             _cellVisualBehaviours = newGridConfigurations
-                                   .SelectMany(x => x.RowConfiguration.SelectMany(y => y.GetCells()
-                                                  .Select(z => z.VisualBehaviourComponent?.Initialize())))
-                                   .ToArray();
+               .SelectMany(x => x.RowConfiguration
+                                 .SelectMany(y => y.GetCells()
+                                                   .Select(z => z.VisualBehaviourComponent?.Initialize().SetBlockSettings(_blockColorSettings)))).ToArray();
         }
 
         private Orientation Selector(float y)
         {
-            var position = new Vector3(0, y);
-            return new Orientation(position);
+            var position = new Vector3(0, y, 0);
+            return new Orientation(position, true);
         }
 
         public Delegate[] GetSubscribers()
@@ -75,7 +90,8 @@ namespace Modules.Grid.Systems.Processors
                    {
                        (GridEvents.GridConfigurationChangedEvent)OnGridConfigurationChanged,
                        (AudioAnalyzerEvents.SpectrumAnalyzerDataEvent)OnAnalyzedDataReceived,
-                       (GlobalAudioSettingsEvents.OnSpectrumAnalyzerSettingsEvent)OnAudioAnalyzerSettingsChanged
+                       (GlobalSettingsEvents.OnSpectrumAnalyzerSettingsEvent)OnAudioAnalyzerSettingsChanged,
+                       (GlobalSettingsEvents.OnBlockColorSettingsEvents)OnBlockColorsChanged
                    };
         }
     }

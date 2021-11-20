@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Modules.AudioPlayerUI.Model
+namespace Modules.GlobalSettings.Model
 {
     public readonly struct SpectrumListenerSettings
     {

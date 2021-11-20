@@ -1,6 +1,6 @@
 ﻿using Extensions;
 
-namespace Modules.AudioPlayerUI.Model
+namespace Modules.GlobalSettings.Model
 {
     public readonly struct SpectrumAnalyzerSettings
     {

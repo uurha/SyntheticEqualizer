@@ -33,10 +33,12 @@ namespace Extensions
 
         public static Orientation Orient(this ICellComponent prefabEntity, Orientation initialOrientation, TupleInt items)
         {
-            var position = initialOrientation.Position + new Vector3(prefabEntity.CellSize.x * items.Item1, 0f,
-                                                                     prefabEntity.CellSize.z * items.Item2);
+            var (x, z) = items;
+
+            var position = initialOrientation.Position + new Vector3(prefabEntity.CellSize.x * x, 0f,
+                                                                     prefabEntity.CellSize.z * z);
             var rotation = initialOrientation.Rotation * Quaternion.identity;
-            var newOrientation = new Orientation(position, rotation);
+            var newOrientation = new Orientation(position, rotation, Vector3.zero);
             return newOrientation;
         }
 

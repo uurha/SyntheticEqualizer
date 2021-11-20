@@ -39,9 +39,9 @@ namespace Modules.Grid.Systems.CellEntity
             Destroy(gameObject);
         }
 
-        public Orientation GetOrientation()
+        public Orientation GetOrientation(bool isLocal = false)
         {
-            return new Orientation(transform);
+            return new Orientation(transform, isLocal);
         }
 
         public ICellComponent Initialize()
@@ -63,28 +63,19 @@ namespace Modules.Grid.Systems.CellEntity
             if (gameObject.activeSelf != state) gameObject.SetActive(state);
         }
 
-        public ICellComponent SetOrientation(Vector3 position)
-        {
-            transform.position = position;
-            return this;
-        }
-
-        public ICellComponent SetOrientation(Quaternion rotation)
-        {
-            transform.rotation = rotation;
-            return this;
-        }
-
-        public ICellComponent SetOrientation(Vector3 position, Quaternion rotation)
-        {
-            SetOrientation(position);
-            SetOrientation(rotation);
-            return this;
-        }
-
         public ICellComponent SetOrientation(Orientation orientation)
         {
-            SetOrientation(orientation.Position, orientation.Rotation);
+            var thisTransform = transform;
+            if (orientation.IsLocal)
+            {
+                thisTransform.localPosition = orientation.Position;
+                thisTransform.localRotation = orientation.Rotation;
+            }
+            else
+            {
+                thisTransform.position = orientation.Position;
+                thisTransform.rotation = orientation.Rotation;
+            }
             return this;
         }
     }

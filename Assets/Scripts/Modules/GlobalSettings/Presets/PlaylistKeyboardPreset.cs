@@ -1,10 +1,10 @@
 ﻿using Modules.InputManagement.Model;
 using UnityEngine;
 
-namespace Modules.AudioPlayerUI.Model
+namespace Modules.GlobalSettings.Presets
 {
-    [CreateAssetMenu(menuName = "Playlist/Keyboard Settings", fileName = "KeyboardSettings", order = 0)]
-    public class PlaylistKeyboardSettings : ScriptableObject
+    [CreateAssetMenu(menuName = "Presets/Playlist Keymap", fileName = "PlaylistKeymap", order = 0)]
+    public class PlaylistKeyboardPreset : ScriptableObject
     {
         [SerializeField] private KeyPreset nextClipKey;
         [SerializeField] private KeyPreset previousClipKey;

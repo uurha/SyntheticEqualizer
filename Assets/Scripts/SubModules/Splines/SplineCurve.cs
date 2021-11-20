@@ -54,14 +54,12 @@ namespace SubModules.Splines
             if (_dirty) CachePoints();
 
             if (isWorld)
-            {
                 points = _cachedPoints.Select(x => new CurvePoint()
                                                    {
                                                        normal = x.normal,
                                                        position = x.position.TransformPoint(this),
                                                        tangent = x.tangent
                                                    }).ToArray();
-            }
             return points;
         }
 

@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7b4fcdff2fce4d90adc12ab1da8e98b5, type: 3}
-  m_Name: KeyboardSettings
+  m_Name: Keymap
   m_EditorClassIdentifier: 
   nextClipKey:
     keyCode: 108

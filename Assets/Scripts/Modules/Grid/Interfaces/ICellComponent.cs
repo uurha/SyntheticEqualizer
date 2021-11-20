@@ -23,16 +23,10 @@ namespace Modules.Grid.Interfaces
 
         public void SetActive(bool state);
 
-        public ICellComponent SetOrientation(Vector3 position);
-
-        public ICellComponent SetOrientation(Quaternion rotation);
-
-        public ICellComponent SetOrientation(Vector3 position, Quaternion rotation);
-
         public ICellComponent SetOrientation(Orientation orientation);
 
         public void Destroy();
 
-        public Orientation GetOrientation();
+        public Orientation GetOrientation(bool isLocal = false);
     }
 }

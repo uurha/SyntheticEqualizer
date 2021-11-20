@@ -5,8 +5,8 @@ using Modules.AudioLoader.Model;
 using Modules.AudioPlayer.Interfaces;
 using Modules.AudioPlayer.Model;
 using Modules.AudioPlayer.Systems.Playlist;
-using Modules.AudioPlayerUI.Model;
 using Modules.Carting.Interfaces;
+using Modules.GlobalSettings.Model;
 using Modules.Grid.Model;
 using UnityEngine;
 
@@ -41,11 +41,11 @@ namespace Base
         public delegate void BeatDetectorEvent(BeatDetectorOutput beatAnalyzeData);
     }
 
-    public static class GlobalAudioSettingsEvents
+    public static class GlobalSettingsEvents
     {
         public delegate void OnSpectrumAnalyzerSettingsEvent(SpectrumAnalyzerSettings analyzerSettings);
-
         public delegate void OnSpectrumListenerSettingsEvent(SpectrumListenerSettings analyzerSettings);
+        public delegate void OnBlockColorSettingsEvents(CellUnitsSettings blockColorSettings);
     }
 
     public static class GridEvents

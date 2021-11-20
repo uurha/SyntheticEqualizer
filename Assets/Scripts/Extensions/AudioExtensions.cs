@@ -6,6 +6,7 @@ namespace Extensions
     public static class AudioExtensions
     {
         //TODO: Rework as fabric method
+
         public enum BandType
         {
             FourBand = 0,
@@ -79,11 +80,10 @@ namespace Extensions
         {
             return (int) bandType;
         }
-
         public static int FrequencyToSpectrumMinIndex(int lenght, int bandIndex, BandType bandType)
         {
             var bandTypeIndex = bandType.BandToIndex();
-
+            
             return FrequencyToSpectrumIndex(lenght,
                                             MiddleFrequenciesForBands[bandTypeIndex][bandIndex] /
                                             BandWidthForBands[bandTypeIndex]);
@@ -103,5 +103,12 @@ namespace Extensions
             var i = Mathf.FloorToInt(f / AudioSettings.outputSampleRate * 2.0f * lenght);
             return Mathf.Clamp(i, 0, lenght - 1);
         }
+    }
+
+    public enum FrequencyType
+    {
+        Low = 0,
+        Middle = 1,
+        High = 2
     }
 }

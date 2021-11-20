@@ -32,9 +32,9 @@ Shader "Custom/NeonHeightInstancing"
         _MiddleDelta("Middle Delta", Float) = 0.15
 
         [Space]
-        _LowestColor("Lowest Color", Color) = (1,0.5,0,1)
-        _MiddleColor("Middle Color", Color) = (0.5,0,1,1)
         _MaxColor("Max Color", Color) = (0,0.5,1,1)
+        _MiddleColor("Middle Color", Color) = (0.5,0,1,1)
+        _LowestColor("Lowest Color", Color) = (1,0.5,0,1)
 
         [Space]
         [Enum(UnityEngine.Rendering.CullMode)] _Cull("Cull", Float) = 2 //"Back"

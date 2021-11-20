@@ -5,7 +5,7 @@ using CorePlugin.Cross.Events.Interface;
 using CorePlugin.Extensions;
 using Extensions;
 using Modules.AudioAnalyse.Model;
-using Modules.AudioPlayerUI.Model;
+using Modules.GlobalSettings.Model;
 using UnityEngine;
 
 namespace Modules.AudioAnalyse.Systems.SpectrumAnalyse
@@ -138,7 +138,7 @@ namespace Modules.AudioAnalyse.Systems.SpectrumAnalyse
                    {
                        (AudioPlayerEvents.AudioClipChangedEvent) OnAudioClipChanged,
                        (DataProcessorsEvents.SpectrumProcessorDataEvent) SpectrumListenerDataReceived,
-                       (GlobalAudioSettingsEvents.OnSpectrumAnalyzerSettingsEvent) OnAnalyzerSettingsChanged
+                       (GlobalSettingsEvents.OnSpectrumAnalyzerSettingsEvent) OnAnalyzerSettingsChanged
                    };
         }
     }

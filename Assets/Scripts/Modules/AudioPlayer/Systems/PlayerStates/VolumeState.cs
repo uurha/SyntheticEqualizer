@@ -16,13 +16,9 @@ namespace Modules.AudioPlayer.Systems.PlayerStates
         public void Execute(IAudioPlayer audioPlayer)
         {
             if (_additive)
-            {
                 audioPlayer.Volume += _volume;
-            }
             else
-            {
                 audioPlayer.Volume = _volume;
-            }
         }
     }
 }

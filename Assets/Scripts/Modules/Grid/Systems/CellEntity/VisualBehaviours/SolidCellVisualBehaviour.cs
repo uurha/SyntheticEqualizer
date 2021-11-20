@@ -2,6 +2,7 @@
 using Base.BehaviourModel.Interfaces;
 using CorePlugin.Attributes.Headers;
 using Extensions;
+using Modules.GlobalSettings.Model;
 using Modules.Grid.Model;
 using Modules.Grid.Systems.CellEntity.Behaviours;
 using Modules.Grid.Systems.CellEntity.Unit;
@@ -22,6 +23,12 @@ namespace Modules.Grid.Systems.CellEntity.VisualBehaviours
         private void OnDisable()
         {
             _transitData.Dispose();
+        }
+
+        public ICellVisualBehaviour SetBlockSettings(CellUnitsSettings settings)
+        {
+            foreach (var cellUnit in items) cellUnit.SetCellUnitData(settings.GetRandomData());
+            return this;
         }
 
         public ICellVisualBehaviour Initialize()

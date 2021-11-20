@@ -117,10 +117,7 @@ namespace Modules.Grid.Systems.Generator
 
             for (var row = 0; row < _rowCount; row++)
             {
-                for (var column = 0; column < _columnsCount; column++)
-                {
-                    cellGrid[column, row] ??= _preset.GetNonRoadCell();
-                }
+                for (var column = 0; column < _columnsCount; column++) cellGrid[column, row] ??= _preset.GetNonRoadCell();
             }
             _lastColumn = currentPosition.Item1;
             _lastRow = currentPosition.Item2;

@@ -22,13 +22,9 @@ namespace Modules.AudioPlayer.Systems
         private void Awake()
         {
             if (!IsInitialised)
-            {
                 _instance = this;
-            }
             else
-            {
                 Destroy(gameObject);
-            }
         }
 
         private void Start()

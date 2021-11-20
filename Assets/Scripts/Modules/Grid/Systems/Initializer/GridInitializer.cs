@@ -9,10 +9,10 @@ using CorePlugin.Cross.Events.Interface;
 using CorePlugin.Extensions;
 using Extensions;
 using Modules.Carting.Interfaces;
+using Modules.GlobalSettings.Presets;
 using Modules.Grid.Interfaces;
 using Modules.Grid.Model;
 using Modules.Grid.Systems.Generator;
-using SubModules.Beom;
 using UnityEngine;
 
 namespace Modules.Grid.Systems.Initializer
@@ -61,9 +61,7 @@ namespace Modules.Grid.Systems.Initializer
                 _isInitialized = false;
 
                 if (_instancedGrids != null)
-                {
                     foreach (var gridConfiguration in _instancedGrids) gridConfiguration.Clear();
-                }
             }
             _instancedGrids ??= new Conveyor<GridConfiguration>(maxGridCount, configuration => configuration.Clear());
             _initialPosition = Vector3.zero;
@@ -122,11 +120,10 @@ namespace Modules.Grid.Systems.Initializer
             var cellEntity = (ICellComponent)bufferGeneratedGrid[column, row].CreateInstance(transform);
             var positionInGrid = new TupleInt(column, row);
             if (previousGrid.IsInitialized) lineSize = previousGrid.LineSize(_previousGridExit, positionInGrid);
-            var bufferPosition = new Orientation(_initialPosition + lineSize, Quaternion.identity);
+            var bufferPosition = new Orientation(_initialPosition + lineSize, Quaternion.identity, Vector3.zero);
 
-            cellEntity.Initialize($"{cellEntity.Name} {column}X{row}")
-                      .SetOrientation(cellEntity.Orient(bufferPosition, positionInGrid));
-            return cellEntity;
+            return cellEntity.Initialize($"{cellEntity.Name} {column}X{row}")
+                             .SetOrientation(cellEntity.Orient(bufferPosition, positionInGrid));
         }
 
         public void InvokeEvents()

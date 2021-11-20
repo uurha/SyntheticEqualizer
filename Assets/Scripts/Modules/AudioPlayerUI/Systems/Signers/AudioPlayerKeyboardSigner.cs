@@ -1,6 +1,6 @@
 ﻿using CorePlugin.Attributes.Headers;
 using Modules.AudioPlayer.Systems;
-using Modules.AudioPlayerUI.Model;
+using Modules.GlobalSettings.Presets;
 using Modules.InputManagement;
 using UnityEngine;
 
@@ -9,7 +9,7 @@ namespace Modules.AudioPlayerUI.Systems.Signers
     public class AudioPlayerKeyboardSigner : MonoBehaviour
     {
         [SettingsHeader]
-        [SerializeField] private PlaylistKeyboardSettings settings;
+        [SerializeField] private PlaylistKeyboardPreset settings;
 
         private void Start()
         {

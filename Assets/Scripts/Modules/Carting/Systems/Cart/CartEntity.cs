@@ -1,8 +1,6 @@
 ﻿using System;
 using Base;
 using CorePlugin.Attributes.EditorAddons;
-using CorePlugin.Cross.Events.Interface;
-using Modules.AudioPlayer.Model;
 using Modules.Carting.Interfaces;
 using UnityEngine;
 
@@ -35,10 +33,7 @@ namespace Modules.Carting.Systems.Cart
 
         private void Update()
         {
-            if (_isInitialized && _readyMove)
-            {
-                InteractMove();
-            }
+            if (_isInitialized && _readyMove) InteractMove();
         }
 
         private class PathOverTime

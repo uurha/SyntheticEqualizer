@@ -14,6 +14,7 @@
 #endregion
 
 using System;
+using CorePlugin.Extensions;
 using UnityEngine;
 
 namespace CorePlugin.Attributes.Headers
@@ -29,8 +30,8 @@ namespace CorePlugin.Attributes.Headers
         }
 
         public SettingsHeaderAttribute(string additionalText, bool preHeader = true) : base(preHeader
-                                                                                                ? $"{additionalText} Settings"
-                                                                                                : $"Settings {additionalText}")
+                                                                                                ? $"{additionalText.PrettyCamelCase()} Settings"
+                                                                                                : $"Settings {additionalText.PrettyCamelCase()}")
         {
         }
     }

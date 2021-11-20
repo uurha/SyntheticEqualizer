@@ -2,11 +2,12 @@ using System.Collections.Generic;
 using System.Linq;
 using CorePlugin.Attributes.Validation;
 using Modules.Grid.Interfaces;
+using SubModules.Beom;
 using UnityEngine;
 
-namespace SubModules.Beom
+namespace Modules.GlobalSettings.Presets
 {
-    [CreateAssetMenu(menuName = "Beom System/Create Beom Preset", fileName = "BeomPreset", order = 0)]
+    [CreateAssetMenu(menuName = "Presets/Beom Preset", fileName = "BeomPreset", order = 0)]
     public class BeomPreset : ScriptableObject
     {
         [HasComponent(typeof(ICellComponent))]

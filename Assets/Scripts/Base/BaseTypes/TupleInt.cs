@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Base.BaseTypes
 {
+    [Serializable]
     public class TupleInt : TupleItems<int, int>
     {
         public class TupleValueComparer : EqualityComparer<TupleInt>

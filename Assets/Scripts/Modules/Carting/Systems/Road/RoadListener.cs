@@ -32,10 +32,7 @@ namespace Modules.Carting.Systems.Road
         private ICartingRoadComponent GetNextRoadEntity()
         {
             if (!_isInitialized) return null;
-            if (_currentRoad.Count <= roadLookAhead)
-            {
-                RequestNextGrid?.Invoke();
-            }
+            if (_currentRoad.Count <= roadLookAhead) RequestNextGrid?.Invoke();
             return _currentRoad.Dequeue();
         }
 

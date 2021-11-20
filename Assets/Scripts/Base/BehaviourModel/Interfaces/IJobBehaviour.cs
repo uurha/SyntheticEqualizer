@@ -1,5 +1,4 @@
-﻿using Unity.Collections;
-using UnityEngine.Jobs;
+﻿using UnityEngine.Jobs;
 
 namespace Base.BehaviourModel.Interfaces
 {

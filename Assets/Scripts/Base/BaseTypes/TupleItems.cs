@@ -1,5 +1,9 @@
-﻿namespace Base.BaseTypes
+﻿using System;
+using UnityEngine;
+
+namespace Base.BaseTypes
 {
+    [Serializable]
     public class TupleItems<T, TV>
     {
         public TupleItems()
@@ -20,7 +24,10 @@
             Item2 = items.Item2;
         }
 
+        [field: SerializeField]
         public T Item1 { get; set; }
+        
+        [field: SerializeField]
         public TV Item2 { get; set; }
     }
 }

@@ -1,9 +1,9 @@
 ﻿using CorePlugin.Core.Interface;
 using UnityEngine;
 
-namespace Modules.GlobalAudioSettings
+namespace Modules.GlobalSettings
 {
-    public class GlobalAudioSettingsCore : MonoBehaviour, ICore
+    public class GlobalSettingsCore : MonoBehaviour, ICore
     {
         public void InitializeElements()
         {

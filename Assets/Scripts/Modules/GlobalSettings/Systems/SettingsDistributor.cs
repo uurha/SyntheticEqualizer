@@ -2,18 +2,20 @@
 using Base;
 using CorePlugin.Attributes.EditorAddons;
 using CorePlugin.Attributes.Headers;
+using CorePlugin.Attributes.Validation;
 using CorePlugin.Cross.Events.Interface;
 using CorePlugin.Extensions;
 using Extensions;
 using Modules.AudioAnalyse.Systems.SpectrumAnalyse;
 using Modules.AudioPlayer.Systems.SpectrumListenerComponent;
-using Modules.AudioPlayerUI.Model;
+using Modules.GlobalSettings.Model;
+using Modules.GlobalSettings.Presets;
 using UnityEngine;
 
-namespace Modules.GlobalAudioSettings.Systems
+namespace Modules.GlobalSettings.Systems
 {
     [CoreManagerElement]
-    public class AudioSettingsDistributor : MonoBehaviour, IEventHandler
+    public class SettingsDistributor : MonoBehaviour, IEventHandler
     {
         [SettingsHeader(nameof(SpectrumListener))]
         [SerializeField] private FFTWindow fftWindow = FFTWindow.BlackmanHarris;
@@ -25,12 +27,17 @@ namespace Modules.GlobalAudioSettings.Systems
 
         [SerializeField] private float fallSpeed = 0.08f;
         [SerializeField] private float sensibility = 8.0f;
+        
+        [SettingsHeader(nameof(BlockColorPreset))]
+        [NotNull][SerializeField] private BlockColorPreset blockColorsPreset;
 
         private SpectrumAnalyzerSettings _currentAnalyzerSettings;
         private SpectrumListenerSettings _currentListenerSettings;
+        private CellUnitsSettings _currentBlockColorsSettings;
 
-        private event GlobalAudioSettingsEvents.OnSpectrumAnalyzerSettingsEvent OnSpectrumAnalyzerSettingsChanged;
-        private event GlobalAudioSettingsEvents.OnSpectrumListenerSettingsEvent OnSpectrumListenerSettingsChanged;
+        private event GlobalSettingsEvents.OnSpectrumAnalyzerSettingsEvent OnSpectrumAnalyzerSettingsChanged;
+        private event GlobalSettingsEvents.OnSpectrumListenerSettingsEvent OnSpectrumListenerSettingsChanged;
+        private event GlobalSettingsEvents.OnBlockColorSettingsEvents OnBlockColorSettingsChanged;
 
         private void Awake()
         {
@@ -41,6 +48,7 @@ namespace Modules.GlobalAudioSettings.Systems
         {
             _currentAnalyzerSettings = new SpectrumAnalyzerSettings(bandType, sensibility, fallSpeed);
             _currentListenerSettings = new SpectrumListenerSettings(fftWindow, numberOfSamples);
+            _currentBlockColorsSettings = blockColorsPreset.GetSettings();
         }
 
         #if UNITY_EDITOR
@@ -58,18 +66,21 @@ namespace Modules.GlobalAudioSettings.Systems
         {
             OnSpectrumAnalyzerSettingsChanged?.Invoke(_currentAnalyzerSettings);
             OnSpectrumListenerSettingsChanged?.Invoke(_currentListenerSettings);
+            OnBlockColorSettingsChanged?.Invoke(_currentBlockColorsSettings);
         }
 
         public void Subscribe(params Delegate[] subscribers)
         {
             EventExtensions.Subscribe(ref OnSpectrumAnalyzerSettingsChanged, subscribers);
             EventExtensions.Subscribe(ref OnSpectrumListenerSettingsChanged, subscribers);
+            EventExtensions.Subscribe(ref OnBlockColorSettingsChanged, subscribers);
         }
 
         public void Unsubscribe(params Delegate[] unsubscribers)
         {
             EventExtensions.Subscribe(ref OnSpectrumAnalyzerSettingsChanged, unsubscribers);
             EventExtensions.Subscribe(ref OnSpectrumListenerSettingsChanged, unsubscribers);
+            EventExtensions.Subscribe(ref OnBlockColorSettingsChanged, unsubscribers);
         }
     }
 }
