@@ -26,17 +26,6 @@ Shader "Custom/NeonHeightInstancing"
         _EmissionPower("Emission Power", Float) = 1
 
         [Space]
-        //[PerRendererData]
-        [Space]
-        _LowestDelta("Lowest Delta", Float) = 0.0
-        _MiddleDelta("Middle Delta", Float) = 0.15
-
-        [Space]
-        _MaxColor("Max Color", Color) = (0,0.5,1,1)
-        _MiddleColor("Middle Color", Color) = (0.5,0,1,1)
-        _LowestColor("Lowest Color", Color) = (1,0.5,0,1)
-
-        [Space]
         [Enum(UnityEngine.Rendering.CullMode)] _Cull("Cull", Float) = 2 //"Back"
     }
 
@@ -72,23 +61,18 @@ Shader "Custom/NeonHeightInstancing"
             float _EmissionPower;
             sampler2D _EmissionMap;
 
-            float4 _LowestColor;
-            float4 _MiddleColor;
-            float4 _MaxColor;
-
-            float _LowestDelta;
-            float _MiddleDelta;
-            float4 _InitialPosition;
-
-            // UNITY_INSTANCING_BUFFER_START(InstanceProps)
-            // UNITY_DEFINE_INSTANCED_PROP(float4, _MinColorP)
-            // UNITY_DEFINE_INSTANCED_PROP(float4, _MaxColorP1)
-            // UNITY_DEFINE_INSTANCED_PROP(float4, _MaxColorP2)
-            // UNITY_INSTANCING_BUFFER_END(InstanceProps)
+            UNITY_INSTANCING_BUFFER_START(InstanceProps)
+            UNITY_DEFINE_INSTANCED_PROP(float4, _LowestColor)
+            UNITY_DEFINE_INSTANCED_PROP(float4, _MiddleColor)
+            UNITY_DEFINE_INSTANCED_PROP(float4, _MaxColor)
+            UNITY_DEFINE_INSTANCED_PROP(float4, _InitialPosition)
+            UNITY_DEFINE_INSTANCED_PROP(float, _LowestDelta)
+            UNITY_DEFINE_INSTANCED_PROP(float, _MiddleDelta)
+            UNITY_INSTANCING_BUFFER_END(InstanceProps)
 
             struct Interpolators
             {
-                // UNITY_VERTEX_INPUT_INSTANCE_ID
+                UNITY_VERTEX_INPUT_INSTANCE_ID
                 float4 position : SV_POSITION;
                 float2 uv : TEXCOORD0;
                 float2 uvSplat : TEXCOORD1;
@@ -100,7 +84,7 @@ Shader "Custom/NeonHeightInstancing"
 
             struct VertexData
             {
-                // UNITY_VERTEX_INPUT_INSTANCE_ID
+                UNITY_VERTEX_INPUT_INSTANCE_ID
                 float4 position : POSITION;
                 float2 uv : TEXCOORD0;
                 float3 normal : NORMAL;
@@ -109,9 +93,9 @@ Shader "Custom/NeonHeightInstancing"
             Interpolators vert(VertexData v)
             {
                 Interpolators i;
-                //UNITY_INITIALIZE_OUTPUT(Interpolators, i);
-                // UNITY_SETUP_INSTANCE_ID(v);
-                // UNITY_TRANSFER_INSTANCE_ID(v, i);
+                UNITY_INITIALIZE_OUTPUT(Interpolators, i);
+                UNITY_SETUP_INSTANCE_ID(v);
+                UNITY_TRANSFER_INSTANCE_ID(v, i);
                 i.position = UnityObjectToClipPos(v.position);
                 i.uv = TRANSFORM_TEX(v.uv, _MainTex);
                 i.uvSplat = v.uv;
@@ -127,12 +111,16 @@ Shader "Custom/NeonHeightInstancing"
 
             float4 frag(Interpolators i) : SV_TARGET
             {
-                // UNITY_SETUP_INSTANCE_ID(i);
-                // _LowestColor = UNITY_ACCESS_INSTANCED_PROP(InstanceProps, _MinColorP);
-                // _MiddleColor = UNITY_ACCESS_INSTANCED_PROP(InstanceProps, _MaxColorP1);
-                // _MaxColor = UNITY_ACCESS_INSTANCED_PROP(InstanceProps, _MaxColorP2);
-                float4 splat = tex2D(_SkinTex, i.uvSplat);
-                float3 tex = tex2D(_MainTex, i.uv);
+                UNITY_SETUP_INSTANCE_ID(i);
+                const float4 lowest_color = UNITY_ACCESS_INSTANCED_PROP(InstanceProps, _LowestColor);
+                const float4 middle_color = UNITY_ACCESS_INSTANCED_PROP(InstanceProps, _MiddleColor);
+                const float4 max_color = UNITY_ACCESS_INSTANCED_PROP(InstanceProps, _MaxColor);
+                const float4 initial_position = UNITY_ACCESS_INSTANCED_PROP(InstanceProps, _InitialPosition);
+                const float lowest_delta = UNITY_ACCESS_INSTANCED_PROP(InstanceProps, _LowestDelta);
+                const float middle_delta = UNITY_ACCESS_INSTANCED_PROP(InstanceProps, _MiddleDelta);
+                
+                const float4 splat = tex2D(_SkinTex, i.uvSplat);
+                const float3 tex = tex2D(_MainTex, i.uv);
 
                 const float inverse_emission = inverse(_Emission);
                 float4 color = float4(tex.rgb * (1 - splat.r - splat.g - splat.b) +
@@ -144,22 +132,22 @@ Shader "Custom/NeonHeightInstancing"
                 float3 emission_color;
                 float2 emission_red = tex2D(_EmissionMap, i.uv).rg;
 
-                const float delta = i.world.y - _InitialPosition.y;
-                
-                if (delta <= _LowestDelta)
+                const float delta = i.world.y - initial_position.y;
+
+                if (delta <= lowest_delta)
                 {
                     emission_red.r += emission_red.g;
-                    emission_color = _LowestColor;
+                    emission_color = lowest_color;
                 }
-                else if (delta <= _MiddleDelta)
+                else if (delta <= middle_delta)
                 {
-                    emission_color = _MiddleColor;
+                    emission_color = middle_color;
                 }
-                else if (delta > _MiddleDelta)
+                else if (delta > middle_delta)
                 {
-                    emission_color = _MaxColor;
+                    emission_color = max_color;
                 }
-                
+
                 color.rgb += (emission_red.r * emission_color * _EmissionPower * _Emission);
 
                 UNITY_APPLY_FOG(i.fogCoord, color);

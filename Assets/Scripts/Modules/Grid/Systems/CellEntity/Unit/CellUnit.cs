@@ -12,7 +12,6 @@ namespace Modules.Grid.Systems.CellEntity.Unit
         [NotNull] [SerializeField] private Material materialPrefab;
 
         private Orientation _initialOrientation;
-        private Material[] _preparedMaterials;
         private MeshRenderer _meshRenderer;
         private static readonly int InitialPosition = Shader.PropertyToID("_InitialPosition");
         private static readonly int LowestColor = Shader.PropertyToID("_LowestColor");
@@ -33,39 +32,27 @@ namespace Modules.Grid.Systems.CellEntity.Unit
 
         public void SetCellUnitData(CellUnitData blockColor)
         {
-            var count = _meshRenderer.materials.Length;
-
-            for (var i = 0; i < count; i++)
-            {
-                _preparedMaterials[i].SetColor(LowestColor, blockColor.LowestColor);
-                _preparedMaterials[i].SetColor(MiddleColor, blockColor.MiddleColor);
-                _preparedMaterials[i].SetColor(MaxColor, blockColor.MaxColor);
-                _preparedMaterials[i].SetFloat(LowestDelta, blockColor.LowDelta);
-                _preparedMaterials[i].SetFloat(MiddleDelta, blockColor.MiddleDelta);
-            }
-            _meshRenderer.materials = _preparedMaterials;
+            var mpb = new MaterialPropertyBlock();
+            mpb.SetColor(LowestColor, blockColor.LowestColor);
+            mpb.SetColor(MiddleColor, blockColor.MiddleColor);
+            mpb.SetColor(MaxColor, blockColor.MaxColor);
+            mpb.SetFloat(LowestDelta, blockColor.LowDelta);
+            mpb.SetFloat(MiddleDelta, blockColor.MiddleDelta);
+            mpb.SetVector(InitialPosition, _initialOrientation.Position);
+            _meshRenderer.SetPropertyBlock(mpb);
         }
 
         [EditorButton]
         private void ResetShaderProperty()
         {
-            var count = _meshRenderer.materials.Length;
-
-            for (var i = 0; i < count; i++) _preparedMaterials[i].SetVector(InitialPosition, _initialOrientation.Position);
-            _meshRenderer.materials = _preparedMaterials;
+            var mpb = new MaterialPropertyBlock();
+            mpb.SetVector(InitialPosition, _initialOrientation.Position);
+            _meshRenderer.SetPropertyBlock(mpb);
         }
 
         private void InstantiateMaterials()
         {
             _meshRenderer = GetComponent<MeshRenderer>();
-            var count = _meshRenderer.materials.Length;
-            _preparedMaterials = new Material[count];
-
-            for (var i = 0; i < count; i++)
-            {
-                var preparedMaterial = Instantiate(materialPrefab);
-                _preparedMaterials[i] = preparedMaterial;
-            }
             ResetShaderProperty();
         }
     }
