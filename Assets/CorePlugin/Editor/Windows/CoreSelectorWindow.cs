@@ -14,11 +14,9 @@
 #endregion
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Reflection;
-using CorePlugin.Attributes.EditorAddons;
 using CorePlugin.Core;
 using CorePlugin.Editor.Extensions;
 using CorePlugin.Extensions;
@@ -29,126 +27,32 @@ using Object = UnityEngine.Object;
 
 namespace CorePlugin.Editor.Windows
 {
+    internal class SelectorWindowAssetPostprocessor : AssetPostprocessor
+    {
+        private static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
+        {
+            CoreSelectorWindow.ValidateCores();
+        }
+    }
+    
     public class CoreSelectorWindow : EditorWindow
     {
-        private List<NamedGroup> _cores = new List<NamedGroup>();
+        private List<SelectorWindowExtensions.NamedGroup> _cores = new List<SelectorWindowExtensions.NamedGroup>();
         private int _mainTab;
         private int _subTab = -1;
 
         private UnityEditor.Editor _embeddedInspector;
-        private static readonly string[] StringsToRemove = { "(Clone)", "Core" };
+        private Object _displayObject;
+        private const string Elements = "Elements";
+        private const string EditScript = "Edit Script";
 
-        private void OnEnable()
+        [DidReloadScripts]
+        public static void ValidateCores()
         {
-            EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
-        }
-
-        private static void DrawSelectionButton(Object displayObject)
-        {
-            if (GUILayout.Button($"Show <b><i>{displayObject.PrettyEditorObjectName(StringsToRemove)}</i></b> Object",
-                                 new GUIStyle(GUI.skin.button) { richText = true }))
-                Selection.SetActiveObjectWithContext(displayObject, displayObject);
-        }
-
-        private static IEnumerable<Object> GetCoreElementsRecursively(Object instance)
-        {
-            var fields = GetObjectsInField(instance.GetType(), instance).ToArray();
-            var empty = Enumerable.Empty<Object>();
-            if (!fields.Any()) return empty;
-
-            foreach (var field in fields)
-            {
-                switch (field)
-                {
-                    case IEnumerable enumerable:
-                    {
-                        var list = enumerable.Cast<GameObject>().ToList();
-                        if (!list.Any()) continue;
-
-                        var elements =
-                            list.SelectMany(x => x.GetComponentsWithAttribute<CoreManagerElementAttribute>());
-                        if (EditorApplication.isPlaying) elements = elements.Select(x => FindObjectOfType(x.GetType()));
-                        var objects = elements.ToList();
-
-                        var aggregate = objects.Aggregate(objects,
-                                                          (current, element) =>
-                                                              current.Concat(GetCoreElementsRecursively(element))
-                                                                     .ToList());
-                        empty = empty.Concat(aggregate);
-                        break;
-                    }
-                    case Object obj:
-                    {
-                        if (obj is MonoBehaviour gameObject)
-                        {
-                            var elements = gameObject.GetComponentsWithAttribute<CoreManagerElementAttribute>();
-                            if (EditorApplication.isPlaying) elements = elements.Select(x => FindObjectOfType(x.GetType()));
-                            var objects = elements.ToList();
-                            var aggregate = objects.Aggregate(objects,
-                                                              (current, element) =>
-                                                                  current.Concat(GetCoreElementsRecursively(element))
-                                                                         .ToList());
-                            empty = empty.Concat(aggregate);
-                        }
-                        break;
-                    }
-                }
-            }
-            return empty;
-        }
-
-        private static IEnumerable<object> GetObjectsInField(Type type, Object instance)
-        {
-            if (type == null) return Enumerable.Empty<object>();
-            var fieldInfos = type.GetFields(ReflectionExtensions.Flags);
-
-            var fields = fieldInfos.Where(x =>
-                                          {
-                                              var fieldAttribute =
-                                                  x.GetCustomAttribute<CoreManagerElementsFieldAttribute>();
-
-                                              return fieldAttribute != null &&
-                                                     fieldAttribute.CheckFlag(EditorApplication.isPlaying
-                                                                                  ? FieldType.PlayMode
-                                                                                  : FieldType.EditorMode);
-                                          }
-                                         ).Select(x => x.GetValue(instance))
-                                   .Concat(GetObjectsInField(type.BaseType, instance));
-            return fields;
-        }
-
-        private static IEnumerable<NamedGroup> ElementGathering(Type type, Object instance)
-        {
-            var fields = GetObjectsInField(type, instance).ToArray();
-            var empty = Enumerable.Empty<NamedGroup>();
-            if (!fields.Any()) return empty;
-
-            foreach (var field in fields)
-            {
-                switch (field)
-                {
-                    case IEnumerable enumerable:
-                    {
-                        var list = enumerable.Cast<GameObject>().ToList();
-                        if (!list.Any()) continue;
-
-                        var elements =
-                            list.SelectMany(x => x.GetComponentsWithAttribute<CoreManagerElementAttribute>());
-                        if (EditorApplication.isPlaying) elements = elements.Select(x => FindObjectOfType(x.GetType()));
-
-                        empty = elements.Aggregate(empty,
-                                                   (current, element) =>
-                                                       current.Append(new NamedGroup(element,
-                                                                          GetCoreElementsRecursively(element))));
-                        break;
-                    }
-                    case Object obj:
-                    {
-                        break;
-                    }
-                }
-            }
-            return empty;
+            if (!HasOpenInstances<CoreSelectorWindow>()) return;
+            var window = GetWindow<CoreSelectorWindow>(true, nameof(CoreSelectorWindow).PrettyCamelCase());
+            window.UpdateCores();
+            window.ResetIndexes();
         }
 
         public static void Init()
@@ -159,9 +63,27 @@ namespace CorePlugin.Editor.Windows
             window.UpdateCores();
         }
 
+        private void OnEnable()
+        {
+            EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
+            GetTabsIndexes();
+        }
+
+        private void GenerateMenu(Rect rect)
+        {
+            if (_displayObject == null) return;
+            var menu = new GenericMenu();
+
+            menu.AddItem(new GUIContent($"Show {_displayObject.PrettyEditorObjectName(SelectorWindowExtensions.StringsToRemove)}"), false,
+                         () => ShowObject(_displayObject));
+            menu.AddItem(new GUIContent(EditScript), false, () => OpenScript(_displayObject));
+            menu.DropDown(rect);
+        }
+
         private void OnDisable()
         {
             EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
+            SetTabIndexes();
             if (_embeddedInspector != null) DestroyImmediate(_embeddedInspector);
         }
 
@@ -174,29 +96,124 @@ namespace CorePlugin.Editor.Windows
             _mainTab = UnityEditorExtension.SelectionGrid(_mainTab, _cores.Select(x => x.NamedObject.Name).ToArray(),
                                                           columnCount,
                                                           new GUIStyle(GUI.skin.button) { stretchWidth = true });
-            if (_mainTab != bufferTab) _subTab = -1;
+
+            if (_mainTab != bufferTab)
+            {
+                _subTab = -1;
+                SetTabIndexes();
+            }
             if (_mainTab >= _cores.Count) return;
             var key = _cores[_mainTab];
-            var displayObject = key.Object;
+            var bufferObject = key.Object;
             EditorGUILayout.Separator();
 
             if (key.NamedObjects.Count > 0)
-                EditorGUILayout.LabelField("Elements",
+            {
+                EditorGUILayout.LabelField(Elements,
                                            new GUIStyle(GUI.skin.label)
                                            {
                                                stretchWidth = true, alignment = TextAnchor.MiddleCenter,
                                                fontStyle = FontStyle.BoldAndItalic
                                            });
+            }
 
             _subTab = UnityEditorExtension.SelectionGrid(_subTab, key.NamedObjects.Select(x => x.Name).ToArray(),
                                                          columnCount,
                                                          new GUIStyle(GUI.skin.button) { stretchWidth = true });
             if (_subTab >= key.Value.Count) return;
-            if (_subTab != -1) displayObject = key.Value[_subTab].Object;
+
+            if (_subTab != -1)
+            {
+                bufferObject = key.Value[_subTab].Object;
+                SetTabIndexes();
+            }
             EditorGUILayout.Separator();
-            DrawSelectionButton(displayObject);
-            RecycleInspector(displayObject);
+
+            EditorGUILayout.BeginFoldoutHeaderGroup(true, $"{bufferObject.PrettyTypeName()} (Script)", null,
+                                                    GenerateMenu);
+            EditorGUILayout.EndFoldoutHeaderGroup();
+            _displayObject = bufferObject;
+            RecycleInspector(bufferObject);
             _embeddedInspector.OnInspectorGUI();
+        }
+
+        private void ResetIndexes()
+        {
+            if (_mainTab >= _cores.Count)
+            {
+                if (_mainTab != -1)
+                {
+                    _mainTab = _cores.Count - 1;
+                }
+                else
+                {
+                    _mainTab = 0;
+                }
+                _subTab = -1;
+                SetTabIndexes();
+                return;
+            }
+            var key = _cores[_mainTab];
+
+            if (_subTab >= key.Value.Count)
+            {
+                if (_subTab != -1)
+                {
+                    _subTab = key.Value.Count - 1;
+                }
+                else
+                {
+                    _subTab = -1;
+                }
+            }
+            SetTabIndexes();
+        }
+
+        private void SetTabIndexes()
+        {
+            EditorPrefs.SetInt(nameof(CoreSelectorWindow) + nameof(_subTab), _subTab);
+            EditorPrefs.SetInt(nameof(CoreSelectorWindow) + nameof(_mainTab), _mainTab);
+        }
+
+        private void GetTabsIndexes()
+        {
+            _subTab = EditorPrefs.GetInt(nameof(CoreSelectorWindow) + nameof(_subTab), 0);
+            _mainTab = EditorPrefs.GetInt(nameof(CoreSelectorWindow) + nameof(_mainTab), 0);
+        }
+
+        private static void OpenScript(Object displayObject)
+        {
+            var scriptPath = string.Empty;
+
+            switch (displayObject)
+            {
+                case MonoBehaviour mono:
+                {
+                    var monoscript = MonoScript.FromMonoBehaviour(mono);
+                    scriptPath = AssetDatabase.GetAssetPath(monoscript);
+                    break;
+                }
+                case ScriptableObject scriptable:
+                {
+                    var monoscript = MonoScript.FromScriptableObject(scriptable);
+                    scriptPath = AssetDatabase.GetAssetPath(monoscript);
+                    break;
+                }
+                default:
+                    Debug.LogException(new
+                                           NotSupportedException($"<b><i>{displayObject.GetType().FullName}</i></b> should inherit from {nameof(MonoBehaviour)} or {nameof(ScriptableObject)}"));
+                    break;
+            }
+
+            if (!UnityEditorInternal.InternalEditorUtility.OpenFileAtLineExternal(scriptPath, 1, 1))
+            {
+                Debug.LogException(new FileNotFoundException("Something go wrong. Not possible to open file in IDE"));
+            }
+        }
+
+        private static void ShowObject(Object displayObject)
+        {
+            Selection.SetActiveObjectWithContext(displayObject, displayObject);
         }
 
         private void OnPlayModeStateChanged(PlayModeStateChange obj)
@@ -222,14 +239,6 @@ namespace CorePlugin.Editor.Windows
             }
         }
 
-        [DidReloadScripts]
-        private static void OnScriptsReloaded()
-        {
-            if (!HasOpenInstances<CoreSelectorWindow>()) return;
-            var window = GetWindow<CoreSelectorWindow>();
-            window.UpdateCores();
-        }
-
         private void RecycleInspector(Object target)
         {
             if (_embeddedInspector != null) DestroyImmediate(_embeddedInspector);
@@ -239,29 +248,7 @@ namespace CorePlugin.Editor.Windows
         private void UpdateCores()
         {
             if (UnityExtensions.TryToFindObjectOfType<CoreManager>(out var coreManager))
-                _cores = ElementGathering(typeof(CoreManager), coreManager).ToList();
-        }
-
-        private class NamedObject : Named<Object, string>
-        {
-            public NamedObject(Object obj) : base(obj, obj.PrettyEditorObjectName(StringsToRemove))
-            {
-            }
-
-            public string Name => value;
-            public Object Object => key;
-        }
-
-        private class NamedGroup : Named<NamedObject, List<NamedObject>>
-        {
-            public NamedGroup(Object namedObject, IEnumerable<Object> list) : base(new NamedObject(namedObject),
-                                                                                   list.Select(item => new NamedObject(item)).ToList())
-            {
-            }
-
-            public Object Object => key.Object;
-            public NamedObject NamedObject => key;
-            public List<NamedObject> NamedObjects => value;
+                _cores = typeof(CoreManager).ElementGathering(coreManager).ToList();
         }
     }
 }

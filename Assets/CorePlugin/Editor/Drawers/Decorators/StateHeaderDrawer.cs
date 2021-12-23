@@ -17,10 +17,10 @@ using CorePlugin.Attributes.Headers;
 using UnityEditor;
 using UnityEngine;
 
-namespace CorePlugin.Editor.Drawers
+namespace CorePlugin.Editor.Drawers.Decorators
 {
-    [CustomPropertyDrawer(typeof(PrefabHeaderAttribute))]
-    internal sealed class PrefabHeaderDrawer : DecoratorDrawer
+    [CustomPropertyDrawer(typeof(StateHeaderAttribute))]
+    internal sealed class StateHeaderDrawer : DecoratorDrawer
     {
         public override void OnGUI(Rect position)
         {

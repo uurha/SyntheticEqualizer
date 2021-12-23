@@ -37,6 +37,14 @@ namespace CorePlugin.Extensions
             if (waitTask != await Task.WhenAny(waitTask, Task.Delay(timeout))) throw new TimeoutException();
         }
 
+        public static async Task AwaitRequestAsync<T>(T task) where T : Task
+        {
+            while (task.IsCompleted)
+            {
+                await Task.Yield();
+            }
+        }
+
         /// <summary>
         ///     Blocks until condition is true or timeout occurs.
         /// </summary>

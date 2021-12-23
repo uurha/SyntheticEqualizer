@@ -38,10 +38,26 @@ namespace CorePlugin.Editor.Extensions
             HelpBox(message, type, style);
         }
 
+        /// <summary>
+        /// Gets object name and converts into CamelCase. If input has attribute DisplayNameAttribute then displays name from attribute
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="remove"></param>
+        /// <returns></returns>
         public static string PrettyEditorObjectName(this Object input, params string[] remove)
         {
             var attr = input.GetType().GetCustomAttribute<DisplayNameAttribute>();
             var name = input.name;
+            if (attr != null) name = attr.GetDisplayName(name);
+            if (remove == null) return name.PrettyCamelCase();
+            name = remove.Aggregate(name, (current, s) => current.Replace(s, string.Empty));
+            return name.PrettyCamelCase();
+        }
+        
+        public static string PrettyTypeName(this Object input, params string[] remove)
+        {
+            var attr = input.GetType().GetCustomAttribute<DisplayNameAttribute>();
+            var name = input.GetType().Name;
             if (attr != null) name = attr.GetDisplayName(name);
             if (remove == null) return name.PrettyCamelCase();
             name = remove.Aggregate(name, (current, s) => current.Replace(s, string.Empty));

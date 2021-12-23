@@ -44,6 +44,12 @@ namespace CorePlugin.Extensions
             list.Add(new Named<TKey, TValue>(key, value));
         }
 
+        /// <summary>
+        /// Gets object name and converts into CamelCase
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="remove"></param>
+        /// <returns></returns>
         public static string PrettyObjectName(this Object input, params string[] remove)
         {
             if (remove == null) return input.name.PrettyCamelCase();

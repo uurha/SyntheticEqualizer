@@ -16,11 +16,12 @@
 using System;
 using System.Diagnostics;
 using CorePlugin.Extensions;
+using UnityEditor;
 
 namespace CorePlugin.Attributes.EditorAddons
 {
     /// <summary>
-    /// Provide component marked by this attribute to <seealso cref="CorePlugin.Editor.Windows.CoreSelectorWindow"/>
+    /// Provide component marked by this attribute to <seealso cref="Editor.Windows.CoreSelectorWindow"/>
     /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface)]
     [Conditional(EditorDefinition.UnityEditor)]
@@ -45,7 +46,7 @@ namespace CorePlugin.Attributes.EditorAddons
     }
     
     /// <summary>
-    /// Provide data from object field marked by this attribute to <seealso cref="CorePlugin.Editor.Windows.CoreSelectorWindow"/>
+    /// Provide data from object field marked by this attribute to <seealso cref="Editor.Windows.CoreSelectorWindow"/>
     /// </summary>
     [AttributeUsage(AttributeTargets.Field)]
     [Conditional(EditorDefinition.UnityEditor)]
