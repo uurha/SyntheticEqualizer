@@ -2,6 +2,7 @@ using System;
 using Base;
 using CorePlugin.Attributes.Headers;
 using CorePlugin.Attributes.Validation;
+using CorePlugin.Core;
 using CorePlugin.Cross.Events.Interface;
 using CorePlugin.Extensions;
 using Modules.AudioPlayer.Model;
@@ -38,8 +39,8 @@ namespace Modules.AudioPlayerUI.Systems.Signers
 
         private void Start()
         {
-            _playButton.OnClick +=  AudioPlayerStateCaller.SwitchPlay;
-            _playbackSlider.OnValueChanged +=  AudioPlayerStateCaller.SetPlaybackTime01;
+            _playButton.OnClick += AudioPlayerStateCaller.SwitchPlay;
+            _playbackSlider.OnValueChanged += AudioPlayerStateCaller.SetPlaybackTime01;
             _volumeSlider.OnValueChanged += OnVolumeSliderValueChanged;
         }
 
@@ -75,9 +76,9 @@ namespace Modules.AudioPlayerUI.Systems.Signers
         {
             return new Delegate[]
                    {
-                       (AudioPlayerEvents.AudioPlayerStateEvent) PlayButtonTextUpdate,
-                       (AudioPlayerEvents.PlaybackTime01ChangedEvent) _playbackSlider.SetValueWithoutNotify,
-                       (AudioPlayerEvents.AudioPlayerVolumeEvent) _volumeSlider.SetValueWithoutNotify
+                       (AudioPlayerEvents.AudioPlayerStateEvent)PlayButtonTextUpdate,
+                       (AudioPlayerEvents.PlaybackTime01ChangedEvent)_playbackSlider.SetValueWithoutNotify,
+                       (AudioPlayerEvents.AudioPlayerVolumeEvent)_volumeSlider.SetValueWithoutNotify
                    };
         }
     }

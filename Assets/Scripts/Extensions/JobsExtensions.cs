@@ -1,6 +1,6 @@
 ﻿using System;
 using Modules.Grid.Model;
-using Modules.Grid.Systems.CellEntity.Behaviours;
+using Modules.Grid.Systems.ChunkEntity.Behaviours;
 using Unity.Jobs;
 using UnityEngine.Jobs;
 

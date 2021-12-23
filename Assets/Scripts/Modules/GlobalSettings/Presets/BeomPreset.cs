@@ -10,12 +10,12 @@ namespace Modules.GlobalSettings.Presets
     [CreateAssetMenu(menuName = "Presets/Beom Preset", fileName = "BeomPreset", order = 0)]
     public class BeomPreset : ScriptableObject
     {
-        [HasComponent(typeof(ICellComponent))]
+        [HasComponent(typeof(IChunkComponent))]
         [SerializeField] private List<GameObject> beomCells;
 
         public BeomCells GetBeomEntities()
         {
-            return new BeomCells(beomCells.Select(x => x.GetComponent<ICellComponent>().Initialize()));
+            return new BeomCells(beomCells.Select(x => x.GetComponent<IChunkComponent>().Initialize()));
         }
     }
 }

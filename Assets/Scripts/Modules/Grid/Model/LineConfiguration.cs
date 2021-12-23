@@ -5,16 +5,16 @@ namespace Modules.Grid.Model
 {
     public struct LineConfiguration
     {
-        private ICellComponent[] _cells;
+        private IChunkComponent[] _cells;
 
         public int Lenght => _cells.Length;
 
-        public LineConfiguration(ICellComponent[] cells)
+        public LineConfiguration(IChunkComponent[] cells)
         {
             _cells = cells;
         }
 
-        public ICellComponent[] GetCells()
+        public IChunkComponent[] GetCells()
         {
             return _cells;
         }
@@ -22,7 +22,7 @@ namespace Modules.Grid.Model
         public void DestroyAll()
         {
             foreach (var cell in _cells) cell.Destroy();
-            _cells = Array.Empty<ICellComponent>();
+            _cells = Array.Empty<IChunkComponent>();
         }
     }
 }

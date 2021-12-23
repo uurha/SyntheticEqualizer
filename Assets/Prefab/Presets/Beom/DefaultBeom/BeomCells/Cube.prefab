@@ -94,4 +94,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e85dfa6f3b944e239b976b2d3e740a4e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  materialPrefab: {fileID: 2100000, guid: 986ad812abc5c484e9c4b95ee09c1b4a, type: 2}
+  positionOffset:
+    id: 0
+  strength: 20
+  height: 5
+  references:
+    version: 1
+    00000000:
+      type: {class: PositionLocalHeightOffset, ns: Modules.Grid.Systems.ChunkEntity.Unit, asm: Assembly-CSharp}

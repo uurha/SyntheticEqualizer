@@ -6,11 +6,11 @@ namespace Modules.Grid.Model
 {
     public readonly struct GridGeneratorOutput
     {
-        public ICellComponent[,] Grid { get; }
+        public IChunkComponent[,] Grid { get; }
         public RoadDirection GridExit { get; }
         public List<TupleInt> RoadPositions { get; }
 
-        public GridGeneratorOutput(ICellComponent[,] grid, RoadDirection gridExit, List<TupleInt> roadPositions)
+        public GridGeneratorOutput(IChunkComponent[,] grid, RoadDirection gridExit, List<TupleInt> roadPositions)
         {
             Grid = grid;
             GridExit = gridExit;

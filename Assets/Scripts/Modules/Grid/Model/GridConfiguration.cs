@@ -8,7 +8,7 @@ namespace Modules.Grid.Model
 {
     public struct GridConfiguration
     {
-        public ICartingRoadComponent[] RoadEntities { get; }
+        public ICartingRoad[] RoadEntities { get; }
 
         public LineConfiguration[] RowConfiguration { get; private set; }
 
@@ -20,7 +20,7 @@ namespace Modules.Grid.Model
 
         public bool IsInitialized { get; private set; }
 
-        public GridConfiguration(ICellComponent[,] cellEntities, ICartingRoadComponent[] roadEntities)
+        public GridConfiguration(IChunkComponent[,] cellEntities, ICartingRoad[] roadEntities)
         {
             RoadEntities = roadEntities;
 
@@ -55,8 +55,8 @@ namespace Modules.Grid.Model
 
             var lineSize = dimension switch
                            {
-                               MatrixDimension.Row => RowConfiguration[index].GetCells().Sum(x => x.CellSize),
-                               MatrixDimension.Column => ColumnsConfiguration[index].GetCells().Sum(x => x.CellSize),
+                               MatrixDimension.Row => RowConfiguration[index].GetCells().Sum(x => x.ChunkSize),
+                               MatrixDimension.Column => ColumnsConfiguration[index].GetCells().Sum(x => x.ChunkSize),
                                _ => throw new ArgumentOutOfRangeException(nameof(dimension), dimension, null)
                            };
             return lineSize;

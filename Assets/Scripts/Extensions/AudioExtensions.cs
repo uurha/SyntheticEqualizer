@@ -80,6 +80,7 @@ namespace Extensions
         {
             return (int) bandType;
         }
+        
         public static int FrequencyToSpectrumMinIndex(int lenght, int bandIndex, BandType bandType)
         {
             var bandTypeIndex = bandType.BandToIndex();

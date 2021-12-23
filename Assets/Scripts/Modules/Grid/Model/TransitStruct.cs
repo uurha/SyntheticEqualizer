@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using Base.BehaviourModel;
 using Base.BehaviourModel.Interfaces;
-using Modules.Grid.Systems.CellEntity.Unit;
+using Modules.Grid.Systems.ChunkEntity.Unit;
 using Unity.Collections;
 using UnityEngine.Jobs;
 
@@ -14,12 +14,12 @@ namespace Modules.Grid.Model
         public TransformAccessArray AccessArray { get; }
         public bool IsCreated { get; }
 
-        public TransitStruct(CellUnit[] cellItems, IJobBehaviour behaviour)
+        public TransitStruct(ChunkUnit[] cellItems, IJobBehaviour behaviour, IOrientationOffsetParams offsetParams)
         {
             JobBehaviour = behaviour;
 
             InitialOrientations =
-                new NativeArray<Orientation>(cellItems.Select(x => x.Initialize().InitialOrientation).ToArray(),
+                new NativeArray<Orientation>(cellItems.Select(x => x.Initialize(offsetParams).InitialOrientation).ToArray(),
                                              Allocator.Persistent);
             AccessArray = new TransformAccessArray(cellItems.Select(x => x.transform).ToArray());
             IsCreated = true;

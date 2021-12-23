@@ -9,14 +9,14 @@ namespace SubModules.Beom
     [Serializable]
     public struct BeomCells
     {
-        private ICellComponent[] _entities;
+        private IChunkComponent[] _entities;
 
-        public BeomCells(IEnumerable<ICellComponent> cellEntities)
+        public BeomCells(IEnumerable<IChunkComponent> cellEntities)
         {
-            _entities = cellEntities as ICellComponent[] ?? cellEntities.ToArray();
+            _entities = cellEntities as IChunkComponent[] ?? cellEntities.ToArray();
         }
 
-        public ICellComponent GetRoadCell(RoadDirection entityType, Direction direction)
+        public IChunkComponent GetRoadCell(RoadDirection entityType, Direction direction)
         {
             return direction switch
                    {
@@ -27,13 +27,13 @@ namespace SubModules.Beom
                    };
         }
 
-        public readonly ICellComponent GetRoadCell(RoadDirection inDir, RoadDirection outDir)
+        public readonly IChunkComponent GetRoadCell(RoadDirection inDir, RoadDirection outDir)
         {
             return _entities.FirstOrDefault(x => x.IsRoad && x.CartingRoadComponent.InDirection == inDir &&
                                                  x.CartingRoadComponent.OutDirection == outDir);
         }
         
-        public readonly ICellComponent GetNonRoadCell()
+        public readonly IChunkComponent GetNonRoadCell()
         {
             return _entities.FirstOrDefault(x => !x.IsRoad);
         }

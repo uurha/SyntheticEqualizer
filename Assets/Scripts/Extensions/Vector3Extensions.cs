@@ -24,6 +24,44 @@ namespace Extensions
         {
             return monoBehaviour.transform.TransformPoint(vector3);
         }
+        
+        public static Vector3 Set(this Vector3 aVec, float value, Axis axis = Axis.X)
+        {
+            switch (axis)
+            {
+                case Axis.X:
+                    aVec.x = value;
+                    break;
+                case Axis.Y:
+                    aVec.y = value;
+                    break;
+                case Axis.Z:
+                    aVec.y = value;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(axis), axis, null);
+            }
+            return aVec;
+        }
+        
+        public static Vector3 Add(this Vector3 aVec, float value, Axis axis = Axis.X)
+        {
+            switch (axis)
+            {
+                case Axis.X:
+                    aVec.x += value;
+                    break;
+                case Axis.Y:
+                    aVec.y += value;
+                    break;
+                case Axis.Z:
+                    aVec.y += value;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(axis), axis, null);
+            }
+            return aVec;
+        }
 
         public static Vector3 OnlyOneAxis(this Vector3 vector3, Axis axis)
         {

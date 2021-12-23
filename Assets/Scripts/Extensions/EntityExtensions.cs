@@ -25,18 +25,18 @@ namespace Extensions
             return entities.Aggregate(Vector3.zero, (current, entity) => current + predicate.Invoke(entity));
         }
 
-        public static Vector3 Orient(this ICellComponent prefabEntity, Vector3 initialPosition, TupleInt items)
+        public static Vector3 Orient(this IChunkComponent prefabEntity, Vector3 initialPosition, TupleInt items)
         {
-            return initialPosition + new Vector3(prefabEntity.CellSize.x * items.Item1, 0f,
-                                                 prefabEntity.CellSize.z * items.Item2);
+            return initialPosition + new Vector3(prefabEntity.ChunkSize.x * items.Item1, 0f,
+                                                 prefabEntity.ChunkSize.z * items.Item2);
         }
 
-        public static Orientation Orient(this ICellComponent prefabEntity, Orientation initialOrientation, TupleInt items)
+        public static Orientation Orient(this IChunkComponent prefabEntity, Orientation initialOrientation, TupleInt items)
         {
             var (x, z) = items;
 
-            var position = initialOrientation.Position + new Vector3(prefabEntity.CellSize.x * x, 0f,
-                                                                     prefabEntity.CellSize.z * z);
+            var position = initialOrientation.Position + new Vector3(prefabEntity.ChunkSize.x * x, 0f,
+                                                                     prefabEntity.ChunkSize.z * z);
             var rotation = initialOrientation.Rotation * Quaternion.identity;
             var newOrientation = new Orientation(position, rotation, Vector3.zero);
             return newOrientation;

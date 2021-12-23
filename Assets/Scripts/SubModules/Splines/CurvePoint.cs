@@ -4,10 +4,19 @@ using UnityEngine;
 namespace SubModules.Splines
 {
     [Serializable]
-    public class CurvePoint
+    public readonly struct CurvePoint
     {
-        public Vector3 position;
-        public Vector3 tangent;
-        public Vector3 normal;
+        public Vector3 Position { get; }
+
+        public Vector3 Tangent { get; }
+
+        public Vector3 Normal { get; }
+
+        public CurvePoint(Vector3 position, Vector3 tangent, Vector3 normal)
+        {
+            Position = position;
+            Tangent = tangent;
+            Normal = normal;
+        }
     }
 }

@@ -33,7 +33,7 @@ namespace Modules.GlobalSettings.Systems
 
         private SpectrumAnalyzerSettings _currentAnalyzerSettings;
         private SpectrumListenerSettings _currentListenerSettings;
-        private CellUnitsSettings _currentBlockColorsSettings;
+        private ChunkUnitsSettings _currentBlockColorsSettings;
 
         private event GlobalSettingsEvents.OnSpectrumAnalyzerSettingsEvent OnSpectrumAnalyzerSettingsChanged;
         private event GlobalSettingsEvents.OnSpectrumListenerSettingsEvent OnSpectrumListenerSettingsChanged;

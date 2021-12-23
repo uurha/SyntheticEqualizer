@@ -1,12 +1,8 @@
-﻿using CorePlugin.Core.Interface;
-using UnityEngine;
+﻿using CorePlugin.Core;
 
 namespace Modules.GlobalSettings
 {
-    public class GlobalSettingsCore : MonoBehaviour, ICore
+    public class GlobalSettingsCore : BaseCore
     {
-        public void InitializeElements()
-        {
-        }
     }
 }

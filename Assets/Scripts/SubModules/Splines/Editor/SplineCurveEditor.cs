@@ -83,13 +83,13 @@ namespace SubModules.Splines.Editor
                 var prevCurvePoint = points[index - 1];
                 var curvePoint = points[index];
                 Handles.color = _lineColor;
-                var curvePointPosition = curvePoint.position;
-                var prevCurvePointPosition = prevCurvePoint.position;
+                var curvePointPosition = curvePoint.Position;
+                var prevCurvePointPosition = prevCurvePoint.Position;
                 Handles.DrawLine(prevCurvePointPosition, curvePointPosition);
 
                 Handles.ConeHandleCap(0, curvePointPosition,
                                       Quaternion.LookRotation(curvePointPosition - prevCurvePointPosition,
-                                                              curvePoint.normal), _normalsLenght / 5f,
+                                                              curvePoint.Normal), _normalsLenght / 5f,
                                       EventType.Repaint);
                 DrawNormal(prevCurvePoint);
                 DrawTangent(prevCurvePoint);
@@ -97,7 +97,7 @@ namespace SubModules.Splines.Editor
                 if (_showPreviewPoint)
                 {
                     Handles.color = Color.white;
-                    var position = _splineCurves.GetPoint(_previewPoint, true).position;
+                    var position = _splineCurves.GetPoint(_previewPoint, true).Position;
 
                     Handles.SphereHandleCap(0, position, Quaternion.identity,
                                             _previewPointSize, EventType.Repaint);
@@ -113,10 +113,10 @@ namespace SubModules.Splines.Editor
             if (_showTangents)
             {
                 Handles.color = _tangentsColor;
-                var position = prevCurvePoint.position;
+                var position = prevCurvePoint.Position;
 
                 Handles.DrawLine(position,
-                                 position + (prevCurvePoint.tangent * _tangentsLenght));
+                                 position + (prevCurvePoint.Tangent * _tangentsLenght));
             }
         }
 
@@ -125,10 +125,10 @@ namespace SubModules.Splines.Editor
             if (_showNormals)
             {
                 Handles.color = _normalsColor;
-                var position = prevCurvePoint.position;
+                var position = prevCurvePoint.Position;
 
                 Handles.DrawLine(position,
-                                 position + (prevCurvePoint.normal * _normalsLenght));
+                                 position + (prevCurvePoint.Normal * _normalsLenght));
             }
         }
 

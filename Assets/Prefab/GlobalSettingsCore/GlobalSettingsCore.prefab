@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4842906410526328864}
   - component: {fileID: 1108317752210940237}
-  - component: {fileID: -42617518419202236}
   m_Layer: 0
   m_Name: GlobalSettingsCore
   m_TagString: Untagged
@@ -44,21 +43,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d5f77c207a9451d90e6fb1f621060ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &-42617518419202236
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3185626438221895778}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7585602c7d5d9954cbc12c62a9fd294b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  fftWindow: 5
-  numberOfSamples: 1024
-  bandType: 5
-  fallSpeed: 0.08
-  sensibility: 8
-  blockColorsPreset: {fileID: 11400000, guid: 6e3df8cbf98c8ec4eb353a09bb2bd165, type: 2}
+  elements:
+  - {fileID: 2834304045378503364, guid: 949764d851e030948b9eac796e50dbf5, type: 3}

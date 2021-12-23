@@ -106,8 +106,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7045517379847676862}
   - component: {fileID: 7586429260266786638}
-  - component: {fileID: 5117495713943062356}
-  - component: {fileID: -4850560270143460344}
   - component: {fileID: 5332416733420848881}
   m_Layer: 0
   m_Name: E_W
@@ -159,52 +157,48 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a586b5a6e71441cae02f161ed0fbb27, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cellSize: {x: 10, y: 0, z: 10}
---- !u!114 &5117495713943062356
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1654235765531610755}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4959dd0400ec4209869e1bb8725f2f70, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  leftItems:
-  - {fileID: 6737723156721492636}
-  - {fileID: 135304531571916639}
-  - {fileID: 6718086376406429334}
-  - {fileID: 1324492368608455291}
-  - {fileID: 5427769715042307600}
-  - {fileID: 6902298892413807333}
-  - {fileID: 7228406219671233220}
-  - {fileID: 4097396151678443277}
-  rightItems:
-  - {fileID: 378308919360381597}
-  - {fileID: 1314650992086251147}
-  - {fileID: 732611286213527839}
-  - {fileID: 6970389066791992170}
-  - {fileID: 302097548942364702}
-  - {fileID: 174285931986195027}
-  - {fileID: 8923366961795520861}
-  - {fileID: 2574253683354189013}
---- !u!114 &-4850560270143460344
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1654235765531610755}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 115a37de96584d269ceeae39d601c667, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  curve: {fileID: 5332416733420848881}
-  inDirection: 2
-  outDirection: -2
+  chunkSize: {x: 10, y: 0, z: 10}
+  behaviour:
+    id: 0
+  cartingRoadComponent:
+    id: 1
+  references:
+    version: 1
+    00000000:
+      type: {class: RoadVisualBehaviour, ns: Modules.Grid.Systems.ChunkEntity.VisualBehaviours, asm: Assembly-CSharp}
+      data:
+        leftItems:
+        - {fileID: 6737723156721492636}
+        - {fileID: 135304531571916639}
+        - {fileID: 6718086376406429334}
+        - {fileID: 1324492368608455291}
+        - {fileID: 5427769715042307600}
+        - {fileID: 6902298892413807333}
+        - {fileID: 7228406219671233220}
+        - {fileID: 4097396151678443277}
+        rightItems:
+        - {fileID: 378308919360381597}
+        - {fileID: 1314650992086251147}
+        - {fileID: 732611286213527839}
+        - {fileID: 6970389066791992170}
+        - {fileID: 302097548942364702}
+        - {fileID: 174285931986195027}
+        - {fileID: 8923366961795520861}
+        - {fileID: 2574253683354189013}
+        orientationOffsetParams:
+          id: 2
+    00000001:
+      type: {class: DefaultCartingRoad, ns: Modules.Carting.Systems.CartingRoad, asm: Assembly-CSharp}
+      data:
+        curve: {fileID: 5332416733420848881}
+        inDirection: 2
+        outDirection: -2
+    00000002:
+      type: {class: UnitPerlinParams, ns: Modules.Grid.Systems.ChunkEntity.Unit, asm: Assembly-CSharp}
+      data:
+        initialLocalOffset: {x: 0, y: -1.5, z: 0}
+        offsetStrength: 20
+        offsetHeight: 3
 --- !u!114 &5332416733420848881
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -428,11 +422,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: eb6905d2677dc484788cac3dc12d4387, type: 3}
---- !u!4 &5026566898062354586 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 6093064618774998177, guid: eb6905d2677dc484788cac3dc12d4387, type: 3}
-  m_PrefabInstance: {fileID: 1247244257378157627}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &174285931986195027 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1379273747978606184, guid: eb6905d2677dc484788cac3dc12d4387, type: 3}
@@ -444,6 +433,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e85dfa6f3b944e239b976b2d3e740a4e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!4 &5026566898062354586 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6093064618774998177, guid: eb6905d2677dc484788cac3dc12d4387, type: 3}
+  m_PrefabInstance: {fileID: 1247244257378157627}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1352373926030829879
 PrefabInstance:
   m_ObjectHideFlags: 0

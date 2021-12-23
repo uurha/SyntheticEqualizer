@@ -6,11 +6,11 @@ namespace Modules.GlobalSettings.Presets
     [CreateAssetMenu(fileName = "BlockColors", menuName = "Presets/Block Colors", order = 0)]
     public class BlockColorPreset : ScriptableObject
     {
-        [SerializeField] private CellUnitData highColor;
-        [SerializeField] private CellUnitData middleColor;
-        [SerializeField] private CellUnitData lowColor;
+        [SerializeField] private ChunkUnitData highColor;
+        [SerializeField] private ChunkUnitData middleColor;
+        [SerializeField] private ChunkUnitData lowColor;
 
-        public CellUnitsSettings GetSettings() =>
-            new CellUnitsSettings(highColor, middleColor, lowColor);
+        public ChunkUnitsSettings GetSettings() =>
+            new ChunkUnitsSettings(highColor, middleColor, lowColor);
     }
 }

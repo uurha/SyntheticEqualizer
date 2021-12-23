@@ -54,12 +54,8 @@ namespace SubModules.Splines
             if (_dirty) CachePoints();
 
             if (isWorld)
-                points = _cachedPoints.Select(x => new CurvePoint()
-                                                   {
-                                                       normal = x.normal,
-                                                       position = x.position.TransformPoint(this),
-                                                       tangent = x.tangent
-                                                   }).ToArray();
+                points = _cachedPoints.Select(x => new CurvePoint(x.Position.TransformPoint(this), x.Tangent, x.Normal))
+                                      .ToArray();
             return points;
         }
 
@@ -219,13 +215,7 @@ namespace SubModules.Splines
         public CurvePoint GetPoint(float t, bool isWorld)
         {
             var localPoint = GetVectorPoint(t);
-
-            return new CurvePoint()
-                   {
-                       position = isWorld ? localPoint.TransformPoint(this) : localPoint,
-                       tangent = GetTangent(t),
-                       normal = GetNormal(t)
-                   };
+            return new CurvePoint(isWorld ? localPoint.TransformPoint(this) : localPoint, GetTangent(t), GetNormal(t));
         }
 
         public Vector3 GetVectorPoint(float t)

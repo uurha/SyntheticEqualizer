@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Base;
 using Base.BaseTypes;
 using Base.Deque;
@@ -45,10 +46,10 @@ namespace Modules.Grid.Systems.Initializer
         }
 
         [EditorButton("Generate Next Grid")]
-        private void GenerateNextGrid()
+        private async Task GenerateNextGrid()
         {
             if (!Application.isPlaying) return;
-            _gridGenerator.GenerateNextGrid(OnGridGenerated);
+            OnGridGenerated(await _gridGenerator.GenerateNextGrid());
         }
 
         [EditorButton("Initialize")]
@@ -75,10 +76,10 @@ namespace Modules.Grid.Systems.Initializer
             _gridGenerator.GenerateGrid(OnGridGenerated);
         }
 
-        private void OnGridGenerated(GridGeneratorOutput gridGeneratorOutput)
+        private async void OnGridGenerated(GridGeneratorOutput gridGeneratorOutput)
         {
-            var bufferGrid = new ICellComponent[columnCount, rowCount];
-            var bufferRoad = new ICartingRoadComponent[gridGeneratorOutput.RoadPositions.Count];
+            var bufferGrid = new IChunkComponent[columnCount, rowCount];
+            var bufferRoad = new ICartingRoad[gridGeneratorOutput.RoadPositions.Count];
             var bufferGeneratedGrid = gridGeneratorOutput.Grid;
             var previousGrid = _instancedGrids.IsEmpty ? default : _instancedGrids.Last;
             var lineSize = Vector3.zero;
@@ -90,7 +91,8 @@ namespace Modules.Grid.Systems.Initializer
                 var buffer = InstantiateCell(bufferGeneratedGrid, column, row, previousGrid,
                                              ref lineSize);
                 bufferGrid[column,row] = buffer;
-                if (buffer.IsRoad) bufferRoad[index] = buffer.CartingRoadComponent;
+                if (buffer.IsRoad) bufferRoad[index] =  buffer.CartingRoadComponent;
+                await Task.Yield();
             }
 
             for (var row = 0; row < rowCount; row++)
@@ -101,6 +103,8 @@ namespace Modules.Grid.Systems.Initializer
                     if(gridGeneratorOutput.RoadPositions.Contains(new TupleInt(column, row), new TupleInt.TupleValueComparer())) continue;
                     bufferGrid[column, row] =
                         InstantiateCell(bufferGeneratedGrid, column, row, previousGrid, ref lineSize);
+                    
+                    await Task.Yield();
                 }
             }
             
@@ -113,14 +117,15 @@ namespace Modules.Grid.Systems.Initializer
             OnGridChanged?.Invoke(_instancedGrids, _isInitialized);
         }
 
-        private ICellComponent InstantiateCell(ICellComponent[,] bufferGeneratedGrid, int column, int row,
+        private IChunkComponent InstantiateCell(IChunkComponent[,] bufferGeneratedGrid, int column, int row,
                                                GridConfiguration previousGrid,
                                                ref Vector3 lineSize)
         {
-            var cellEntity = (ICellComponent)bufferGeneratedGrid[column, row].CreateInstance(transform);
+            var cellEntity = (IChunkComponent)bufferGeneratedGrid[column, row].CreateInstance(transform);
             var positionInGrid = new TupleInt(column, row);
             if (previousGrid.IsInitialized) lineSize = previousGrid.LineSize(_previousGridExit, positionInGrid);
-            var bufferPosition = new Orientation(_initialPosition + lineSize, Quaternion.identity, Vector3.zero);
+            var initialPosition = _initialPosition + lineSize;
+            var bufferPosition = new Orientation(initialPosition, Quaternion.identity, Vector3.zero);
 
             return cellEntity.Initialize($"{cellEntity.Name} {column}X{row}")
                              .SetOrientation(cellEntity.Orient(bufferPosition, positionInGrid));

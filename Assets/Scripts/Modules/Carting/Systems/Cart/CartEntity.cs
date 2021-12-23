@@ -1,6 +1,7 @@
 ﻿using System;
 using Base;
 using CorePlugin.Attributes.EditorAddons;
+using CorePlugin.Extensions;
 using Modules.Carting.Interfaces;
 using UnityEngine;
 
@@ -13,15 +14,15 @@ namespace Modules.Carting.Systems.Cart
         private event RoadEvents.RequestNextRoadEntity OnRequestNextRoadEntity;
         private bool _isInitialized;
         private bool _readyMove;
-        private ICartingRoadComponent _currentCartingRoad;
+        private ICartingRoad _currentCartingRoad;
         private PathOverTime _pathOverTime;
         private Transform _thisTransform;
         
-        public void Initialize(RoadEvents.RequestNextRoadEntity onRequestNextRoad)
+        public async void Initialize(RoadEvents.RequestNextRoadEntity onRequestNextRoad)
         {
             OnRequestNextRoadEntity = onRequestNextRoad ?? throw new ArgumentNullException();
             _isInitialized = true;
-            _currentCartingRoad = OnRequestNextRoadEntity.Invoke();
+            _currentCartingRoad = await OnRequestNextRoadEntity.Invoke();
             _pathOverTime = new PathOverTime();
             _thisTransform = transform;
         }
@@ -60,20 +61,21 @@ namespace Modules.Carting.Systems.Cart
             }
         }
 
-        private void InteractMove()
+        private async void InteractMove()
         {
+            await TaskExtensions.WaitUntil(() => _isInitialized);
             _pathOverTime.UpdatePath(speed);
             _pathOverTime.UpdateTime();
             while (true)
             {
                 if (_currentCartingRoad != null && _currentCartingRoad.GetPoint(_pathOverTime.PassedPath, out var movePoint))
                 {
-                    _thisTransform.position = movePoint.position;
-                    _thisTransform.forward = movePoint.tangent;
+                    _thisTransform.position = movePoint.Position;
+                    _thisTransform.forward = movePoint.Tangent;
                 }
                 else
                 {
-                    _currentCartingRoad = OnRequestNextRoadEntity?.Invoke();
+                    _currentCartingRoad = await OnRequestNextRoadEntity!.Invoke();
                     _pathOverTime.Reset();
                     _pathOverTime.UpdateTime();
                     continue;

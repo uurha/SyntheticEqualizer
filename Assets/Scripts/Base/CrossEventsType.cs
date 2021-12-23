@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Base.Deque;
 using Modules.AudioAnalyse.Model;
 using Modules.AudioLoader.Model;
@@ -19,7 +20,7 @@ namespace Base
         public delegate void AudioLoadRequested(AudioLoaderSettings loaderSettings, Action<AudioDataProgress> action);
 
         public delegate void AudioPlayerStateEvent(AudioPlayerState state);
-        
+
         public delegate void AudioPlayerVolumeEvent(float volume);
 
         public delegate void PlaybackTime01ChangedEvent(float data);
@@ -44,20 +45,24 @@ namespace Base
     public static class GlobalSettingsEvents
     {
         public delegate void OnSpectrumAnalyzerSettingsEvent(SpectrumAnalyzerSettings analyzerSettings);
+
         public delegate void OnSpectrumListenerSettingsEvent(SpectrumListenerSettings analyzerSettings);
-        public delegate void OnBlockColorSettingsEvents(CellUnitsSettings blockColorSettings);
+
+        public delegate void OnBlockColorSettingsEvents(ChunkUnitsSettings blockColorSettings);
     }
 
     public static class GridEvents
     {
-        public delegate void GridConfigurationChangedEvent(Conveyor<GridConfiguration> gridConfigurations, bool isInitialized);
+        public delegate void GridConfigurationChangedEvent(Conveyor<GridConfiguration> gridConfigurations,
+                                                           bool isInitialized);
 
-        public delegate void RequestNextGrid();
+        public delegate Task RequestNextGrid();
     }
 
     public static class RoadEvents
     {
-        public delegate ICartingRoadComponent RequestNextRoadEntity();
+        public delegate Task<ICartingRoad> RequestNextRoadEntity();
+
         public delegate void OnRoadReadyEvent(bool isReady);
     }
 

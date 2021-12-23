@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   columnCount: 5
-  rowCount: 10
+  rowCount: 5
   maxGridCount: 3
   seedValue: 50063421
   preset: {fileID: 11400000, guid: c7300ec06d2da8243b227496984e9811, type: 2}
