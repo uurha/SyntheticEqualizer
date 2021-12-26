@@ -14,13 +14,15 @@
 #endregion
 
 using System;
+using System.Diagnostics;
 using CorePlugin.Attributes.Base;
-using UnityEditor;
+using CorePlugin.Extensions;
 using Object = UnityEngine.Object;
 
 namespace CorePlugin.Attributes.Validation
 {
     [AttributeUsage(AttributeTargets.Field)]
+    [Conditional(EditorDefinition.UnityEditor)]
     public class SceneObjectRequiredAttribute : FieldValidationAttribute
     {
         public SceneObjectRequiredAttribute(bool showError) : base(showError)
@@ -33,8 +35,11 @@ namespace CorePlugin.Attributes.Validation
 
         private protected override bool ValidState(object obj)
         {
-            return PrefabUtility.GetPrefabInstanceStatus((Object) obj) != PrefabInstanceStatus.NotAPrefab &&
-                   PrefabUtility.GetPrefabAssetType((Object) obj) == PrefabAssetType.NotAPrefab;
+            #if UNITY_EDITOR
+            return ((Object)obj).IsSceneObject();
+            #else
+            return true;
+            #endif
         }
 
         private protected override string ErrorText()

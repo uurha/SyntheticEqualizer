@@ -66,7 +66,7 @@ namespace CorePlugin.Editor.EditorState
 
             var objs =
                 allAssets.Select(a => AssetDatabase.LoadAssetAtPath(a, typeof(GameObject)) as GameObject)
-                         .Zip(allAssets, (o, s) => new {obj = o, path = s});
+                         .Zip(allAssets, (o, s) => new { obj = o, path = s });
             var errors = Enumerable.Empty<ErrorObjectPair>();
 
             return objs.Where(x => x.obj != null)

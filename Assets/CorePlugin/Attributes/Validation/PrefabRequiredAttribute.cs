@@ -14,6 +14,7 @@
 #endregion
 
 using System;
+using System.Diagnostics;
 using CorePlugin.Attributes.Base;
 using CorePlugin.Extensions;
 using Object = UnityEngine.Object;
@@ -24,6 +25,7 @@ namespace CorePlugin.Attributes.Validation
     /// Attribute validating whether the object or all items in list are prefabs.
     /// </summary>
     [AttributeUsage(AttributeTargets.Field)]
+    [Conditional(EditorDefinition.UnityEditor)]
     public class PrefabRequiredAttribute : FieldValidationAttribute
     {
         public PrefabRequiredAttribute(bool showError) : base(showError)
@@ -36,7 +38,11 @@ namespace CorePlugin.Attributes.Validation
 
         private protected override bool ValidState(object obj)
         {
-            return ((Object) obj).IsPrefab();
+            #if UNITY_EDITOR
+            return ((Object)obj).IsPrefab();
+            #else
+            return true;
+            #endif
         }
 
         private protected override string ErrorText()

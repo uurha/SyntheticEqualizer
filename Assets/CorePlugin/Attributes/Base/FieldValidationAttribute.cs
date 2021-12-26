@@ -61,7 +61,7 @@ namespace CorePlugin.Attributes.Base
                 else
                 {
                     _error =
-                        $"Object <b>\"{((Object) value)?.name}\"</b> {ErrorText()}\ninto Field: <i>{field.Name}</i> on GameObject: {instance.name}";
+                        $"Object <b>\"{((Object)value)?.name}\"</b> {ErrorText()}\ninto Field: <i>{field.Name}</i> on GameObject: {instance.name}";
                     isValid = value != null && ValidState(value);
                 }
             }

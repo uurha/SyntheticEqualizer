@@ -24,7 +24,7 @@ namespace CorePlugin.Extensions
         public static T Combine<T>(this Delegate[] subscribers) where T : Delegate
         {
             return subscribers.OfType<T>()
-                              .Aggregate<T, T>(null, (current, dDelegate) => (T) Delegate.Combine(current, dDelegate));
+                              .Aggregate<T, T>(null, (current, dDelegate) => (T)Delegate.Combine(current, dDelegate));
         }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace CorePlugin.Extensions
         {
             if (delegates == null) throw new ArgumentNullException($"{nameof(delegates)} should be null");
             if (delegates.Length <= 0) throw new ArgumentOutOfRangeException($"{nameof(delegates)}.Length should not be zero");
-            dDelegate = delegates.OfType<T>().Aggregate(dDelegate, (current, delegate1) => (T) aggregateMethod.Invoke(current, delegate1));
+            dDelegate = delegates.OfType<T>().Aggregate(dDelegate, (current, delegate1) => (T)aggregateMethod.Invoke(current, delegate1));
         }
 
         /// <summary>

@@ -14,8 +14,10 @@
 #endregion
 
 using System;
+using System.Diagnostics;
 using System.Linq;
 using CorePlugin.Attributes.Base;
+using CorePlugin.Extensions;
 using UnityEngine;
 
 namespace CorePlugin.Attributes.Validation
@@ -24,6 +26,7 @@ namespace CorePlugin.Attributes.Validation
     /// Attribute validating whether Object in field or all objects in the list have desired component.
     /// </summary>
     [AttributeUsage(AttributeTargets.Field)]
+    [Conditional(EditorDefinition.UnityEditor)]
     public class HasComponentAttribute : FieldValidationAttribute
     {
         private readonly Type _requiredType;
@@ -45,7 +48,7 @@ namespace CorePlugin.Attributes.Validation
 
         private protected override bool ValidState(object obj)
         {
-            return ((GameObject) obj).GetComponents<MonoBehaviour>().Select(x => x.GetType()).Any(type => _requiredType.IsAssignableFrom(type));
+            return ((GameObject)obj).GetComponents<MonoBehaviour>().Select(x => x.GetType()).Any(type => _requiredType.IsAssignableFrom(type));
         }
     }
 }

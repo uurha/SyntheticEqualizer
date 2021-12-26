@@ -26,7 +26,7 @@ namespace CorePlugin.Cross.SceneData
     /// <seealso cref="CorePlugin.Cross.SceneData.Interface.ISceneData"/>
     /// </summary>
     [OneAndOnly]
-    public class SceneDataHandler : Singleton<SceneDataHandler>
+    public class SceneDataHandler : StaticObjectSingleton<SceneDataHandler>
     {
         private readonly Dictionary<Type, ISceneData> _data = new Dictionary<Type, ISceneData>();
 
@@ -39,7 +39,6 @@ namespace CorePlugin.Cross.SceneData
                 return;
             }
             DontDestroyOnLoad(this);
-            _instance = this;
         }
 
         /// <summary>
@@ -47,7 +46,17 @@ namespace CorePlugin.Cross.SceneData
         /// </summary>
         /// <param name="data"></param>
         /// <typeparam name="T"></typeparam>
-        public void AddData<T>(T data) where T : ISceneData, new()
+        public static void AddData<T>(T data) where T : ISceneData, new()
+        {
+            GetInstance().AddDataInternal(data);
+        }
+
+        /// <summary>
+        /// Adding data to dictionary by passed Type
+        /// </summary>
+        /// <param name="data"></param>
+        /// <typeparam name="T"></typeparam>
+        private void AddDataInternal<T>(T data) where T : ISceneData, new()
         {
             var isContains = _data.ContainsKey(typeof(T));
 
@@ -62,10 +71,20 @@ namespace CorePlugin.Cross.SceneData
         /// </summary>
         /// <param name="data"></param>
         /// <typeparam name="T"></typeparam>
-        public bool GetData<T>(out T data) where T : ISceneData, new()
+        public static bool GetData<T>(out T data) where T : ISceneData, new()
+        {
+            return GetInstance().GetDataInternal(out data);
+        }
+
+        /// <summary>
+        /// Getting data from dictionary by passed Type
+        /// </summary>
+        /// <param name="data"></param>
+        /// <typeparam name="T"></typeparam>
+        private bool GetDataInternal<T>(out T data) where T : ISceneData, new()
         {
             var isGet = _data.TryGetValue(typeof(T), out var buffer);
-            data = (T) buffer;
+            data = (T)buffer;
             return isGet;
         }
 
@@ -73,9 +92,36 @@ namespace CorePlugin.Cross.SceneData
         /// Removing data from dictionary by passed Type
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        public void RemoveData<T>() where T : ISceneData, new()
+        public static void RemoveData<T>() where T : ISceneData, new()
+        {
+            GetInstance().RemoveDataInternal<T>();
+        }
+
+        /// <summary>
+        /// Removing data from dictionary by passed Type
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        public void RemoveData<T>(T data) where T : ISceneData, new()
+        {
+            GetInstance().RemoveDataInternal(data);
+        }
+
+        /// <summary>
+        /// Removing data from dictionary by passed Type
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        private void RemoveDataInternal<T>() where T : ISceneData, new()
         {
             if (_data.ContainsKey(typeof(T))) _data.Remove(typeof(T));
+        }
+
+        /// <summary>
+        /// Removing data from dictionary by passed Type
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        private void RemoveDataInternal<T>(T data) where T : ISceneData, new()
+        {
+            if (_data.ContainsValue(data)) _data.Remove(typeof(T));
         }
     }
 }

@@ -28,8 +28,8 @@ namespace CorePlugin.Extensions
     {
         #if UNITY_EDITOR
         public const BindingFlags Flags = BindingFlags.Public | BindingFlags.NonPublic |
-                                           BindingFlags.Static | BindingFlags.Instance |
-                                           BindingFlags.DeclaredOnly;
+                                          BindingFlags.Static | BindingFlags.Instance |
+                                          BindingFlags.DeclaredOnly;
 
         public static IEnumerable<KeyValuePair<FieldInfo, IEnumerable<T>>> GetFieldsAttributes<T>(this Type t)
             where T : Attribute
@@ -43,19 +43,19 @@ namespace CorePlugin.Extensions
 
         public static IEnumerable<T> GetFields<T>(this object obj)
         {
-            return obj.GetType().GetFields(Flags).Where(x => x.FieldType == typeof(T)).Select(x=>(T) x.GetValue(obj));
+            return obj.GetType().GetFields(Flags).Where(x => x.FieldType == typeof(T)).Select(x => (T)x.GetValue(obj));
         }
-        
+
         public static T GetField<T>(this object obj, string name)
         {
             return (T)obj.GetType().GetField(name, Flags)?.GetValue(obj);
         }
-        
+
         public static void SetValue(this object obj, string name, object value)
         {
             obj.GetType().GetField(name, Flags)?.SetValue(obj, value);
         }
-        
+
         public static string PrettyMemberName(this MemberInfo input)
         {
             return input.Name.PrettyCamelCase();
@@ -106,7 +106,7 @@ namespace CorePlugin.Extensions
         {
             return gameObject.GetComponents<Component>().Where(x => GetBaseTypes(x.GetType()).Any(t => t.GetCustomAttribute<T>(false) != null));
         }
-        
+
         public static IEnumerable<Object> GetComponentsWithAttribute<T>(this MonoBehaviour monoBehaviour) where T : Attribute
         {
             return monoBehaviour.GetComponents<Component>().Where(x => GetBaseTypes(x.GetType()).Any(t => t.GetCustomAttribute<T>(false) != null));
@@ -133,6 +133,12 @@ namespace CorePlugin.Extensions
         {
             return PrefabUtility.GetPrefabInstanceStatus(obj) == PrefabInstanceStatus.NotAPrefab &&
                    PrefabUtility.GetPrefabAssetType(obj) != PrefabAssetType.NotAPrefab;
+        }
+
+        public static bool IsSceneObject(this Object obj)
+        {
+            return PrefabUtility.GetPrefabInstanceStatus(obj) != PrefabInstanceStatus.NotAPrefab &&
+                   PrefabUtility.GetPrefabAssetType(obj) == PrefabAssetType.NotAPrefab;
         }
 
         public static IEnumerable<KeyValuePair<MethodInfo, IEnumerable<T>>> GetMethodsAttributes<T>(this Type t)

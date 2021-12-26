@@ -1,4 +1,19 @@
-﻿using System;
+﻿#region license
+
+// Copyright 2021 - 2021 Arcueid Elizabeth D'athemon
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//     http://www.apache.org/licenses/LICENSE-2.0
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+#endregion
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using CorePlugin.Attributes.EditorAddons.SelectAttributes;
@@ -9,7 +24,7 @@ namespace CorePlugin.Editor.Drawers.SelectDrawers
 {
     public abstract class SelectDrawerBase<T> : PropertyDrawer where T : SelectAttributeBase
     {
-        private bool _initializeFold = false;
+        private bool _initializeFold;
 
         private protected List<Type> _reflectionType;
 
@@ -33,7 +48,6 @@ namespace CorePlugin.Editor.Drawers.SelectDrawers
             var currentTypeIndex = Array.IndexOf(typeFullNameArray, property.managedReferenceFullTypename);
             var currentObjectType = _reflectionType[currentTypeIndex];
             var selectedTypeIndex = EditorGUI.Popup(popupPosition, currentTypeIndex, typePopupNameArray);
-
             ValidateType(property, selectedTypeIndex, currentObjectType);
 
             if (!_initializeFold)

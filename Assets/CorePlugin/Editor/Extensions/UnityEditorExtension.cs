@@ -34,7 +34,7 @@ namespace CorePlugin.Editor.Extensions
         /// <param name="type"></param>
         public static void HelpBox(string message, MessageType type)
         {
-            var style = new GUIStyle(EditorStyles.helpBox) {richText = true, fontSize = 11};
+            var style = new GUIStyle(EditorStyles.helpBox) { richText = true, fontSize = 11 };
             HelpBox(message, type, style);
         }
 
@@ -53,7 +53,7 @@ namespace CorePlugin.Editor.Extensions
             name = remove.Aggregate(name, (current, s) => current.Replace(s, string.Empty));
             return name.PrettyCamelCase();
         }
-        
+
         public static string PrettyTypeName(this Object input, params string[] remove)
         {
             var attr = input.GetType().GetCustomAttribute<DisplayNameAttribute>();

@@ -28,14 +28,8 @@ namespace CorePlugin.Dispatchers
         private static readonly Queue<Action> ExecutionQueue = new Queue<Action>();
         private static readonly SemaphoreSlim ExecutionQueueLock = new SemaphoreSlim(1, 1);
 
-        public static event Action OnDestroyEvent; 
+        public static event Action OnDestroyEvent;
 
-        [RuntimeInitializeOnLoadMethod]
-        private static void Init()
-        {
-            Initialize();
-        }
-        
         private void Awake()
         {
             if (_instance == null)
@@ -129,6 +123,12 @@ namespace CorePlugin.Dispatchers
             {
                 ExecutionQueueLock.Release();
             }
+        }
+
+        [RuntimeInitializeOnLoadMethod]
+        private static void Init()
+        {
+            Initialize();
         }
 
         protected override void OnDestroy()

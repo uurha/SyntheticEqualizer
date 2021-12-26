@@ -22,6 +22,7 @@ using CorePlugin.Editor.Extensions;
 using CorePlugin.Extensions;
 using UnityEditor;
 using UnityEditor.Callbacks;
+using UnityEditorInternal;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -34,7 +35,7 @@ namespace CorePlugin.Editor.Windows
             CoreSelectorWindow.ValidateCores();
         }
     }
-    
+
     public class CoreSelectorWindow : EditorWindow
     {
         private List<SelectorWindowExtensions.NamedGroup> _cores = new List<SelectorWindowExtensions.NamedGroup>();
@@ -45,23 +46,6 @@ namespace CorePlugin.Editor.Windows
         private Object _displayObject;
         private const string Elements = "Elements";
         private const string EditScript = "Edit Script";
-
-        [DidReloadScripts]
-        public static void ValidateCores()
-        {
-            if (!HasOpenInstances<CoreSelectorWindow>()) return;
-            var window = GetWindow<CoreSelectorWindow>(true, nameof(CoreSelectorWindow).PrettyCamelCase());
-            window.UpdateCores();
-            window.ResetIndexes();
-        }
-
-        public static void Init()
-        {
-            // Get existing open window or if none, make a new one:
-            var window = GetWindow<CoreSelectorWindow>(true, nameof(CoreSelectorWindow).PrettyCamelCase());
-            window.Show();
-            window.UpdateCores();
-        }
 
         private void OnEnable()
         {
@@ -78,6 +62,20 @@ namespace CorePlugin.Editor.Windows
                          () => ShowObject(_displayObject));
             menu.AddItem(new GUIContent(EditScript), false, () => OpenScript(_displayObject));
             menu.DropDown(rect);
+        }
+
+        private void GetTabsIndexes()
+        {
+            _subTab = EditorPrefs.GetInt(nameof(CoreSelectorWindow) + nameof(_subTab), 0);
+            _mainTab = EditorPrefs.GetInt(nameof(CoreSelectorWindow) + nameof(_mainTab), 0);
+        }
+
+        public static void Init()
+        {
+            // Get existing open window or if none, make a new one:
+            var window = GetWindow<CoreSelectorWindow>(true, nameof(CoreSelectorWindow).PrettyCamelCase());
+            window.Show();
+            window.UpdateCores();
         }
 
         private void OnDisable()
@@ -108,14 +106,12 @@ namespace CorePlugin.Editor.Windows
             EditorGUILayout.Separator();
 
             if (key.NamedObjects.Count > 0)
-            {
                 EditorGUILayout.LabelField(Elements,
                                            new GUIStyle(GUI.skin.label)
                                            {
                                                stretchWidth = true, alignment = TextAnchor.MiddleCenter,
                                                fontStyle = FontStyle.BoldAndItalic
                                            });
-            }
 
             _subTab = UnityEditorExtension.SelectionGrid(_subTab, key.NamedObjects.Select(x => x.Name).ToArray(),
                                                          columnCount,
@@ -137,48 +133,27 @@ namespace CorePlugin.Editor.Windows
             _embeddedInspector.OnInspectorGUI();
         }
 
-        private void ResetIndexes()
+        private void OnPlayModeStateChanged(PlayModeStateChange obj)
         {
-            if (_mainTab >= _cores.Count)
+            switch (obj)
             {
-                if (_mainTab != -1)
-                {
-                    _mainTab = _cores.Count - 1;
-                }
-                else
-                {
-                    _mainTab = 0;
-                }
-                _subTab = -1;
-                SetTabIndexes();
-                return;
+                case PlayModeStateChange.EnteredEditMode:
+                    _cores.Clear();
+                    UpdateCores();
+                    break;
+                case PlayModeStateChange.ExitingEditMode:
+                    _cores.Clear();
+                    break;
+                case PlayModeStateChange.EnteredPlayMode:
+                    _cores.Clear();
+                    UpdateCores();
+                    break;
+                case PlayModeStateChange.ExitingPlayMode:
+                    _cores.Clear();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(obj), obj, null);
             }
-            var key = _cores[_mainTab];
-
-            if (_subTab >= key.Value.Count)
-            {
-                if (_subTab != -1)
-                {
-                    _subTab = key.Value.Count - 1;
-                }
-                else
-                {
-                    _subTab = -1;
-                }
-            }
-            SetTabIndexes();
-        }
-
-        private void SetTabIndexes()
-        {
-            EditorPrefs.SetInt(nameof(CoreSelectorWindow) + nameof(_subTab), _subTab);
-            EditorPrefs.SetInt(nameof(CoreSelectorWindow) + nameof(_mainTab), _mainTab);
-        }
-
-        private void GetTabsIndexes()
-        {
-            _subTab = EditorPrefs.GetInt(nameof(CoreSelectorWindow) + nameof(_subTab), 0);
-            _mainTab = EditorPrefs.GetInt(nameof(CoreSelectorWindow) + nameof(_mainTab), 0);
         }
 
         private static void OpenScript(Object displayObject)
@@ -205,38 +180,8 @@ namespace CorePlugin.Editor.Windows
                     break;
             }
 
-            if (!UnityEditorInternal.InternalEditorUtility.OpenFileAtLineExternal(scriptPath, 1, 1))
-            {
+            if (!InternalEditorUtility.OpenFileAtLineExternal(scriptPath, 1, 1))
                 Debug.LogException(new FileNotFoundException("Something go wrong. Not possible to open file in IDE"));
-            }
-        }
-
-        private static void ShowObject(Object displayObject)
-        {
-            Selection.SetActiveObjectWithContext(displayObject, displayObject);
-        }
-
-        private void OnPlayModeStateChanged(PlayModeStateChange obj)
-        {
-            switch (obj)
-            {
-                case PlayModeStateChange.EnteredEditMode:
-                    _cores.Clear();
-                    UpdateCores();
-                    break;
-                case PlayModeStateChange.ExitingEditMode:
-                    _cores.Clear();
-                    break;
-                case PlayModeStateChange.EnteredPlayMode:
-                    _cores.Clear();
-                    UpdateCores();
-                    break;
-                case PlayModeStateChange.ExitingPlayMode:
-                    _cores.Clear();
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(obj), obj, null);
-            }
         }
 
         private void RecycleInspector(Object target)
@@ -245,10 +190,54 @@ namespace CorePlugin.Editor.Windows
             _embeddedInspector = UnityEditor.Editor.CreateEditor(target);
         }
 
+        private void ResetIndexes()
+        {
+            if (_mainTab >= _cores.Count)
+            {
+                if (_mainTab != -1)
+                    _mainTab = _cores.Count - 1;
+                else
+                    _mainTab = 0;
+                _subTab = -1;
+                SetTabIndexes();
+                return;
+            }
+            var key = _cores[_mainTab];
+
+            if (_subTab >= key.Value.Count)
+            {
+                if (_subTab != -1)
+                    _subTab = key.Value.Count - 1;
+                else
+                    _subTab = -1;
+            }
+            SetTabIndexes();
+        }
+
+        private void SetTabIndexes()
+        {
+            EditorPrefs.SetInt(nameof(CoreSelectorWindow) + nameof(_subTab), _subTab);
+            EditorPrefs.SetInt(nameof(CoreSelectorWindow) + nameof(_mainTab), _mainTab);
+        }
+
+        private static void ShowObject(Object displayObject)
+        {
+            Selection.SetActiveObjectWithContext(displayObject, displayObject);
+        }
+
         private void UpdateCores()
         {
             if (UnityExtensions.TryToFindObjectOfType<CoreManager>(out var coreManager))
                 _cores = typeof(CoreManager).ElementGathering(coreManager).ToList();
+        }
+
+        [DidReloadScripts]
+        public static void ValidateCores()
+        {
+            if (!HasOpenInstances<CoreSelectorWindow>()) return;
+            var window = GetWindow<CoreSelectorWindow>(true, nameof(CoreSelectorWindow).PrettyCamelCase());
+            window.UpdateCores();
+            window.ResetIndexes();
         }
     }
 }

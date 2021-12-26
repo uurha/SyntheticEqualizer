@@ -44,7 +44,7 @@ namespace CorePlugin.Attributes.EditorAddons
         EditorMode = 2,
         Both = PlayMode | EditorMode
     }
-    
+
     /// <summary>
     /// Provide data from object field marked by this attribute to <seealso cref="Editor.Windows.CoreSelectorWindow"/>
     /// </summary>

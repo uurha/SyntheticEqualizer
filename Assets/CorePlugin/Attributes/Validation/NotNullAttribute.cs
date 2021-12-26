@@ -14,7 +14,9 @@
 #endregion
 
 using System;
+using System.Diagnostics;
 using CorePlugin.Attributes.Base;
+using CorePlugin.Extensions;
 
 namespace CorePlugin.Attributes.Validation
 {
@@ -22,6 +24,7 @@ namespace CorePlugin.Attributes.Validation
     /// Attribute validating whether field or element in the list equals null.
     /// </summary>
     [AttributeUsage(AttributeTargets.Field)]
+    [Conditional(EditorDefinition.UnityEditor)]
     public class NotNullAttribute : FieldValidationAttribute
     {
         public NotNullAttribute(bool showError) : base(showError)

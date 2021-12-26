@@ -14,6 +14,7 @@
 #endregion
 
 using System.Collections.Generic;
+using System.Linq;
 using CorePlugin.Attributes.Base;
 using CorePlugin.Editor.Helpers;
 using CorePlugin.Extensions;
@@ -27,12 +28,22 @@ namespace CorePlugin.Editor.Extensions
         public static IEnumerable<ErrorObjectPair> ErrorObjectPairs(GameObject o)
         {
             var behaviours = o.GetComponentsInChildren<MonoBehaviour>(true);
-            return ListErrors(behaviours);
+            if (behaviours.All(x => x != null)) return ListErrors(behaviours);
+            var correctedList = new List<MonoBehaviour>();
+            var errorList = new List<ErrorObjectPair>();
+
+            foreach (var monoBehaviour in behaviours)
+                if (monoBehaviour != null)
+                    correctedList.Add(monoBehaviour);
+                else
+                    errorList.Add(new ErrorObjectPair($"Missing script reference on object {o.name} or its' child", o));
+            errorList.AddRange(ListErrors(correctedList));
+            return errorList;
         }
 
         public static IEnumerable<ErrorObjectPair> ErrorObjectPairs()
         {
-            var behaviours = Object.FindObjectsOfType<MonoBehaviour>();
+            var behaviours = Object.FindObjectsOfType<MonoBehaviour>(true);
             return ListErrors(behaviours);
         }
 

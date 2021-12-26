@@ -36,7 +36,7 @@ namespace CorePlugin.ReferenceDistribution
         private IEnumerable<IDistributingReference> _distributingReferences;
         private bool _isInitialized;
         private static ReferenceDistributor _instance;
-        private static readonly string[] WarningCallers = {"Awake", "OnEnable"};
+        private static readonly string[] WarningCallers = { "Awake", "OnEnable" };
 
         /// <summary>
         /// Finding reference if passed parameter is null.

@@ -60,6 +60,12 @@ namespace CorePlugin.FileSystem
             _defaultExtension = extension;
         }
 
+        public void Dispose()
+        {
+            _semaphoreSlim.Dispose();
+            _semaphoreSlim = null;
+        }
+
         /// <summary>
         /// Saves class to the file with the name of class.
         /// </summary>
@@ -161,12 +167,6 @@ namespace CorePlugin.FileSystem
             {
                 _semaphoreSlim.Release();
             }
-        }
-
-        public void Dispose()
-        {
-            _semaphoreSlim.Dispose();
-            _semaphoreSlim = null;
         }
     }
 }

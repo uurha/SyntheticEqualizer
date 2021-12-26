@@ -14,8 +14,10 @@
 #endregion
 
 using System;
+using System.Diagnostics;
 using System.Linq;
 using CorePlugin.Attributes.Base;
+using CorePlugin.Extensions;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -25,6 +27,7 @@ namespace CorePlugin.Attributes.Validation
     /// Attribute validating whether there is only one copy of this class in the scene.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class)]
+    [Conditional(EditorDefinition.UnityEditor)]
     public class OneAndOnlyAttribute : ClassValidationAttribute
     {
         private Type _type;

@@ -56,6 +56,13 @@ Any OS supported. Unity version 2020 and above. (Package requires C# 8.0)
     3. <b>[Editor Symbol Definer]</b> - allows defining Scripting Define Symbols in the project thought attribute or
        button in Inspector.
 
+### v2.0.2
+
+1. Fixed build issue with Validation Attributes
+2. Removed redundant prefabs and scripts
+3. Added:
+    1. SelectImplementation Attribute
+    2. SelectType Attribute
 
 [Scene Loader]: https://github.com/uurha/AdvancedSceneManagement
 

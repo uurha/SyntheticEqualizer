@@ -39,10 +39,7 @@ namespace CorePlugin.Extensions
 
         public static async Task AwaitRequestAsync<T>(T task) where T : Task
         {
-            while (task.IsCompleted)
-            {
-                await Task.Yield();
-            }
+            while (task.IsCompleted) await Task.Yield();
         }
 
         /// <summary>

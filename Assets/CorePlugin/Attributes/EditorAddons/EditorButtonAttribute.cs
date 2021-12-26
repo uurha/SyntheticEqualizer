@@ -35,7 +35,7 @@ namespace CorePlugin.Attributes.EditorAddons
         public EditorButtonAttribute(string displayName, params object[] invokeParams) : this(displayName, -1, -1, invokeParams)
         {
         }
-        
+
         /// <summary>
         /// Provides Editor button
         /// </summary>
